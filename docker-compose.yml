@@ -1,0 +1,46 @@
+version: "1"
+services:
+  db:
+    image: postgres:latest
+    container_name: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    env_file:
+      - ./server/.env
+
+  pgAdmin:
+    image: dpage/pgadmin4
+    container_name: pgAdmin
+    env_file:
+      - ./server/.env
+    ports:
+      - "5050:80"
+
+  server:
+    build: ./server
+    ports: 
+      - "1998:80"
+    volumes:
+      - ./server:/usr/src/app
+    links:
+      - db
+    env_file:
+      - ./server/.env
+    # diesel infer_schema macro gives warnings with this flag.
+    # environment:
+    #   - CARGO_INCREMENTAL=1
+    command: bash -c "bash ./wait-for-it.sh db:5432 && cargo watch -x run"
+
+  web:
+    build: ./web
+    volumes:
+      - ./web:/usr/src/app
+    ports:
+      - "1999:3000"
+    env_file:
+      - ./web/.env.local
+    command: bash -c "npm install && npm run start:ci"
+    links:
+      - server
