@@ -52,7 +52,7 @@ async fn main() {
 
     if session_store_result.is_err() {
         println!("Session store couldnt migrate");
-    }
+    } 
      
     let deletion_task = tokio::task::spawn(
         session_store

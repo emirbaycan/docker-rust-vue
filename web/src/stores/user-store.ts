@@ -3,21 +3,58 @@ import { defineStore } from 'pinia'
 export const useUserStore = defineStore('user', {
   state: () => {
     return {
-      userName: 'Vasili Savitski',
-      email: 'vasili@gmail.com',
+      id: localStorage.id,
+      fullname: localStorage.fullname,
+      username: localStorage.username,
+      email: localStorage.email,
       memberSince: '8/12/2020',
-      pfp: 'https://picsum.photos/id/22/200/300',
-      is2FAEnabled: false,
+      pfp: localStorage.avatar
     }
   },
 
   actions: {
-    toggle2FA() {
-      this.is2FAEnabled = !this.is2FAEnabled
-    },
+    async changeFullname(fullname: string) {
+      const response = await fetch(import.meta.env.VITE_API_URL + 'api/user/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+           "fullname": fullname 
+          }),
+      })
 
-    changeUserName(userName: string) {
-      this.userName = userName
+      const result = await response.json()
+
+      console.log(result);
+
+      if(result.status=="success"){
+        localStorage.fullname = fullname;
+        this.fullname = fullname
+      }     
+    },
+    
+    async changeUsername(username: string) {
+      const response = await fetch(import.meta.env.VITE_API_URL + 'api/user/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+           "username": username 
+          }),
+      })
+
+      const result = await response.json()
+
+      console.log(result);
+
+      if(result.status=="success"){
+        localStorage.username = username;
+        this.username = username
+      }     
     },
   },
 })

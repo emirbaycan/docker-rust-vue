@@ -8,11 +8,15 @@ use axum::{
     Json,
 };
 
+use tower_sessions::Session;
+use uuid::Uuid;
+
 use crate::general::schema::{FilterOptions, Table};
 use crate::user::{
     model::UserModel,
     schema::{CreateUserSchema, UpdateUserSchema},
 };
+
 use crate::AppState;
 
 pub async fn user_list_handler(
@@ -212,4 +216,59 @@ pub async fn delete_user_handler(
     }
 
     Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn update_user_handler(
+    session: Session,
+    State(data): State<Arc<AppState>>,
+    Json(body): Json<UpdateUserSchema>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+
+    let id = session.get::<Uuid>("id").await.unwrap().unwrap();
+
+    let query_result = sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", id)
+        .fetch_one(&data.db)
+        .await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": format!("Item with ID: {} not found", id)
+        });
+        return Err((StatusCode::NOT_FOUND, Json(error_response)));
+    }
+
+    let now = chrono::Utc::now();
+    let item = query_result.unwrap();
+
+    let query_result = sqlx
+        ::query_as!(
+            UserModel,
+            "UPDATE users SET username = $1, password = $2, email = $3, fullname = $4, role = $5, avatar = $6, notes = $7, active = $8, updated_at = $9 WHERE id = $10 RETURNING *",
+            body.username.to_owned().unwrap_or(item.username),  
+            body.password.to_owned().unwrap_or(item.password),
+            body.email.to_owned().unwrap_or(item.email),
+            body.fullname.to_owned().unwrap_or(item.fullname),
+            body.role.to_owned().unwrap_or(item.role),
+            body.avatar.to_owned().unwrap_or(item.avatar),
+            body.notes.to_owned().unwrap_or(item.notes),
+            body.active.to_owned().unwrap_or(item.active),
+            now,
+            id 
+        )
+        .fetch_one(&data.db).await;
+
+    match query_result {
+        Ok(item) => {
+            let item_response = serde_json::json!({"status": "success"});
+
+            return Ok(Json(item_response));
+        }
+        Err(err) => {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"status": "error","message": format!("{:?}", err)})),
+            ));
+        }
+    }
 }

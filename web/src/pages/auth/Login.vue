@@ -73,6 +73,16 @@ const submit = async () => {
 
     const result = await response.json()
 
+    let user = result.data;
+
+    localStorage.id = user.id;
+    localStorage.username = user.username;
+    localStorage.email = user.email;
+    localStorage.fullname = user.fullname;
+    localStorage.role = user.role;
+    localStorage.avatar = user.avatar;
+    localStorage.active = user.active;
+
     if (result.status == 'success') {
       init({ message: "You've successfully logged in", color: 'success' })
       push({ name: 'dashboard' })

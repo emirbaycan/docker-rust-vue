@@ -3,9 +3,9 @@ use std::sync::Arc;
 use axum::{middleware, Router};
 
 use crate::{
-    auth::route::{auth_admin, auth_router}, detail::route::detail_router, general::route::general_router,
+    auth::route::{auth_admin, auth_router, auth_user}, detail::route::detail_router, general::route::general_router,
     image::route::{admin_image_router, image_router, visitor_image_router}, job::route::job_router, project::route::project_router,
-    testimonial::route::testimonial_router, user::route::user_router, AppState,
+    testimonial::route::testimonial_router, user::route::{all_user_router, user_router}, AppState,
 };
 
 pub fn create_router(app_state: Arc<AppState>) -> Router {
@@ -19,7 +19,6 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
     let testimonial_route = testimonial_router(app_state.clone());
     let user_route = user_router(app_state.clone());
 
-    
     let admin_prefix = "/api/admin";
 
     let admin_route = Router::new()
@@ -33,6 +32,12 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
     .nest(admin_prefix, user_route)
     .layer(middleware::from_fn(auth_admin));
 
+    let user_prefix = "/api/user";
+
+    let user_route = Router::new()
+    .nest(user_prefix, all_user_router(app_state.clone())) 
+    .layer(middleware::from_fn(auth_user));
+
     let visitor_prefix = "/";
     
     let visitor_route = Router::new()
@@ -41,5 +46,6 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
 
     Router::new()
         .merge(admin_route)
+        .merge(user_route)
         .merge(visitor_route)
 }

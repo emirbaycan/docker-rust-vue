@@ -15,6 +15,8 @@ use crate::{
     AppState,
 };
 
+use super::handler::update_user_handler;
+
 pub fn user_router(app_state: Arc<AppState>) -> Router {
     Router::new()
     .route("/users", get(user_list_handler))
@@ -25,6 +27,13 @@ pub fn user_router(app_state: Arc<AppState>) -> Router {
         .patch(edit_user_handler)
         .delete(delete_user_handler),
     )
+    .with_state(app_state)
+    .layer(middleware::from_fn(authenticate))
+}
+
+pub fn all_user_router(app_state: Arc<AppState>) -> Router {
+    Router::new()
+    .route("/account", post(update_user_handler))
     .with_state(app_state)
     .layer(middleware::from_fn(authenticate))
 }

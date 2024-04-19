@@ -8,7 +8,7 @@
     close-button
     @update:modelValue="emits('cancel')"
   >
-    <h1 class="va-h5 mb-4">Reset password</h1>
+    <h1 class="va-h5 mb-4">Edit Name</h1>
     <VaForm ref="form" @submit.prevent="submit">
       <VaInput v-model="Name" class="mb-4" label="Name" placeholder="Name" />
       <div class="flex flex-col-reverse md:flex-row md:items-center md:justify-end md:space-x-4">
@@ -31,14 +31,14 @@ const { init } = useToast()
 
 const emits = defineEmits(['cancel'])
 
-const Name = ref<string>(store.userName)
+const Name = ref<string>(store.fullname)
 
 const submit = () => {
-  if (!Name.value || Name.value === store.userName) {
+  if (!Name.value || Name.value === store.fullname) {
     return emits('cancel')
   }
 
-  store.changeUserName(Name.value)
+  store.changeFullname(Name.value)
   init({ message: "You've successfully changed your name", color: 'success' })
   emits('cancel')
 }
