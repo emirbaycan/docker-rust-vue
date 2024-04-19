@@ -14,6 +14,7 @@ pub struct CreateUserSchema {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateUserSchema {
     pub username: Option<String>,
+    pub old_password: Option<String>,
     pub password: Option<String>,
     pub email: Option<String>,
     pub fullname: Option<String>,

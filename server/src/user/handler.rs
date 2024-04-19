@@ -1,3 +1,4 @@
+use bcrypt::{hash, verify, DEFAULT_COST};
 use serde_json::json;
 use std::sync::Arc;
 
@@ -240,13 +241,26 @@ pub async fn update_user_handler(
 
     let now = chrono::Utc::now();
     let item = query_result.unwrap();
+    let mut password = item.password;
+
+    if body.password.is_some() && body.old_password.is_some(){
+        if verify(&body.old_password.unwrap(),&password).unwrap(){
+            password = hash(body.password.unwrap(),DEFAULT_COST).unwrap();
+        }else{
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": "Passwords didn't match"
+            });
+            return Err((StatusCode::NOT_FOUND, Json(error_response)));
+        }
+    }
 
     let query_result = sqlx
         ::query_as!(
             UserModel,
             "UPDATE users SET username = $1, password = $2, email = $3, fullname = $4, role = $5, avatar = $6, notes = $7, active = $8, updated_at = $9 WHERE id = $10 RETURNING *",
             body.username.to_owned().unwrap_or(item.username),  
-            body.password.to_owned().unwrap_or(item.password),
+            &password,
             body.email.to_owned().unwrap_or(item.email),
             body.fullname.to_owned().unwrap_or(item.fullname),
             body.role.to_owned().unwrap_or(item.role),

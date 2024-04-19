@@ -60,5 +60,5 @@ import { buttonStyles } from '../styles'
 
 const store = useUserStore()
 
-const emits = defineEmits(['openNameModal','openUsernameModal', 'openResetPasswordModal'])
+const emits = defineEmits(['openNameModal', 'openUsernameModal', 'openResetPasswordModal'])
 </script>
