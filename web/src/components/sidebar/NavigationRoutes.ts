@@ -22,28 +22,28 @@ export default {
       name: 'projects',
       displayName: 'menu.projects',
       meta: {
-        icon: 'folder_shared',
+        icon: 'code',
       },
     },
     {
       name: 'jobs',
       displayName: 'menu.jobs',
       meta: {
-        icon: 'folder_shared',
+        icon: 'work',
       },
     },
     {
       name: 'testimonials',
       displayName: 'menu.testimonials',
       meta: {
-        icon: 'folder_shared',
+        icon: 'comment',
       },
     },
     {
       name: 'images',
       displayName: 'menu.images',
       meta: {
-        icon: 'folder_shared',
+        icon: 'image',
       },
     },
     {

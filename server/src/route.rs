@@ -4,7 +4,7 @@ use axum::{middleware, Router};
 
 use crate::{
     auth::route::{auth_admin, auth_router, auth_user}, detail::route::detail_router, general::route::general_router,
-    image::route::{admin_image_router, image_router, visitor_image_router}, job::route::job_router, project::route::project_router,
+    image::route::{admin_image_router, image_router, user_image_router, visitor_image_router}, job::route::job_router, project::route::project_router,
     testimonial::route::testimonial_router, user::route::{all_user_router, user_router}, AppState,
 };
 
@@ -35,6 +35,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
     let user_prefix = "/api/user";
 
     let user_route = Router::new()
+    .nest(user_prefix, user_image_router(app_state.clone())) 
     .nest(user_prefix, all_user_router(app_state.clone())) 
     .layer(middleware::from_fn(auth_user));
 

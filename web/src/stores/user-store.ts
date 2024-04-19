@@ -4,6 +4,7 @@ export const useUserStore = defineStore('user', {
   state: () => {
     return {
       id: localStorage.id,
+      avatar: localStorage.avatar,
       fullname: localStorage.fullname,
       username: localStorage.username,
       email: localStorage.email,
@@ -26,8 +27,6 @@ export const useUserStore = defineStore('user', {
       })
 
       const result = await response.json()
-
-      console.log(result);
 
       if(result.status=="success"){
         localStorage.fullname = fullname;

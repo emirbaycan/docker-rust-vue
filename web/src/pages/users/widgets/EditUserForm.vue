@@ -31,7 +31,7 @@ const newUser = ref<User>({ ...defaultNewUser })
 
 const isFormHasUnsavedChanges = computed(() => {
   return Object.keys(newUser.value).some((key) => {
-    if (key === 'avatar' || key === 'projects') {
+    if (key === 'avatar') {
       return false
     }
 
@@ -70,15 +70,16 @@ watch(avatar, async (newAvatar) => {
 
   formData.append('file', newAvatar)
 
-  const response = await fetch(import.meta.env.VITE_API_URL + 'image', {
+  const response = await fetch(import.meta.env.VITE_API_URL + 'api/user/image', {
     method: 'POST',
+    credentials: 'include',
     body: formData,
   })
 
   const result = await response.json()
   const image: any = result.data.item.name
 
-  newUser.value.avatar = 'http  ://localhost:1998/images/' + image
+  newUser.value.avatar = 'http://localhost:1998/images/' + image
 })
 
 const form = useForm('add-user-form')
@@ -100,61 +101,28 @@ const roleSelectOptions: { text: Capitalize<UserRole>; value: UserRole }[] = [
 
 <template>
   <VaForm v-slot="{ isValid }" ref="add-user-form" class="flex-col justify-start items-start gap-4 inline-flex w-full">
-    <VaFileUpload
-      v-model="avatar"
-      type="single"
-      hide-file-list
-      class="self-stretch justify-start items-center gap-4 inline-flex"
-    >
+    <VaFileUpload v-model="avatar" type="single" hide-file-list
+      class="self-stretch justify-start items-center gap-4 inline-flex">
       <UserAvatar :user="newUser" size="large" />
       <VaButton preset="primary" size="small">Add image</VaButton>
-      <VaButton
-        v-if="avatar"
-        preset="primary"
-        color="danger"
-        size="small"
-        icon="delete"
-        class="z-10"
-        @click.stop="avatar = undefined"
-      />
+      <VaButton v-if="avatar" preset="primary" color="danger" size="small" icon="delete" class="z-10"
+        @click.stop="avatar = undefined" />
     </VaFileUpload>
     <div class="self-stretch flex-col justify-start items-start gap-4 flex">
       <div class="flex gap-4 flex-col sm:flex-row w-full">
-        <VaInput
-          v-model="newUser.fullname"
-          label="Full name"
-          class="w-full sm:w-1/2"
-          :rules="[validators.required]"
-          name="fullname"
-        />
-        <VaInput
-          v-model="newUser.username"
-          label="Username"
-          class="w-full sm:w-1/2"
-          :rules="[validators.required]"
-          name="username"
-        />
+        <VaInput v-model="newUser.fullname" label="Full name" class="w-full sm:w-1/2" :rules="[validators.required]"
+          name="fullname" />
+        <VaInput v-model="newUser.username" label="Username" class="w-full sm:w-1/2" :rules="[validators.required]"
+          name="username" />
       </div>
       <div class="flex gap-4 flex-col sm:flex-row w-full">
-        <VaInput
-          v-model="newUser.email"
-          label="Email"
-          class="w-full sm:w-1/2"
-          :rules="[validators.required, validators.email]"
-          name="email"
-        />
+        <VaInput v-model="newUser.email" label="Email" class="w-full sm:w-1/2"
+          :rules="[validators.required, validators.email]" name="email" />
       </div>
       <div class="flex gap-4 w-full">
         <div class="w-1/2">
-          <VaSelect
-            v-model="newUser.role"
-            label="Role"
-            class="w-full"
-            :options="roleSelectOptions"
-            :rules="[validators.required]"
-            name="role"
-            value-by="value"
-          />
+          <VaSelect v-model="newUser.role" label="Role" class="w-full" :options="roleSelectOptions"
+            :rules="[validators.required]" name="role" value-by="value" />
         </div>
 
         <div class="flex items-center w-1/2 mt-4">
