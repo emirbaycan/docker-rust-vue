@@ -144,6 +144,59 @@ pub async fn get_user_handler(
     }
 }
 
+pub async fn new_user_list_handler(
+    State(data): State<Arc<AppState>>,
+    opts: Option<Query<FilterOptions>>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let Query(opts) = opts.unwrap_or_default();
+
+    let limit = opts.limit.unwrap_or(10);
+    let offset = (opts.page.unwrap_or(1) - 1) * limit;
+
+    let query_result = sqlx::query_as!(Table, 
+        "SELECT count(id) as count FROM users WHERE role = 1")
+        .fetch_one(&data.db)
+        .await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let item = query_result.unwrap();
+
+    let count = item.count;
+
+    let query_result = sqlx::query_as!(
+        UserModel,
+        "SELECT * FROM users WHERE role = 1 ORDER by created_at LIMIT $1 OFFSET $2",
+        limit as i32,
+        offset as i32
+    )
+    .fetch_all(&data.db)
+    .await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let items = query_result.unwrap();
+
+    let json_response = serde_json::json!({
+        "status": "success",
+        "count": count,
+        "items": items
+    });
+    Ok(Json(json_response))
+}
+
 pub async fn edit_user_handler(
     Path(id): Path<uuid::Uuid>,
     State(data): State<Arc<AppState>>,
@@ -273,7 +326,7 @@ pub async fn update_user_handler(
         .fetch_one(&data.db).await;
 
     match query_result {
-        Ok(item) => {
+        Ok(_item) => {
             let item_response = serde_json::json!({"status": "success"});
 
             return Ok(Json(item_response));

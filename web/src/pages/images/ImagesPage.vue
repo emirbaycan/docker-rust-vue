@@ -5,6 +5,7 @@ import EditImageForm from './widgets/EditImageForm.vue'
 import { Image } from './types'
 import { useItems } from './composables/useImages'
 import { useModal, useToast } from 'vuestic-ui'
+import { updateAllItems } from '../../data/pages/images'
 
 const doShowEditImageModal = ref(false)
 
@@ -81,7 +82,17 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
             </template>
           </VaInput>
         </div>
-        <VaButton @click="showAddImageModal">Add Image</VaButton>
+        <VaMenu>
+          <template #anchor>
+            <VaButton>Actions</VaButton>
+          </template>
+          <VaMenuItem>
+            <VaButton @click="updateAllItems()">Update Images</VaButton>
+          </VaMenuItem>
+          <VaMenuItem>
+            <VaButton @click="showAddImageModal">Add Image</VaButton>
+          </VaMenuItem>
+        </VaMenu>
       </div>
 
       <ImageTable

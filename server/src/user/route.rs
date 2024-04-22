@@ -10,15 +10,14 @@ use crate::{
     auth::route::authenticate,
     user::handler::{
         create_user_handler, delete_user_handler, edit_user_handler, get_user_handler,
-        user_list_handler,
+        user_list_handler, new_user_list_handler, update_user_handler
     },
     AppState,
 };
 
-use super::handler::update_user_handler;
-
 pub fn user_router(app_state: Arc<AppState>) -> Router {
     Router::new()
+    .route("/new_users", get(new_user_list_handler))
     .route("/users", get(user_list_handler))
     .route("/users", post(create_user_handler))
     .route(

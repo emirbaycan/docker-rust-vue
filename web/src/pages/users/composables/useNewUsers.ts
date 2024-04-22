@@ -1,39 +1,30 @@
 import { Ref, ref, unref, watch } from 'vue'
-import {
-  updateAllItems,
-  getItems,
-  updateItem,
-  addItem,
-  removeItem,
-  type Filters,
-  Pagination,
-  Sorting,
-} from '../../../data/pages/images'
-import { Image } from '../types'
+import { getUsers, updateUser, addUser, removeUser, type Filters, Pagination, Sorting } from '../../../data/pages/new_users'
+import { User } from '../types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })
-const makeSortingRef = () => ref<Sorting>({ sortBy: 'name', sortingOrder: null })
+const makeSortingRef = () => ref<Sorting>({ sortBy: 'fullname', sortingOrder: null })
 const makeFiltersRef = () => ref<Partial<Filters>>({ search: '' })
 
-export const useItems = (options?: {
+export const useUsers = (options?: {
   pagination?: Ref<Pagination>
   sorting?: Ref<Sorting>
   filters?: Ref<Partial<Filters>>
 }) => {
   const isLoading = ref(false)
-  const items = ref<Image[]>([])
+  const users = ref<User[]>([])
 
   const { filters = makeFiltersRef(), sorting = makeSortingRef(), pagination = makePaginationRef() } = options || {}
 
   const fetch = async () => {
     isLoading.value = true
-    const { data, pagination: newPagination } = await getItems({
+    const { data, pagination: newPagination } = await getUsers({
       ...unref(filters),
       ...unref(sorting),
       ...unref(pagination),
     })
-    items.value = data
+    users.value = data
 
     ignoreUpdates(() => {
       pagination.value = newPagination
@@ -47,6 +38,7 @@ export const useItems = (options?: {
   watch(
     filters,
     () => {
+      // Reset pagination to first page when filters changed
       pagination.value.page = 1
       fetch()
     },
@@ -62,34 +54,27 @@ export const useItems = (options?: {
     sorting,
     pagination,
 
-    items,
+    users,
 
     fetch,
 
-    async add(item: Image) {
+    async add(user: User) {
       isLoading.value = true
-      await addItem(item)
+      await addUser(user)
       await fetch()
       isLoading.value = false
     },
 
-    async update(item: Image) {
+    async update(user: User) {
       isLoading.value = true
-      await updateItem(item)
-      await fetch()
-      isLoading.value = false
-    },
-    
-    async update_all(item: Image) {
-      isLoading.value = true
-      await updateAllItems()
+      await updateUser(user)
       await fetch()
       isLoading.value = false
     },
 
-    async remove(item: Image) {
+    async remove(user: User) {
       isLoading.value = true
-      await removeItem(item)
+      await removeUser(user)
       await fetch()
       isLoading.value = false
     },

@@ -1,4 +1,4 @@
-import { Image } from '../../pages/images/types'
+import { User } from '../../pages/users/types'
 
 // Simulate API calls
 
@@ -9,7 +9,7 @@ export type Pagination = {
 }
 
 export type Sorting = {
-  sortBy: keyof Image | undefined
+  sortBy: keyof User | undefined
   sortingOrder: 'asc' | 'desc' | null
 }
 
@@ -23,10 +23,10 @@ const getSortItem = (obj: any, sortBy: string) => {
   return obj[sortBy]
 }
 
-export const getItems = async (filters: Partial<Filters & Pagination & Sorting>) => {
+export const getUsers = async (filters: Partial<Filters & Pagination & Sorting>) => {
   const { search, sortBy, sortingOrder } = filters
 
-  const response = await fetch(admin_api_url + 'images?page=' + filters.page + '&limit=' + filters.perPage, {
+  const response = await fetch(admin_api_url + 'new_users', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -36,16 +36,16 @@ export const getItems = async (filters: Partial<Filters & Pagination & Sorting>)
 
   const result = await response.json()
 
-  const items: Array<Image> = result.items
+  const users: Array<User> = result.items
   const count = result.count
 
-  let filteredItems = items
-
+  let filteredUsers = users
+ 
   if (search) {
-    filteredItems = filteredItems.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+    filteredUsers = filteredUsers.filter((user) => user.fullname.toLowerCase().includes(search.toLowerCase()))
   }
   if (sortBy && sortingOrder) {
-    filteredItems = filteredItems.sort((a, b) => {
+    filteredUsers = filteredUsers.sort((a, b) => {
       const first = getSortItem(a, sortBy)
       const second = getSortItem(b, sortBy)
       if (first > second) {
@@ -60,7 +60,7 @@ export const getItems = async (filters: Partial<Filters & Pagination & Sorting>)
 
   const { page = 1, perPage = 10 } = filters || {}
   return {
-    data: filteredItems,
+    data: filteredUsers.slice((page - 1) * perPage, page * perPage),
     pagination: {
       page,
       perPage,
@@ -69,62 +69,48 @@ export const getItems = async (filters: Partial<Filters & Pagination & Sorting>)
   }
 }
 
-export const updateAllItems = async () => {
-  const response = await fetch(admin_api_url + 'update/all_images', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  })
-
-  const result = await response.json()
-
-  return true;
-}
-
-export const addItem = async (item: Image) => {
-  const response = await fetch(admin_api_url + 'images', {
+export const addUser = async (user: User) => {
+  const response = await fetch(admin_api_url + 'users', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify(item),
+    body: JSON.stringify(user),
   })
 
   const result = await response.json()
-  const newItem: Image = result.item
+  const newUser: User = result.item
 
   return {
-    ...newItem,
+    ...newUser,
   }
 }
 
-export const updateItem = async (item: Image) => {
-  const response = await fetch(admin_api_url + 'images/' + item.id, {
+export const updateUser = async (user: User) => {
+  const response = await fetch(admin_api_url + 'users/' + user.id, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify(item),
+    body: JSON.stringify(user),
   })
 
   const result = await response.json()
-  const newItem: Image = result.item
+  const newUser: User = result.item
 
-  return newItem
+  return newUser
 }
 
-export const removeItem = async (item: Image) => {
-  const response = await fetch(admin_api_url + 'images/' + item.id, {
+export const removeUser = async (user: User) => {
+  const response = await fetch(admin_api_url + 'users/' + user.id, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify(item),
+    body: JSON.stringify(user),
   })
 
   const result = await response.json()
