@@ -74,7 +74,7 @@ const submit = async () => {
     const result = await response.json()
 
     let user = result.data;
-
+    localStorage.last_login = new Date().getTime();
     localStorage.id = user.id;
     localStorage.username = user.username;
     localStorage.email = user.email;
