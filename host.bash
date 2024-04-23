@@ -1,0 +1,1 @@
+DOCKER_HOST=ssh://ubuntu@emirbaycan.com.tr

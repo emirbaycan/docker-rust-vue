@@ -5,6 +5,8 @@ import AppLayout from '../layouts/AppLayout.vue'
 
 import RouteViewComponent from '../layouts/RouterBypass.vue'
 
+import stores from '../stores'
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
@@ -15,6 +17,9 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: AppLayout,
     redirect: { name: 'dashboard' },
+    meta:{
+      requiresAuth:true
+    },
     children: [
       {
         name: 'dashboard',
@@ -131,6 +136,15 @@ const router = createRouter({
     }
   },
   routes,
+})
+
+router.beforeEach((to,from,next)=>{
+  if(to.matched.some(route=>route.meta.requiresAuth)){
+    if(!localStorage.getItem('id')){
+      next({ name: 'login' })
+    }
+  }
+  next();
 })
 
 export default router
