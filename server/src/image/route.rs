@@ -1,4 +1,4 @@
-    use std::sync::Arc;
+use std::sync::Arc;
 
 use axum::{
     routing::{get, post},
@@ -8,12 +8,12 @@ use axum::{
 use crate::{
     image::handler::{
         create_image_handler, delete_image_handler, edit_image_handler, get_image_handler,
-        image_list_handler, show_image_handler, update_all_images_handler, upload_image_handler,
+        image_list_handler, show_image_handler, update_all_images_handler,
     },
     AppState,
 };
 
-use super::handler::upload_user_image_handler;
+use super::handler::{upload_image_handler, upload_user_image_handler};
 
 pub fn image_router(app_state: Arc<AppState>) -> Router {
     Router::new()
@@ -36,8 +36,9 @@ pub fn admin_image_router(app_state: Arc<AppState>) -> Router {
 
 pub fn user_image_router(app_state: Arc<AppState>) -> Router {
     Router::new()
-    .route("/image", post(upload_user_image_handler))
-    .with_state(app_state)
+        .route("/image", post(upload_image_handler))
+        .route("/user_image", post(upload_user_image_handler))
+        .with_state(app_state)
 }
 
 pub fn visitor_image_router(app_state: Arc<AppState>) -> Router {

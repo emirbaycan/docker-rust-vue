@@ -70,7 +70,7 @@ watch(avatar, async (newAvatar) => {
 
   formData.append('file', newAvatar)
 
-  const response = await fetch(import.meta.env.VITE_API_URL + 'api/user/image', {
+  const response = await fetch(import.meta.env.VITE_API_URL + 'api/user/user_image', {
     method: 'POST',
     credentials: 'include',
     body: formData,
