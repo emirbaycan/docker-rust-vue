@@ -79,7 +79,8 @@ watch(avatar, async (newAvatar) => {
   const result = await response.json()
   const image: any = result.data.item.name
 
-  newUser.value.avatar = 'http://localhost:1998/images/' + image
+  newUser.value.avatar = 'http://localhost:1998/images/' + image + "?" + new Date().getTime();
+  localStorage.avatar = 'http://localhost:1998/images/' + image+ "?" + new Date().getTime();
 })
 
 const form = useForm('add-user-form')

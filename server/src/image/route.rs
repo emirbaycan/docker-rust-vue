@@ -13,6 +13,8 @@ use crate::{
     AppState,
 };
 
+use super::handler::upload_user_image_handler;
+
 pub fn image_router(app_state: Arc<AppState>) -> Router {
     Router::new()
         .route("/images", post(create_image_handler))
@@ -34,7 +36,7 @@ pub fn admin_image_router(app_state: Arc<AppState>) -> Router {
 
 pub fn user_image_router(app_state: Arc<AppState>) -> Router {
     Router::new()
-    .route("/image", post(upload_image_handler))
+    .route("/image", post(upload_user_image_handler))
     .with_state(app_state)
 }
 

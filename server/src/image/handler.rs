@@ -1,4 +1,6 @@
 use serde_json::json;
+use tower_sessions::Session;
+use uuid::Uuid;
 use std::sync::Arc;
 use tokio_util::codec::{BytesCodec, FramedRead};
 
@@ -53,6 +55,39 @@ pub async fn upload_image_handler(
         let item_response = json!({"status": "success","data": json!({
             "item": json!({
                 "name":name+".webp"
+            })
+        })});
+
+        return Ok((StatusCode::CREATED, Json(item_response)));
+    }
+
+    let json_response = serde_json::json!({
+        "status": "success",
+    });
+
+    Ok((StatusCode::CREATED, Json(json_response)))
+}
+
+
+pub async fn upload_user_image_handler(
+    session : Session,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    while let Some(mut field) = multipart.next_field().await.unwrap() {
+        
+        let file_name = session.get::<Uuid>("id").await.unwrap().unwrap().to_string();
+
+        let file_path = format!("images/{}.webp", file_name);
+        let mut file = File::create(&file_path).unwrap();
+
+        // Write the data from the field to the file
+        while let Some(chunk) = field.next().await {
+            let data = chunk.unwrap();
+            file.write_all(&data).unwrap();
+        }
+        let item_response = json!({"status": "success","data": json!({
+            "item": json!({
+                "name":file_name+".webp"
             })
         })});
 
