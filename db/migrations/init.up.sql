@@ -93,6 +93,14 @@ VALUES
     (
         'Kalenuxer',
         'A website building framework that provides all the necessary tools for building highly efficient for performance web applications, It contains multi language support, minifiers, obfuscators, SSR, templaters (mail, section, pages..), classification, svg to icons, versionizers, css, js structure and localizations,',
+        ARRAY ['https://img.emirbaycan.com.tr/images/kalenuxer.webp'],
+        'https://github.com/kalinux0/Kalenuxer',
+        'https://github.com/kalinux0/Kalenuxer',
+        ARRAY ['Modifiable Templating Language','HTML/HTML5','CSS/CSS3','Javascript','PHP','Node.js','LAMP','AWS','Git','Figma','MySQL']
+    ),
+    (
+        'My Partners Law Firm',
+        'A website and control panel that i built for a Law Firm it also contains SSR algorithms that converts the SQL datas to HTML structure with Kalenuxer',
         ARRAY ['https://emirbaycan.com.tr/images/kalenuxer/1.webp'],
         'https://github.com/kalinux0/Kalenuxer',
         'https://github.com/kalinux0/Kalenuxer',

@@ -26,7 +26,7 @@ const getSortItem = (obj: any, sortBy: string) => {
 export const getItems = async (filters: Partial<Filters & Pagination & Sorting>) => {
   const { search, sortBy, sortingOrder } = filters
 
-  const response = await fetch(admin_api_url + 'images?page=' + filters.page + '&limit=' + filters.perPage, {
+  const response = await fetch(admin_api_url + 'images?page=' + filters.page + '&limit=' + filters.perPage+"&search="+filters.search, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
