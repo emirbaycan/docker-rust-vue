@@ -5,6 +5,7 @@ import ImageAvatar from './ImageAvatar.vue'
 import { PropType, computed, toRef } from 'vue'
 import { Pagination, Sorting } from '../../../api/images/request';
 import { useVModel } from '@vueuse/core'
+import { parseDbDate } from '../../../services/utils';
 
 const columns = defineVaDataTableColumns([
   { label: 'Image', key: 'image', sortable: true },
@@ -56,13 +57,13 @@ const onImageDelete = async (item: Image) => {
 </script>
 
 <template>
-  <VaDataTable
-    v-model:sort-by="sortByVModel"
-    v-model:sorting-order="sortingOrderVModel"
-    :columns="columns"
-    :items="items"
-    :loading="$props.loading"
-  >
+  <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :columns="columns"
+    :items="items" :loading="$props.loading">
+
+    <template #cell(created_at)="{ rowData }">
+      {{ parseDbDate(rowData.created_at) }}
+    </template>
+
     <template #cell(image)="{ rowData }">
       <div class="flex items-center gap-2 max-w-[230px] ellipsis">
         <ImageAvatar :item="rowData as Image" size="small" />
@@ -71,21 +72,10 @@ const onImageDelete = async (item: Image) => {
 
     <template #cell(actions)="{ rowData }">
       <div class="flex gap-2 justify-end">
-        <VaButton
-          preset="primary"
-          size="small"
-          icon="mso-edit"
-          aria-label="Edit item"
-          @click="$emit('edit', rowData as Image)"
-        />
-        <VaButton
-          preset="primary"
-          size="small"
-          icon="mso-delete"
-          color="danger"
-          aria-label="Delete item"
-          @click="onImageDelete(rowData as Image)"
-        />
+        <VaButton preset="primary" size="small" icon="mso-edit" aria-label="Edit item"
+          @click="$emit('edit', rowData as Image)" />
+        <VaButton preset="primary" size="small" icon="mso-delete" color="danger" aria-label="Delete item"
+          @click="onImageDelete(rowData as Image)" />
       </div>
     </template>
   </VaDataTable>
@@ -98,29 +88,12 @@ const onImageDelete = async (item: Image) => {
     </div>
 
     <div v-if="totalPages > 1" class="flex">
-      <VaButton
-        preset="secondary"
-        icon="va-arrow-left"
-        aria-label="Previous page"
-        :disabled="$props.pagination.page === 1"
-        @click="$props.pagination.page--"
-      />
-      <VaButton
-        class="mr-2"
-        preset="secondary"
-        icon="va-arrow-right"
-        aria-label="Next page"
-        :disabled="$props.pagination.page === totalPages"
-        @click="$props.pagination.page++"
-      />
-      <VaPagination
-        v-model="$props.pagination.page"
-        buttons-preset="secondary"
-        :pages="totalPages"
-        :visible-pages="5"
-        :boundary-links="false"
-        :direction-links="false"
-      />
+      <VaButton preset="secondary" icon="va-arrow-left" aria-label="Previous page"
+        :disabled="$props.pagination.page === 1" @click="$props.pagination.page--" />
+      <VaButton class="mr-2" preset="secondary" icon="va-arrow-right" aria-label="Next page"
+        :disabled="$props.pagination.page === totalPages" @click="$props.pagination.page++" />
+      <VaPagination v-model="$props.pagination.page" buttons-preset="secondary" :pages="totalPages" :visible-pages="5"
+        :boundary-links="false" :direction-links="false" />
     </div>
   </div>
 </template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
 import { defineVaDataTableColumns } from 'vuestic-ui'
-import { EmptyProject, Project } from '../../../api/projects/types'
+import {  Project } from '../../../api/projects/types'
 import { Pagination, Sorting } from '../../../api/projects/request'
 import { useVModel } from '@vueuse/core'
+import { parseDbDate } from '../../../services/utils';
 
 const columns = defineVaDataTableColumns([
   { label: 'Project title', key: 'title', sortable: true },
@@ -55,10 +56,8 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
       :columns="columns"
       :loading="loading"
     >
-      <template #cell(project_name)="{ rowData }">
-        <div class="ellipsis max-w-[230px] lg:max-w-[450px]">
-          {{ rowData.project_name }}
-        </div>
+      <template #cell(created_at)="{ rowData }">
+          {{ parseDbDate(rowData.created_at) }}
       </template>
 
       <template #cell(actions)="{ rowData: project }">
