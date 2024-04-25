@@ -8,6 +8,7 @@ mod detail;
 mod user;
 mod image;
 mod auth;
+mod server;
 
 mod route;
 
