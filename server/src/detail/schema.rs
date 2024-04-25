@@ -11,6 +11,9 @@ pub struct CreateDetailSchema {
     pub position: String,
     pub company: String,
     pub img: String,
+    pub github: String,
+    pub linkedin: String,
+    pub email: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -24,4 +27,7 @@ pub struct UpdateDetailSchema {
     pub position: Option<String>,
     pub company: Option<String>,
     pub img: Option<String>,
+    pub github: Option<String>,
+    pub linkedin: Option<String>,
+    pub email: Option<String>
 }

@@ -72,7 +72,9 @@ pub async fn create_detail_handler(
     let query_result = sqlx
         ::query_as!(
             DetailModel,
-            "INSERT INTO details (title,logo,keywords,site_description,description,about,position,company,img) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+            "INSERT INTO details 
+            (title,logo,keywords,site_description,description,about,position,company,img,github,linkedin,email) VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
             body.title.to_string(),
             body.logo.to_string(),
             body.keywords.to_string(),
@@ -81,7 +83,10 @@ pub async fn create_detail_handler(
             body.about.to_string(),
             body.position.to_string(),
             body.company.to_string(),
-            body.img.to_string()
+            body.img.to_string(),
+            body.github.to_string(),
+            body.linkedin.to_string(),
+            body.email.to_string()
         )
         .fetch_one(&data.db).await;
 
@@ -162,7 +167,9 @@ pub async fn edit_detail_handler(
     let query_result = sqlx
         ::query_as!(
             DetailModel,
-            "UPDATE details SET title = $1, logo = $2, keywords = $3, site_description = $4, description = $5, about = $6, position = $7, company = $8, img = $9, updated_at = $10 WHERE id = $11 RETURNING *",
+            "UPDATE details SET 
+            title = $1, logo = $2, keywords = $3, site_description = $4, description = $5, about = $6, position = $7, company = $8, img = $9, github = $10, linkedin = $11, email = $12, updated_at = $13 
+            WHERE id = $14 RETURNING *",
             body.title.to_owned().unwrap_or(item.title),
             body.logo.to_owned().unwrap_or(item.logo),
             body.keywords.to_owned().unwrap_or(item.keywords),
@@ -172,6 +179,9 @@ pub async fn edit_detail_handler(
             body.position.to_owned().unwrap_or(item.position),
             body.company.to_owned().unwrap_or(item.company),
             body.img.to_owned().unwrap_or(item.img),
+            body.github.to_owned().unwrap_or(item.github),
+            body.linkedin.to_owned().unwrap_or(item.linkedin),
+            body.email.to_owned().unwrap_or(item.email),
             now,
             id
         )
