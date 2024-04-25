@@ -64,6 +64,16 @@ pub async fn server_info() -> Result<impl IntoResponse, (StatusCode, Json<serde_
         serialized_components.push(serialized_component);
     }
 
+
+    let mut serialized_cpus = Vec::new();
+    sys.refresh_cpu();
+    for cpu in sys.cpus() {
+        let serialized_cpu = serde_json::json!({
+            "cpu": cpu.cpu_usage()
+        });
+        serialized_cpus.push(serialized_cpu);
+    }
+
     let json_response = serde_json::json!({
         "status": "success",
         "data": serde_json::json!({
@@ -76,6 +86,7 @@ pub async fn server_info() -> Result<impl IntoResponse, (StatusCode, Json<serde_
             "os_version":System::os_version(),
             "host_name":System::host_name(),
             "cpu_number":sys.cpus().len(),
+            "cpus":serialized_cpus,
             "process":serialized_processes,
             "disks":serialized_disks,
             "networks":serialized_networks,
