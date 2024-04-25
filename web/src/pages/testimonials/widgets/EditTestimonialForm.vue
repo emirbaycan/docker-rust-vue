@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { EmptyTestimonial, Testimonial } from '../types'
+import { EmptyTestimonial, Testimonial } from '../../../api/testimonials/types'
 import { SelectOption } from 'vuestic-ui'
 
 const props = defineProps<{

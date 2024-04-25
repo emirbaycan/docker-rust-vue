@@ -8,8 +8,8 @@ import {
   type Filters,
   Pagination,
   Sorting,
-} from '../../../data/pages/images'
-import { Image } from '../types'
+} from '../../../api/images/request'
+import { Image } from '../../../api/images/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })

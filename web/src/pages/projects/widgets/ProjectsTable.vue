@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
 import { defineVaDataTableColumns } from 'vuestic-ui'
-import { Project } from '../types'
-import { Pagination, Sorting } from '../../../data/pages/projects'
+import { EmptyProject, Project } from '../../../api/projects/types'
+import { Pagination, Sorting } from '../../../api/projects/request'
 import { useVModel } from '@vueuse/core'
 
 const columns = defineVaDataTableColumns([

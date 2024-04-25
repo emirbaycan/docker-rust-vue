@@ -2,10 +2,10 @@
 import { ref } from 'vue'
 import ImageTable from './widgets/ImageTable.vue'
 import EditImageForm from './widgets/EditImageForm.vue'
-import { Image } from './types'
+import { Image } from '../../api/images/types'
 import { useItems } from './composables/useImages'
 import { useModal, useToast } from 'vuestic-ui'
-import { updateAllItems } from '../../data/pages/images'
+import { updateAllItems } from '../../api/images/request'
 
 const doShowEditImageModal = ref(false)
 

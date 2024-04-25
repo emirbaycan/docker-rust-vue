@@ -252,7 +252,6 @@ pub async fn image_list_handler(
         "SELECT count(id) as count FROM images".to_string()
     };
 
-  // Execute the query and assign the result to query_result
     let mut query  = sqlx::query_as::<_, Table>(&query);
 
     for param in params.clone() {

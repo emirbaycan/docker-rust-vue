@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useItems } from './composables/useJobs'
 import JobTable from './widgets/JobsTable.vue'
 import EditJobForm from './widgets/EditJobForm.vue'
-import { Job } from './types'
+import { Job } from '../../api/jobs/types'
 import { useModal, useToast } from 'vuestic-ui'
 
 const { items, update, add, isLoading, remove, pagination, sorting } = useItems()

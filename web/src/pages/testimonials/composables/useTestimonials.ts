@@ -1,6 +1,6 @@
 import { Ref, ref, unref } from 'vue'
-import { getItems, addItem, updateItem, removeItem, Sorting, Pagination } from '../../../data/pages/testimonials'
-import { Testimonial } from '../types'
+import { getItems, addItem, updateItem, removeItem, Sorting, Pagination } from '../../../api/testimonials/request'
+import { Testimonial } from '../../../api/testimonials/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })

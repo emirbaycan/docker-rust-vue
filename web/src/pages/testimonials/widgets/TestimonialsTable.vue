@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
 import { defineVaDataTableColumns } from 'vuestic-ui'
-import { Testimonial } from '../types'
-import { Pagination, Sorting } from '../../../data/pages/testimonials'
+import { Testimonial } from '../../../api/testimonials/types'
+import { Pagination, Sorting } from '../../../api/testimonials/request'
 import { useVModel } from '@vueuse/core'
 
 const columns = defineVaDataTableColumns([
@@ -49,13 +49,8 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
 
 <template>
   <div>
-    <VaDataTable
-      v-model:sort-by="sortByVModel"
-      v-model:sorting-order="sortingOrderVModel"
-      :items="items"
-      :columns="columns"
-      :loading="loading"
-    >
+    <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :items="items"
+      :columns="columns" :loading="loading">
       <template #cell(item_name)="{ rowData }">
         <div class="ellipsis max-w-[230px] lg:max-w-[450px]">
           {{ rowData.item_name }}
@@ -64,22 +59,10 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
 
       <template #cell(actions)="{ rowData: item }">
         <div class="flex gap-2 justify-end">
-          <VaButton
-            preset="primary"
-            size="small"
-            color="primary"
-            icon="mso-edit"
-            aria-label="Edit item"
-            @click="$emit('edit', item as Testimonial)"
-          />
-          <VaButton
-            preset="primary"
-            size="small"
-            icon="mso-delete"
-            color="danger"
-            aria-label="Delete item"
-            @click="$emit('delete', item as Testimonial)"
-          />
+          <VaButton preset="primary" size="small" color="primary" icon="mso-edit" aria-label="Edit item"
+            @click="$emit('edit', item as Testimonial)" />
+          <VaButton preset="primary" size="small" icon="mso-delete" color="danger" aria-label="Delete item"
+            @click="$emit('delete', item as Testimonial)" />
         </div>
       </template>
     </VaDataTable>
@@ -91,29 +74,12 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
       </div>
 
       <div v-if="totalPages > 1" class="flex">
-        <VaButton
-          preset="secondary"
-          icon="va-arrow-left"
-          aria-label="Previous page"
-          :disabled="$props.pagination.page === 1"
-          @click="$props.pagination.page--"
-        />
-        <VaButton
-          class="mr-2"
-          preset="secondary"
-          icon="va-arrow-right"
-          aria-label="Next page"
-          :disabled="$props.pagination.page === totalPages"
-          @click="$props.pagination.page++"
-        />
-        <VaPagination
-          v-model="$props.pagination.page"
-          buttons-preset="secondary"
-          :pages="totalPages"
-          :visible-pages="5"
-          :boundary-links="false"
-          :direction-links="false"
-        />
+        <VaButton preset="secondary" icon="va-arrow-left" aria-label="Previous page"
+          :disabled="$props.pagination.page === 1" @click="$props.pagination.page--" />
+        <VaButton class="mr-2" preset="secondary" icon="va-arrow-right" aria-label="Next page"
+          :disabled="$props.pagination.page === totalPages" @click="$props.pagination.page++" />
+        <VaPagination v-model="$props.pagination.page" buttons-preset="secondary" :pages="totalPages" :visible-pages="5"
+          :boundary-links="false" :direction-links="false" />
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropType, computed, ref, watch } from 'vue'
 import { useForm } from 'vuestic-ui'
-import { User, UserRole } from '../types'
+import { User, UserRole } from '../../../api/users/types'
 import UserAvatar from './UserAvatar.vue'
 import { validators } from '../../../services/utils'
 

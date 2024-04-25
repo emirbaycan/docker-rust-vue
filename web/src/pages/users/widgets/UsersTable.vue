@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { defineVaDataTableColumns, useModal } from 'vuestic-ui'
-import { User, UserRole } from '../types'
+import { User, UserRole } from '../../../api/users/types'
 import UserAvatar from './UserAvatar.vue'
 import { PropType, computed, toRef } from 'vue'
-import { Pagination, Sorting } from '../../../data/pages/users'
+import { Pagination, Sorting } from '../../../api/users/request'
 import { useVModel } from '@vueuse/core'
 
 const columns = defineVaDataTableColumns([

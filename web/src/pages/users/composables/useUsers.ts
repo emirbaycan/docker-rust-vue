@@ -1,6 +1,6 @@
 import { Ref, ref, unref, watch } from 'vue'
-import { getUsers, updateUser, addUser, removeUser, type Filters, Pagination, Sorting } from '../../../data/pages/users'
-import { User } from '../types'
+import { getUsers, updateUser, addUser, removeUser, type Filters, Pagination, Sorting } from '../../../api/users/request'
+import { User } from '../../../api/users/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })

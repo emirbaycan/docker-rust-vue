@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import UsersTable from './widgets/UsersTable.vue'
 import EditUserForm from './widgets/EditUserForm.vue'
-import { User } from './types'
+import { User } from '../../api/users/types'
 import { useUsers } from './composables/useNewUsers'
 import { useModal, useToast } from 'vuestic-ui'
 

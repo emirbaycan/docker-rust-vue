@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useProjects } from './composables/useProjects'
 import ProjectTable from './widgets/ProjectsTable.vue'
 import EditProjectForm from './widgets/EditProjectForm.vue'
-import { Project } from './types'
+import { Project } from '../../api/projects/types'
 import { useModal, useToast } from 'vuestic-ui'
 
 const { projects, update, add, isLoading, remove, pagination, sorting } = useProjects()

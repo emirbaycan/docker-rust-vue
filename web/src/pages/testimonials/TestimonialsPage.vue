@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useItems } from './composables/useTestimonials'
 import TestimonialTable from './widgets/TestimonialsTable.vue'
 import EditTestimonialForm from './widgets/EditTestimonialForm.vue'
-import { Testimonial } from './types'
+import { Testimonial } from '../../api/testimonials/types'
 import { useModal, useToast } from 'vuestic-ui'
 
 const { items, update, add, isLoading, remove, pagination, sorting } = useItems()

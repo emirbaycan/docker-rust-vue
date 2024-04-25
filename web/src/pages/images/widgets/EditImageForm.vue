@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Image, EmptyImage } from '../types'
+import { Image, EmptyImage } from '../../../api/images/types'
 import ImageAvatar from './ImageAvatar.vue'
 import { validators } from '../../../services/utils'
 

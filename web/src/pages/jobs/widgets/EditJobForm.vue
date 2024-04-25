@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { EmptyJob, Job } from '../types'
+import { EmptyJob, Job } from '../../../api/jobs/types'
 import { SelectOption } from 'vuestic-ui'
 
 const props = defineProps<{

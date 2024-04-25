@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { defineVaDataTableColumns, useModal } from 'vuestic-ui'
-import { Image } from '../types'
+import { Image } from '../../../api/images/types'
 import ImageAvatar from './ImageAvatar.vue'
 import { PropType, computed, toRef } from 'vue'
-import { Pagination, Sorting } from '../../../data/pages/images'
+import { Pagination, Sorting } from '../../../api/images/request';
 import { useVModel } from '@vueuse/core'
 
 const columns = defineVaDataTableColumns([

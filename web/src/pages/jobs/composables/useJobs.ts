@@ -1,6 +1,6 @@
 import { Ref, ref, unref } from 'vue'
-import { getItems, addItem, updateItem, removeItem, Sorting, Pagination } from '../../../data/pages/jobs'
-import { Job } from '../types'
+import { getItems, addItem, updateItem, removeItem, Sorting, Pagination } from '../../../api/jobs/request'
+import { Job } from '../../../api/jobs/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })

@@ -6,8 +6,8 @@ import {
   removeProject,
   Sorting,
   Pagination,
-} from '../../../data/pages/projects'
-import { Project } from '../types'
+} from '../../../api/projects/request'
+import { Project } from '../../../api/projects/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })

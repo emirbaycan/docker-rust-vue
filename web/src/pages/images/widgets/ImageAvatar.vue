@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { EmptyImage } from '../types'
+import { EmptyImage } from '../../../api/images/types'
 
 const avatarColor = (itemName: string) => {
   const colors = ['primary', '#FFD43A', '#ADFF00', '#262824', 'danger']

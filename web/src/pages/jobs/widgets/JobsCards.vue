@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { Job } from '../types'
+import { Job } from '../../../api/jobs/types'
 
 defineProps({
   items: {
@@ -20,17 +20,10 @@ defineEmits<{
 </script>
 
 <template>
-  <VaInnerLoading
-    v-if="items.length > 0 || loading"
-    :loading="loading"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[4rem]"
-  >
-    <VaCard
-      v-for="item in items"
-      :key="item.title"
-      :style="{ '--va-card-outlined-border': '1px solid var(--va-background-element)' }"
-      outlined
-    >
+  <VaInnerLoading v-if="items.length > 0 || loading" :loading="loading"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[4rem]">
+    <VaCard v-for="item in items" :key="item.title"
+      :style="{ '--va-card-outlined-border': '1px solid var(--va-background-element)' }" outlined>
       <VaCardContent class="flex flex-col h-full">
         <div class="text-[var(--va-secondary)]">{{ item.created_at }}</div>
         <div class="flex flex-col items-center gap-4 grow">
