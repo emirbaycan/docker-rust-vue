@@ -247,7 +247,7 @@ INSERT INTO
         description,
         about,
         position,
-        company,
+        company, 
         img,
         github,
         linkedin,

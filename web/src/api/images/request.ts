@@ -19,10 +19,6 @@ export type Filters = {
 
 const admin_api_url = import.meta.env.VITE_API_URL + 'api/admin/'
 
-const getSortItem = (obj: any, sortBy: string) => {
-  return obj[sortBy]
-}
-
 export const getItems = async (filters: Partial<Filters & Pagination & Sorting>) => {
   const { search, sortBy, sortingOrder } = filters
 
@@ -43,20 +39,7 @@ export const getItems = async (filters: Partial<Filters & Pagination & Sorting>)
 
   if (search) {
     filteredItems = filteredItems.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-  }
-  if (sortBy && sortingOrder) {
-    filteredItems = filteredItems.sort((a, b) => {
-      const first = getSortItem(a, sortBy)
-      const second = getSortItem(b, sortBy)
-      if (first > second) {
-        return sortingOrder === 'asc' ? 1 : -1
-      }
-      if (first < second) {
-        return sortingOrder === 'asc' ? -1 : 1
-      }
-      return 0
-    })
-  }
+  } 
 
   const { page = 1, perPage = 10 } = filters || {}
   return {

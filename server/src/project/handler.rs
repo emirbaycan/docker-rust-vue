@@ -13,51 +13,78 @@ pub async fn project_list_handler(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let Query(opts) = opts.unwrap_or_default();
 
+    let search = opts.search.unwrap_or("".to_string());
     let limit = opts.limit.unwrap_or(10);
     let offset = (opts.page.unwrap_or(1) - 1) * limit;
+
+    let mut sets = "WHERE ".to_string();
+    let mut params: Vec<String> = Vec::new(); 
+    let mut parameter_count = 0;
+
+    if !search.is_empty(){
+        sets.push_str("name LIKE CONCAT('%',$");
+        parameter_count += 1;
+        sets.push_str(&parameter_count.to_string());
+        sets.push_str(",'%') ");
+        params.push(search);
+    }
+
+    let query = if parameter_count > 0 {
+        format!("SELECT count(id) as count FROM projects {}", sets)
+    } else {
+        "SELECT count(id) as count FROM projects".to_string()
+    };
+
+    let mut query  = sqlx::query_as::<_, Table>(&query);
     
-    let query_result = sqlx
-        ::query_as!(
-            Table,
-            "SELECT count(id) as count FROM projects"
-        )
-        .fetch_one(&data.db).await;
+    for param in params.clone() {
+        query  = query .bind(param);
+    }
+
+    let query_result = query.fetch_one(&data.db).await;
 
     if query_result.is_err() {
-        let error_response =
-            serde_json::json!({
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
             "message": format!("Something went wrong")
         });
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    let item = query_result.unwrap();
-
+    let item = query_result.unwrap(); 
     let count = item.count;
+    
+    let query = if parameter_count > 0 {
+        format!("SELECT * FROM projects {} ORDER by created_at LIMIT ${} OFFSET ${}", sets, parameter_count+1, parameter_count+2)
+    } else {
+        "SELECT * FROM projects ORDER by created_at LIMIT $1 OFFSET $2".to_string()
+    };
 
-    let query_result = sqlx
-        ::query_as!(
-            ProjectModel,
-            "SELECT * FROM projects ORDER by created_at LIMIT $1 OFFSET $2",
-            limit as i32,
-            offset as i32
-        )
-        .fetch_all(&data.db).await
-        .map_err(|e| {
-            let error_response =
-                serde_json::json!({
-                "status": "fail",
-                "message": format!("Something bad happened while fetching all items: {}", e),
-            });
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
-        })?;
+    let mut query  = sqlx::query_as::<_, ProjectModel>(&query);
+    for param in params {
+        query  = query.bind(param);
+    }
 
-    let json_response =
-        serde_json::json!({
+    query = query.bind(limit as i32).bind(offset as i32);
+
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let items = query_result.unwrap();
+
+    let json_response = serde_json::json!({
         "status": "success",
         "count": count,
-        "items": query_result
+        "items": items
     });
     Ok(Json(json_response))
 }

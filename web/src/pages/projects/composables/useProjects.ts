@@ -1,31 +1,38 @@
 import { Ref, ref, unref } from 'vue'
 import {
-  getProjects,
-  addProject,
-  updateProject,
-  removeProject,
+  getItems,
+  addItem,
+  updateItem,
+  removeItem,
   Sorting,
   Pagination,
+  type Filters,
 } from '../../../api/projects/request'
 import { Project } from '../../../api/projects/types'
 import { watchIgnorable } from '@vueuse/core'
 
 const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0 })
 const makeSortingRef = () => ref<Sorting>({ sortBy: 'created_at', sortingOrder: 'desc' })
+const makeFiltersRef = () => ref<Partial<Filters>>({ search: '' })
 
-export const useProjects = (options?: { sorting?: Ref<Sorting>; pagination?: Ref<Pagination> }) => {
+export const useItems = (options?: { 
+  pagination?: Ref<Pagination>
+  sorting?: Ref<Sorting>
+  filters?: Ref<Partial<Filters>>
+}) => {
   const isLoading = ref(false)
-  const projects = ref<Project[]>([])
+  const items = ref<Project[]>([])
 
-  const { sorting = makeSortingRef(), pagination = makePaginationRef() } = options ?? {}
+  const { filters = makeFiltersRef(), sorting = makeSortingRef(), pagination = makePaginationRef() } = options ?? {}
 
   const fetch = async () => {
     isLoading.value = true
-    const { data, pagination: newPagination } = await getProjects({
+    const { data, pagination: newPagination } = await getItems({
+      ...unref(filters),
       ...unref(sorting),
       ...unref(pagination),
     })
-    projects.value = data as Project[]
+    items.value = data as Project[]
 
     ignoreUpdates(() => {
       pagination.value = newPagination
@@ -41,38 +48,34 @@ export const useProjects = (options?: { sorting?: Ref<Sorting>; pagination?: Ref
   return {
     isLoading,
 
-    projects,
+    filters,
+    pagination,
+    sorting,
+
+    items,
 
     fetch,
 
-    async add(project: Project) {
+    async add(item: Project) {
       isLoading.value = true
-      await addProject({
-        ...project,
-      })
+      await addItem(item)
       await fetch()
       isLoading.value = false
     },
 
-    async update(project: Project) {
+    async update(item: Project) {
       isLoading.value = true
-      await updateProject({
-        ...project,
-      })
+      await updateItem(item)
       await fetch()
       isLoading.value = false
     },
 
-    async remove(project: Project) {
+    async remove(item: Project) {
       isLoading.value = true
-      await removeProject({
-        ...project,
-      })
+      await removeItem(item)
       await fetch()
       isLoading.value = false
     },
 
-    pagination,
-    sorting,
   }
 }

@@ -18,8 +18,6 @@ pub struct DetailModel {
     pub github: String,
     pub linkedin: String,
     pub email: String,
-    #[serde(rename = "createdAt")]
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(rename = "updatedAt")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }

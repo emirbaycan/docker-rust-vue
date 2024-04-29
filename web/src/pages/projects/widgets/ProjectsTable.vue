@@ -14,7 +14,7 @@ const columns = defineVaDataTableColumns([
 ])
 
 const props = defineProps({
-  projects: {
+  items: {
     type: Array as PropType<Project[]>,
     required: true,
   },
@@ -52,7 +52,7 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
     <VaDataTable
       v-model:sort-by="sortByVModel"
       v-model:sorting-order="sortingOrderVModel"
-      :items="projects"
+      :items="items"
       :columns="columns"
       :loading="loading"
     >

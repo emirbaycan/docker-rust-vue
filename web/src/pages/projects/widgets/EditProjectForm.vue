@@ -4,12 +4,12 @@ import { EmptyProject, Project } from '../../../api/projects/types'
 import { SelectOption } from 'vuestic-ui'
 
 const props = defineProps<{
-  project: Project | null
+  item: Project | null
   saveButtonLabel: string
 }>()
 
 defineEmits<{
-  (event: 'save', project: Project): void
+  (event: 'save', item: Project): void
   (event: 'close'): void
 }>()
 
@@ -27,7 +27,7 @@ const newProject = ref({ ...defaultNewProject })
 const isFormHasUnsavedChanges = computed(() => {
   return Object.keys(newProject.value).some((key) => {
     return (
-      newProject.value[key as keyof EmptyProject] !== (props.project ?? defaultNewProject)?.[key as keyof EmptyProject]
+      newProject.value[key as keyof EmptyProject] !== (props.item ?? defaultNewProject)?.[key as keyof EmptyProject]
     )
   })
 })
@@ -37,14 +37,14 @@ defineExpose({
 })
 
 watch(
-  () => props.project,
+  () => props.item,
   () => {
-    if (!props.project) {
+    if (!props.item) {
       return
     }
 
     newProject.value = {
-      ...props.project,
+      ...props.item,
     }
   },
   { immediate: true },

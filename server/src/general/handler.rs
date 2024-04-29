@@ -42,7 +42,6 @@ async fn get_table(table: &str, data: Arc<AppState>) -> Value  {
 pub async fn update_translation_file(
     State(data): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    
     let file_path = "data/en.json";
     let mut file = match tokio::fs::File::open(&file_path).await {
         Ok(file) => file,

@@ -1,40 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useProjects } from './composables/useProjects'
+import { useItems } from './composables/useProjects'
 import ProjectTable from './widgets/ProjectsTable.vue'
 import EditProjectForm from './widgets/EditProjectForm.vue'
 import { Project } from '../../api/projects/types'
 import { useModal, useToast } from 'vuestic-ui'
 
-const { projects, update, add, isLoading, remove, pagination, sorting } = useProjects()
+const { items, isLoading, filters, sorting, pagination, ...itemsApi } = useItems()
 
-const projectToEdit = ref<Project | null>(null)
+const itemToEdit = ref<Project | null>(null)
 const doShowProjectFormModal = ref(false)
 
-const editProject = (project: Project) => {
-  projectToEdit.value = project
+const editProject = (item: Project) => {
+  itemToEdit.value = item
   doShowProjectFormModal.value = true
 }
 
 const createNewProject = () => {
-  projectToEdit.value = null
+  itemToEdit.value = null
   doShowProjectFormModal.value = true
 }
 
 const { init: notify } = useToast()
 
-const onProjectSaved = async (project: Project) => {
-  doShowProjectFormModal.value = false
-  if ('id' in project) {
-    await update(project as Project)
+const onProjectSaved = async (item: Project) => {
+  if (itemToEdit.value) {
+    await itemsApi.update(item)
     notify({
-      message: 'Project updated',
+      message: `${item.title} has been updated`,
       color: 'success',
     })
   } else {
-    await add(project as Project)
+    itemsApi.add(item)
     notify({
-      message: 'Project created',
+      message: `${item.title} has been created`,
       color: 'success',
     })
   }
@@ -42,10 +41,10 @@ const onProjectSaved = async (project: Project) => {
 
 const { confirm } = useModal()
 
-const onProjectDeleted = async (project: Project) => {
+const onProjectDeleted = async (item: Project) => {
   const response = await confirm({
-    title: 'Delete project',
-    message: `Are you sure you want to delete project "${project.title}"?`,
+    title: 'Delete item',
+    message: `Are you sure you want to delete item "${item.title}"?`,
     okText: 'Delete',
     size: 'small',
     maxWidth: '380px',
@@ -54,8 +53,8 @@ const onProjectDeleted = async (project: Project) => {
   if (!response) {
     return
   }
-
-  await remove(project)
+  
+  await itemsApi.remove(item)
   notify({
     message: 'Project deleted',
     color: 'success',
@@ -86,6 +85,11 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
+        <VaInput v-model="filters.search" placeholder="Search">
+          <template #prependInner>
+            <VaIcon name="search" color="secondary" size="small" />
+          </template>
+        </VaInput>
         <div class="flex flex-col md:flex-row gap-2 justify-start"></div>
         <VaButton icon="add" @click="createNewProject">Project</VaButton>
       </div>
@@ -93,7 +97,7 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
         v-model:sort-by="sorting.sortBy"
         v-model:sorting-order="sorting.sortingOrder"
         v-model:pagination="pagination"
-        :projects="projects"
+        :items="items"
         :loading="isLoading"
         @edit="editProject"
         @delete="onProjectDeleted"
@@ -110,16 +114,16 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
       hide-default-actions
       :before-cancel="beforeEditFormModalClose"
     >
-      <h1 v-if="projectToEdit === null" class="va-h5 mb-4">Add project</h1>
+      <h1 v-if="itemToEdit === null" class="va-h5 mb-4">Add project</h1>
       <h1 v-else class="va-h5 mb-4">Edit project</h1>
       <EditProjectForm
         ref="editFormRef"
-        :project="projectToEdit"
-        :save-button-label="projectToEdit === null ? 'Add' : 'Save'"
+        :item="itemToEdit"
+        :save-button-label="itemToEdit === null ? 'Add' : 'Save'"
         @close="cancel"
         @save="
-          (project) => {
-            onProjectSaved(project)
+          (item) => {
+            onProjectSaved(item)
             ok()
           }
         "
