@@ -1,5 +1,5 @@
 import { Ref, ref, unref, watch } from 'vue'
-import { getUsers, updateUser, addUser, removeUser, type Filters, Pagination, Sorting } from '../../../api/new_users/request'
+import { getItems, updateItem, addItem, removeItem, type Filters, Pagination, Sorting } from '../../../api/new_users/request'
 import { User } from '../../../api/users/types'
 import { watchIgnorable } from '@vueuse/core'
 
@@ -7,7 +7,7 @@ const makePaginationRef = () => ref<Pagination>({ page: 1, perPage: 10, total: 0
 const makeSortingRef = () => ref<Sorting>({ sortBy: 'fullname', sortingOrder: null })
 const makeFiltersRef = () => ref<Partial<Filters>>({ search: '' })
 
-export const useUsers = (options?: {
+export const useItems = (options?: {
   pagination?: Ref<Pagination>
   sorting?: Ref<Sorting>
   filters?: Ref<Partial<Filters>>
@@ -19,7 +19,7 @@ export const useUsers = (options?: {
 
   const fetch = async () => {
     isLoading.value = true
-    const { data, pagination: newPagination } = await getUsers({
+    const { data, pagination: newPagination } = await getItems({
       ...unref(filters),
       ...unref(sorting),
       ...unref(pagination),
@@ -60,21 +60,21 @@ export const useUsers = (options?: {
 
     async add(user: User) {
       isLoading.value = true
-      await addUser(user)
+      await addItem(user)
       await fetch()
       isLoading.value = false
     },
 
     async update(user: User) {
       isLoading.value = true
-      await updateUser(user)
+      await updateItem(user)
       await fetch()
       isLoading.value = false
     },
 
     async remove(user: User) {
       isLoading.value = true
-      await removeUser(user)
+      await removeItem(user)
       await fetch()
       isLoading.value = false
     },

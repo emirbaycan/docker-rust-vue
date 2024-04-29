@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropType, computed } from 'vue'
 import { defineVaDataTableColumns } from 'vuestic-ui'
-import {  Project } from '../../../api/projects/types'
+import { Project } from '../../../api/projects/types'
 import { Pagination, Sorting } from '../../../api/projects/request'
 import { useVModel } from '@vueuse/core'
 import { parseDbDate } from '../../../services/utils';
@@ -37,8 +37,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
-  (event: 'edit', project: Project): void
-  (event: 'delete', project: Project): void
+  (event: 'edit', item: Project): void
+  (event: 'delete', item: Project): void
 }>()
 
 const sortByVModel = useVModel(props, 'sortBy', emit)
@@ -49,35 +49,18 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
 
 <template>
   <div>
-    <VaDataTable
-      v-model:sort-by="sortByVModel"
-      v-model:sorting-order="sortingOrderVModel"
-      :items="items"
-      :columns="columns"
-      :loading="loading"
-    >
+    <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :items="items"
+      :columns="columns" :loading="loading">
       <template #cell(created_at)="{ rowData }">
-          {{ parseDbDate(rowData.created_at) }}
+        {{ parseDbDate(rowData.created_at) }}
       </template>
 
-      <template #cell(actions)="{ rowData: project }">
+      <template #cell(actions)="{ rowData: item }">
         <div class="flex gap-2 justify-end">
-          <VaButton
-            preset="primary"
-            size="small"
-            color="primary"
-            icon="mso-edit"
-            aria-label="Edit project"
-            @click="$emit('edit', project as Project)"
-          />
-          <VaButton
-            preset="primary"
-            size="small"
-            icon="mso-delete"
-            color="danger"
-            aria-label="Delete project"
-            @click="$emit('delete', project as Project)"
-          />
+          <VaButton preset="primary" size="small" color="primary" icon="mso-edit" aria-label="Edit project"
+            @click="$emit('edit', item as Project)" />
+          <VaButton preset="primary" size="small" icon="mso-delete" color="danger" aria-label="Delete project"
+            @click="$emit('delete', item as Project)" />
         </div>
       </template>
     </VaDataTable>
@@ -89,29 +72,12 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
       </div>
 
       <div v-if="totalPages > 1" class="flex">
-        <VaButton
-          preset="secondary"
-          icon="va-arrow-left"
-          aria-label="Previous page"
-          :disabled="$props.pagination.page === 1"
-          @click="$props.pagination.page--"
-        />
-        <VaButton
-          class="mr-2"
-          preset="secondary"
-          icon="va-arrow-right"
-          aria-label="Next page"
-          :disabled="$props.pagination.page === totalPages"
-          @click="$props.pagination.page++"
-        />
-        <VaPagination
-          v-model="$props.pagination.page"
-          buttons-preset="secondary"
-          :pages="totalPages"
-          :visible-pages="5"
-          :boundary-links="false"
-          :direction-links="false"
-        />
+        <VaButton preset="secondary" icon="va-arrow-left" aria-label="Previous page"
+          :disabled="$props.pagination.page === 1" @click="$props.pagination.page--" />
+        <VaButton class="mr-2" preset="secondary" icon="va-arrow-right" aria-label="Next page"
+          :disabled="$props.pagination.page === totalPages" @click="$props.pagination.page++" />
+        <VaPagination v-model="$props.pagination.page" buttons-preset="secondary" :pages="totalPages" :visible-pages="5"
+          :boundary-links="false" :direction-links="false" />
       </div>
     </div>
   </div>

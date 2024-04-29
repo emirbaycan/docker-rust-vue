@@ -6,7 +6,7 @@ import EditTestimonialForm from './widgets/EditTestimonialForm.vue'
 import { Testimonial } from '../../api/testimonials/types'
 import { useModal, useToast } from 'vuestic-ui'
 
-const { items, update, add, isLoading, remove, pagination, sorting } = useItems()
+const { items, isLoading, filters, sorting, pagination, ...itemsApi } = useItems()
 
 const itemToEdit = ref<Testimonial | null>(null)
 const doShowItemFormModal = ref(false)
@@ -25,16 +25,16 @@ const { init: notify } = useToast()
 
 const onItemSaved = async (item: Testimonial) => {
   doShowItemFormModal.value = false
-  if ('id' in item) {
-    await update(item as Testimonial)
+  if (itemToEdit.value) {
+    await itemsApi.update(item)
     notify({
-      message: 'Item updated',
+      message: `Item has been updated`,
       color: 'success',
     })
   } else {
-    await add(item as Testimonial)
+    itemsApi.add(item)
     notify({
-      message: 'Item created',
+      message: `Item has been created`,
       color: 'success',
     })
   }
@@ -55,7 +55,7 @@ const onItemDeleted = async (item: Testimonial) => {
     return
   }
 
-  await remove(item)
+  await itemsApi.remove(item)
   notify({
     message: 'Item deleted',
     color: 'success',
@@ -86,7 +86,13 @@ const beforeEditFormModalClose = async (hide: () => unknown) => {
   <VaCard>
     <VaCardContent>
       <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
-        <div class="flex flex-col md:flex-row gap-2 justify-start"></div>
+        <div class="flex flex-col md:flex-row gap-2 justify-start">
+          <VaInput v-model="filters.search" placeholder="Search">
+            <template #prependInner>
+              <VaIcon name="search" color="secondary" size="small" />
+            </template>
+          </VaInput>
+        </div>      
         <VaButton icon="add" @click="createNewItem">Testimonial</VaButton>
       </div>
       <TestimonialTable

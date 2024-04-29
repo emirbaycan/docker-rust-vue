@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineVaDataTableColumns } from 'vuestic-ui'
-import { useProjects } from '../../../projects/composables/useProjects'
-import { Pagination } from '../../../../data/pages/projects'
+import { useItems } from '../../../projects/composables/useProjects'
+import { Pagination } from '../../../../api/projects/request'
 import { ref } from 'vue'
 
 const columns = defineVaDataTableColumns([
@@ -11,7 +11,7 @@ const columns = defineVaDataTableColumns([
 ])
 
 const pagination = ref<Pagination>({ page: 1, perPage: 5, total: 0 })
-const { projects, isLoading, sorting } = useProjects({
+const { items, isLoading, sorting } = useItems({
   pagination,
 })
 </script>
@@ -23,11 +23,11 @@ const { projects, isLoading, sorting } = useProjects({
       <VaButton preset="primary" size="small" to="/projects">View all projects</VaButton>
     </VaCardTitle>
     <VaCardContent>
-      <div v-if="projects.length > 0">
+      <div v-if="items.length > 0">
         <VaDataTable
           v-model:sort-by="sorting.sortBy"
           v-model:sorting-order="sorting.sortingOrder"
-          :items="projects"
+          :items="items"
           :columns="columns"
           :loading="isLoading"
         >

@@ -3,12 +3,12 @@ import { ref } from 'vue'
 import UsersTable from './widgets/UsersTable.vue'
 import EditUserForm from './widgets/EditUserForm.vue'
 import { User } from '../../api/users/types'
-import { useUsers } from './composables/useNewUsers'
+import { useItems } from './composables/useNewUsers'
 import { useModal, useToast } from 'vuestic-ui'
 
 const doShowEditUserModal = ref(false)
 
-const { users, isLoading, filters, sorting, pagination, ...usersApi } = useUsers()
+const { users, isLoading, filters, sorting, pagination, ...itemsApi } = useItems()
 
 const userToEdit = ref<User | null>(null)
 
@@ -26,13 +26,13 @@ const { init: notify } = useToast()
 
 const onUserSaved = async (user: User) => {
   if (userToEdit.value) {
-    await usersApi.update(user)
+    await itemsApi.update(user)
     notify({
       message: `${user.fullname} has been updated`,
       color: 'success',
     })
   } else {
-    usersApi.add(user)
+    itemsApi.add(user)
     notify({
       message: `${user.fullname} has been created`,
       color: 'success',
@@ -41,7 +41,7 @@ const onUserSaved = async (user: User) => {
 }
 
 const onUserDelete = async (user: User) => {
-  await usersApi.remove(user)
+  await itemsApi.remove(user)
   notify({
     message: `${user.fullname} has been deleted`,
     color: 'success',

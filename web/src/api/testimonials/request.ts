@@ -12,9 +12,13 @@ export type Sorting = {
   sortingOrder: 'asc' | 'desc' | null
 }
 
+export type Filters = {
+  search: string
+}
+
 const admin_api_url = import.meta.env.VITE_API_URL + 'api/admin/'
 
-export const getItems = async (options: Sorting & Pagination) => {
+export const getItems = async (filters: Partial<Filters & Pagination & Sorting>) => {
   const response = await fetch(admin_api_url + 'testimonials', {
     method: 'GET',
     headers: {
@@ -28,11 +32,13 @@ export const getItems = async (options: Sorting & Pagination) => {
   const items: Array<Testimonial> = result.items
   const count = result.count
  
+  const { page = 1, perPage = 10 } = filters || {}
+
   return {
     data: items,
     pagination: {
-      page: options.page,
-      perPage: options.perPage,
+      page: page,
+      perPage: perPage,
       total: count,
     },
   }
