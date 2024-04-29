@@ -14,14 +14,6 @@ export type Sorting = {
 
 const admin_api_url = import.meta.env.VITE_API_URL + 'api/admin/'
 
-const getSortItem = (obj: any, sortBy: keyof Array<Job>[number]) => {
-  if (sortBy === 'created_at') {
-    return new Date(obj[sortBy])
-  }
-
-  return obj[sortBy]
-}
-
 export const getItems = async (options: Sorting & Pagination) => {
   const response = await fetch(admin_api_url + 'jobs', {
     method: 'GET',
@@ -35,25 +27,9 @@ export const getItems = async (options: Sorting & Pagination) => {
 
   const items: Array<Job> = result.items
   const count = result.count
-
-  if (options.sortBy && options.sortingOrder) {
-    items.sort((a, b) => {
-      a = getSortItem(a, options.sortBy!)
-      b = getSortItem(b, options.sortBy!)
-      if (a < b) {
-        return options.sortingOrder === 'asc' ? -1 : 1
-      }
-      if (a > b) {
-        return options.sortingOrder === 'asc' ? 1 : -1
-      }
-      return 0
-    })
-  }
-
-  const normalizedItems = items.slice((options.page - 1) * options.perPage, options.page * options.perPage)
-
+ 
   return {
-    data: normalizedItems,
+    data: items,
     pagination: {
       page: options.page,
       perPage: options.perPage,

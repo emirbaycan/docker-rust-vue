@@ -20,7 +20,6 @@ export type Filters = {
 const admin_api_url = import.meta.env.VITE_API_URL + 'api/admin/'
 
 export const getItems = async (filters: Partial<Filters & Pagination & Sorting>) => {
-  const { search, sortBy, sortingOrder } = filters
 
   const response = await fetch(admin_api_url + 'images?page=' + filters.page + '&limit=' + filters.perPage + "&search=" + filters.search, {
     method: 'GET',
@@ -35,15 +34,9 @@ export const getItems = async (filters: Partial<Filters & Pagination & Sorting>)
   const items: Array<Image> = result.items
   const count = result.count
 
-  let filteredItems = items
-
-  if (search) {
-    filteredItems = filteredItems.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-  } 
-
   const { page = 1, perPage = 10 } = filters || {}
   return {
-    data: filteredItems,
+    data: items,
     pagination: {
       page,
       perPage,
