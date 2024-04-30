@@ -56,7 +56,7 @@ export type UpdateTaskSuperVisor = {
 }
 
 export type Task = {
-    id: number
+    task_id: number
     group_id: number
     name: string
     updates: Array<TaskUpdate>

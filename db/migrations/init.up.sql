@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS task_visors (
 
 CREATE TABLE IF NOT EXISTS task_updates (
     update_id SERIAL PRIMARY KEY,
+    task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     text VARCHAR(10000) NOT NULL, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

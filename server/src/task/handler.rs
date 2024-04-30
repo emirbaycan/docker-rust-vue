@@ -3,126 +3,60 @@ use std::sync::Arc;
 
 use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoResponse, Json };
 
-use crate::general::schema::{FilterOptions, Table};
 use crate::task::{ model::TaskModel, schema::{ CreateTaskSchema, UpdateTaskSchema } };
 use crate::AppState;
 
-pub async fn user_task_list_handler(
-    opts: Option<Query<FilterOptions>>,
-    State(data): State<Arc<AppState>>
-) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let Query(opts) = opts.unwrap_or_default();
+use super::schema::TaskFilters;
 
-    let search = opts.search.unwrap_or("".to_string());
-    let limit = opts.limit.unwrap_or(10);
-    let offset = (opts.page.unwrap_or(1) - 1) * limit;
-
-    let mut sets = "WHERE ".to_string();
-    let mut params: Vec<String> = Vec::new(); 
-    let mut parameter_count = 0;
-
-    if !search.is_empty(){
-        sets.push_str("name LIKE CONCAT('%',$");
-        parameter_count += 1;
-        sets.push_str(&parameter_count.to_string());
-        sets.push_str(",'%') ");
-        params.push(search);
-    }
- 
-    
-    let query = if parameter_count > 0 {
-        format!("SELECT * FROM tasks {} ORDER by created_at LIMIT ${} OFFSET ${}", sets, parameter_count+1, parameter_count+2)
-    } else {
-        "SELECT * FROM tasks ORDER by created_at LIMIT $1 OFFSET $2".to_string()
-    };
-
-    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
-    for param in params {
-        query  = query.bind(param);
-    }
-
-    query = query.bind(limit as i32).bind(offset as i32);
-
-    let query_result = query.fetch_all(&data.db).await;
-
-    if query_result.is_err() {
-        let error_response = serde_json::json!({
-            "error": query_result.unwrap_err().to_string(),
-            "status": "fail",
-            "message": "Something bad happened while fetching all items",
-        });
-        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
-    }
-
-    let items = query_result.unwrap();
-
-    let json_response = serde_json::json!({
-        "status": "success",
-        "items": items
-    });
-    Ok(Json(json_response))
-}
+use chrono::DateTime;
 
 pub async fn task_list_handler(
-    opts: Option<Query<FilterOptions>>,
+    opts: Option<Query<TaskFilters>>,
     State(data): State<Arc<AppState>>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let Query(opts) = opts.unwrap_or_default();
 
-    let search = opts.search.unwrap_or("".to_string());
-    let limit = opts.limit.unwrap_or(10);
-    let offset = (opts.page.unwrap_or(1) - 1) * limit;
+    let agenda_id = opts.agenda_id.unwrap_or("".to_string());
 
     let mut sets = "WHERE ".to_string();
     let mut params: Vec<String> = Vec::new(); 
     let mut parameter_count = 0;
 
-    if !search.is_empty(){
-        sets.push_str("name LIKE CONCAT('%',$");
+    if !agenda_id.is_empty(){
+        sets.push_str("a.agenda_id = $");
         parameter_count += 1;
         sets.push_str(&parameter_count.to_string());
-        sets.push_str(",'%') ");
-        params.push(search);
-    }
-
-    let query = if parameter_count > 0 {
-        format!("SELECT count(id) as count FROM tasks {}", sets)
-    } else {
-        "SELECT count(id) as count FROM tasks".to_string()
-    };
-
-    let mut query  = sqlx::query_as::<_, Table>(&query);
-    
-    for param in params.clone() {
-        query  = query .bind(param);
-    }
-
-    let query_result = query.fetch_one(&data.db).await;
-
-    if query_result.is_err() {
+        params.push(agenda_id);
+    }else {
         let error_response = serde_json::json!({
-            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
             "message": format!("Something went wrong")
         });
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
-
-    let item = query_result.unwrap(); 
-    let count = item.count;
-    
+ 
     let query = if parameter_count > 0 {
-        format!("SELECT * FROM tasks {} ORDER by created_at LIMIT ${} OFFSET ${}", sets, parameter_count+1, parameter_count+2)
+        format!("SELECT * FROM tasks a {} 
+        INNER JOIN task_groups b ON a.group_id = b.group_id
+        INNER JOIN task_updates c ON a.task_id = c.task_id        
+        INNER JOIN task_visors d ON a.task_id = d.task_id
+        INNER JOIN task_supervisors e ON a.task_id = e.task_id
+        INNER JOIN task_agendas f ON a.agenda_id = b.agenda_id
+        ORDER by a.created_at", sets)
     } else {
-        "SELECT * FROM tasks ORDER by created_at LIMIT $1 OFFSET $2".to_string()
+        "SELECT * FROM tasks a
+        INNER JOIN task_groups b ON a.group_id = b.group_id
+        INNER JOIN task_updates c ON a.task_id = c.task_id        
+        INNER JOIN task_visors d ON a.task_id = d.task_id
+        INNER JOIN task_supervisors e ON a.task_id = e.task_id
+        INNER JOIN task_agendas f ON a.agenda_id = b.agenda_id
+        ORDER by a.created_at".to_string()
     };
 
     let mut query  = sqlx::query_as::<_, TaskModel>(&query);
     for param in params {
         query  = query.bind(param);
     }
-
-    query = query.bind(limit as i32).bind(offset as i32);
 
     let query_result = query.fetch_all(&data.db).await;
 
@@ -139,31 +73,26 @@ pub async fn task_list_handler(
 
     let json_response = serde_json::json!({
         "status": "success",
-        "count": count,
         "items": items
     });
     Ok(Json(json_response))
 }
-
+ 
 pub async fn create_task_handler(
     State(data): State<Arc<AppState>>,
     Json(body): Json<CreateTaskSchema>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
 
-        // Convert Vec<String> to JSON string
-        let imgs_slice: Vec<String> = body.imgs.iter().map(|s| s.clone()).collect();
-        let stacks_slice: Vec<String> = body.stacks.iter().map(|s| s.clone()).collect();
-    
     let query_result = sqlx
         ::query_as!(
             TaskModel,
-            "INSERT INTO tasks (title,description,imgs,demo,git,stacks) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-            body.title.to_string(),
-            body.description.to_string(),
-            &imgs_slice[..],
-            body.demo.to_string(),
-            body.git.to_string(),
-            &stacks_slice[..],
+            "INSERT INTO tasks (group_id,name,date,expiration_date,status,priority) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            body.group_id,
+            body.name.to_string(),
+            DateTime::from_timestamp(body.date, 0),
+            DateTime::from_timestamp(body.expiration_date, 0),
+            body.status,
+            body.priority,
         )
         .fetch_one(&data.db).await;
 
@@ -192,35 +121,7 @@ pub async fn create_task_handler(
         }
     }
 }
-
-pub async fn get_task_handler(
-    Path(id): Path<uuid::Uuid>,
-    State(data): State<Arc<AppState>>
-) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let query_result = sqlx
-        ::query_as!(TaskModel, "SELECT * FROM tasks WHERE id = $1", id)
-        .fetch_one(&data.db).await;
-
-    match query_result {
-        Ok(item) => {
-            let item_response =
-                serde_json::json!({"status": "success","data": serde_json::json!({
-                "item": item
-            })});
-
-            return Ok(Json(item_response));
-        }
-        Err(_) => {
-            let error_response =
-                serde_json::json!({
-                "status": "fail",
-                "message": format!("Item with ID: {} not found", id)
-            });
-            return Err((StatusCode::NOT_FOUND, Json(error_response)));
-        }
-    }
-}
-
+ 
 pub async fn edit_task_handler(
     Path(id): Path<uuid::Uuid>,
     State(data): State<Arc<AppState>>,
@@ -276,11 +177,11 @@ pub async fn edit_task_handler(
 }
 
 pub async fn delete_task_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<usize>,
     State(data): State<Arc<AppState>>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let rows_affected = sqlx
-        ::query!("DELETE FROM tasks WHERE id = $1", id)
+        ::query!("DELETE FROM tasks WHERE task_id = $1", id)
         .execute(&data.db).await
         .unwrap()
         .rows_affected();

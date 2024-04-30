@@ -8,9 +8,7 @@ export type Sorting = {
 }
 
 export type Filters = {
-    date: string,
-    project_id: number,
-    visor: number,
+    agenda_id: number,    
 }
 
 const user_api_url = import.meta.env.VITE_API_URL + 'api/user/'
@@ -18,9 +16,7 @@ const user_api_url = import.meta.env.VITE_API_URL + 'api/user/'
 export const getTasks = async (filters: Partial<Filters & Sorting>) => {
 
     const response = await fetch(user_api_url +
-        'tasks?project_id=' + filters.project_id +
-        "&date=" + filters.date +
-        "&visor=" + filters.visor, {
+        'tasks?agenda_id=' + filters.agenda_id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
