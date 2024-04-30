@@ -10,6 +10,8 @@ mod image;
 mod auth;
 mod server;
 
+mod task;
+
 mod route;
 
 use std::sync::Arc;

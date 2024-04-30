@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS task_groups (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS agendas (
+CREATE TABLE IF NOT EXISTS task_agendas (
     agenda_id SERIAL PRIMARY KEY,
     title VARCHAR(1000) NOT NULL,
     user_id INTEGER NOT NULL,    

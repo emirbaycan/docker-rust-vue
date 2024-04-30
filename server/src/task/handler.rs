@@ -7,6 +7,62 @@ use crate::general::schema::{FilterOptions, Table};
 use crate::task::{ model::TaskModel, schema::{ CreateTaskSchema, UpdateTaskSchema } };
 use crate::AppState;
 
+pub async fn user_task_list_handler(
+    opts: Option<Query<FilterOptions>>,
+    State(data): State<Arc<AppState>>
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let Query(opts) = opts.unwrap_or_default();
+
+    let search = opts.search.unwrap_or("".to_string());
+    let limit = opts.limit.unwrap_or(10);
+    let offset = (opts.page.unwrap_or(1) - 1) * limit;
+
+    let mut sets = "WHERE ".to_string();
+    let mut params: Vec<String> = Vec::new(); 
+    let mut parameter_count = 0;
+
+    if !search.is_empty(){
+        sets.push_str("name LIKE CONCAT('%',$");
+        parameter_count += 1;
+        sets.push_str(&parameter_count.to_string());
+        sets.push_str(",'%') ");
+        params.push(search);
+    }
+ 
+    
+    let query = if parameter_count > 0 {
+        format!("SELECT * FROM tasks {} ORDER by created_at LIMIT ${} OFFSET ${}", sets, parameter_count+1, parameter_count+2)
+    } else {
+        "SELECT * FROM tasks ORDER by created_at LIMIT $1 OFFSET $2".to_string()
+    };
+
+    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+    for param in params {
+        query  = query.bind(param);
+    }
+
+    query = query.bind(limit as i32).bind(offset as i32);
+
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let items = query_result.unwrap();
+
+    let json_response = serde_json::json!({
+        "status": "success",
+        "items": items
+    });
+    Ok(Json(json_response))
+}
+
 pub async fn task_list_handler(
     opts: Option<Query<FilterOptions>>,
     State(data): State<Arc<AppState>>
