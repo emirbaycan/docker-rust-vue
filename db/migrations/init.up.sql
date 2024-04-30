@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS task_groups (
 CREATE TABLE IF NOT EXISTS agendas (
     agenda_id SERIAL PRIMARY KEY,
     title VARCHAR(1000) NOT NULL,
-    owner_id INTEGER NOT NULL,    
+    user_id INTEGER NOT NULL,    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -3,31 +3,56 @@ export type TaskStatus = 1 | 2 | 3 | 4;
 export type TaskPriority = 1 | 2 | 3 | 4;
 
 export type TaskUpdate = {
-    id: number,
-    writer_id: number,
+    update_id: number,
+    user_id: number,
     text: string,
     created_at: string,
     updated_at: string,
 }
 
-export type NewTaskUpdate = {
-    writer_id: number,
+export type CreateTaskUpdate = {
+    user_id: number,
     text: string,
 }
 
 export type TaskVisor = {
-    id: number,
-    project_id: number,
-    user_id: number,
+    visor_id: number,
+    task_id: number,
+    email: string,
     fullname: string,
     created_at: string,
     updated_at:string,
 }
 
-export type NewTaskVisor = {
-    project_id: number,
-    user_id: number,
+export type CreateTaskVisor = {
+    task_id: number,
+    email: string,
+}
+
+export type UpdateTaskVisor = {
+    visor_id: number,
+    task_id: number,
+    email: string,
+}
+
+export type TaskSuperVisor = {
+    supervisor_id: number,
+    task_id: number,
+    email: string,
     fullname: string,
+    created_at: string,
+    updated_at:string,
+}
+
+export type CreateTaskSuperVisor = {
+    task_id: number,
+    email: string
+}
+
+export type UpdateTaskSuperVisor = {
+    supervisor_id: number,
+    task_id: number,
+    email: string,
 }
 
 export type Task = {
@@ -46,12 +71,9 @@ export type Task = {
 }
 
 export type UpdateTask = {
-    id: number
+    task_id: number
     group_id: number
     name: string
-    updates: Array<TaskUpdate>
-    supervisors: Array<TaskVisor>,
-    visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,
     status: TaskStatus
@@ -71,24 +93,37 @@ export type CreateTask = {
 }
 
 export type TaskGroup = {
-    id: number
-    project_id: number
-    owner_id: number,
+    group_id: number
+    agenda_id: number
     title: string
     created_at: string
     updated_at: string
 }
 
 export type UpdateTaskGroup = {
-    id: number
-    project_id: number
-    owner_id: number,
+    group_id: number
+    agenda_id: number
     title: string
 }
 
 export type CreateTaskGroup = {
-    project_id: number
-    owner_id: number,
+    agenda_id: number,
     title: string
 }
 
+export type TaskAgenda = {
+    agenda_id: number
+    title: string
+    user_id: string
+    created_at: string
+    updated_at: string
+}
+
+export type UpdateTaskAgenda = {
+    agenda_id: number
+    title: string
+}
+
+export type CreateTaskAgenda = {
+    title: string
+}
