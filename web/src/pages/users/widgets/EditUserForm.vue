@@ -20,7 +20,7 @@ const defaultNewUser: User = {
   id: -1,
   avatar: '',
   fullname: '',
-  role: 'user',
+  role: 1,
   username: '',
   notes: '',
   email: '',
@@ -93,10 +93,11 @@ const onSave = () => {
   }
 }
 
-const roleSelectOptions: { text: Capitalize<UserRole>; value: UserRole }[] = [
-  { text: 'Admin', value: 'admin' },
-  { text: 'User', value: 'user' },
-  { text: 'Owner', value: 'owner' },
+const roleSelectOptions: { text: string; value: UserRole }[] = [
+  { text: 'New User', value: 1 },
+  { text: 'User', value: 2 },
+  { text: 'Admin', value: 3 },
+  { text: 'Owner', value: 4 },
 ]
 </script>
 

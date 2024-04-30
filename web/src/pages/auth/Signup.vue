@@ -5,50 +5,27 @@
       Have an account?
       <RouterLink :to="{ name: 'login' }" class="font-semibold text-primary">Login</RouterLink>
     </p>
-    <VaInput
-      v-model="formData.email"
+    <VaInput v-model="formData.email"
       :rules="[(v) => !!v || 'Email field is required', (v) => /.+@.+\..+/.test(v) || 'Email should be valid']"
-      class="mb-4"
-      label="Email"
-      type="email"
-    />
+      class="mb-4" label="Email" type="email" />
     <VaValue v-slot="isPasswordVisible" :default-value="false">
-      <VaInput
-        ref="password1"
-        v-model="formData.password"
-        :rules="passwordRules"
-        :type="isPasswordVisible.value ? 'text' : 'password'"
-        class="mb-4"
-        label="Password"
+      <VaInput ref="password1" v-model="formData.password" :rules="passwordRules"
+        :type="isPasswordVisible.value ? 'text' : 'password'" class="mb-4" label="Password"
         messages="Password should be 8+ characters: letters, numbers, and special characters."
-        @clickAppendInner.stop="isPasswordVisible.value = !isPasswordVisible.value"
-      >
+        @clickAppendInner.stop="isPasswordVisible.value = !isPasswordVisible.value">
         <template #appendInner>
-          <VaIcon
-            :name="isPasswordVisible.value ? 'mso-visibility_off' : 'mso-visibility'"
-            class="cursor-pointer"
-            color="secondary"
-          />
+          <VaIcon :name="isPasswordVisible.value ? 'mso-visibility_off' : 'mso-visibility'" class="cursor-pointer"
+            color="secondary" />
         </template>
       </VaInput>
-      <VaInput
-        ref="password2"
-        v-model="formData.repeatPassword"
-        :rules="[
-          (v) => !!v || 'Repeat Password field is required',
-          (v) => v === formData.password || 'Passwords don\'t match',
-        ]"
-        :type="isPasswordVisible.value ? 'text' : 'password'"
-        class="mb-4"
-        label="Repeat Password"
-        @clickAppendInner.stop="isPasswordVisible.value = !isPasswordVisible.value"
-      >
+      <VaInput ref="password2" v-model="formData.repeatPassword" :rules="[
+        (v) => !!v || 'Repeat Password field is required',
+        (v) => v === formData.password || 'Passwords don\'t match',
+      ]" :type="isPasswordVisible.value ? 'text' : 'password'" class="mb-4" label="Repeat Password"
+        @clickAppendInner.stop="isPasswordVisible.value = !isPasswordVisible.value">
         <template #appendInner>
-          <VaIcon
-            :name="isPasswordVisible.value ? 'mso-visibility_off' : 'mso-visibility'"
-            class="cursor-pointer"
-            color="secondary"
-          />
+          <VaIcon :name="isPasswordVisible.value ? 'mso-visibility_off' : 'mso-visibility'" class="cursor-pointer"
+            color="secondary" />
         </template>
       </VaInput>
     </VaValue>
@@ -74,13 +51,36 @@ const formData = reactive({
   repeatPassword: '',
 })
 
-const submit = () => {
+const submit = async () => {
   if (validate()) {
-    init({
-      message: "You've successfully signed up",
-      color: 'success',
+    const response = await fetch(import.meta.env.VITE_API_URL + 'auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(formData),
     })
-    push({ name: 'dashboard' })
+
+    const result = await response.json()
+
+    if (result.status == 'success') {
+      let user = result.data;
+      localStorage.last_login = new Date().getTime();
+      localStorage.id = user.id;
+      localStorage.username = user.username;
+      localStorage.email = user.email;
+      localStorage.fullname = user.fullname;
+      localStorage.role = user.role;
+      localStorage.avatar = user.avatar;
+      localStorage.active = user.active;
+      
+      init({ message: "You've successfully signed up", color: 'success' })
+      push({ name: 'dashboard' })
+    } else {
+      init({ message: result.message, color: 'warning' })
+    }
+
   }
 }
 

@@ -49,8 +49,12 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
 
 <template>
   <div>
-    <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :items="items"
-      :columns="columns" :loading="loading">
+    <VaDataTable 
+    v-model:sort-by="sortByVModel" 
+    v-model:sorting-order="sortingOrderVModel" 
+    :items="items"
+      :columns="columns" 
+      :loading="loading">
       <template #cell(created_at)="{ rowData }">
         {{ parseDbDate(rowData.created_at) }}
       </template>

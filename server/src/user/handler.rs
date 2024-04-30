@@ -26,37 +26,60 @@ pub async fn user_list_handler(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let Query(opts) = opts.unwrap_or_default();
 
+    let search = opts.search.unwrap_or("".to_string());
     let limit = opts.limit.unwrap_or(10);
     let offset = (opts.page.unwrap_or(1) - 1) * limit;
 
-    let query_result = sqlx::query_as!(Table, 
-        "SELECT count(id) as count FROM users")
-        .fetch_one(&data.db)
-        .await;
+    let mut sets = "WHERE ".to_string();
+    let mut params: Vec<String> = Vec::new(); 
+    let mut parameter_count = 0;
+
+    if !search.is_empty(){
+        sets.push_str("name LIKE CONCAT('%',$");
+        parameter_count += 1;
+        sets.push_str(&parameter_count.to_string());
+        sets.push_str(",'%') ");
+        params.push(search);
+    }
+
+    sets.push_str("role > 1");
+
+    let query = format!("SELECT count(id) as count FROM users {}", sets);
+
+    let mut query  = sqlx::query_as::<_, Table>(&query);
+
+    for param in params.clone() {
+        query  = query .bind(param);
+    }
+
+    let query_result = query.fetch_one(&data.db).await;
 
     if query_result.is_err() {
         let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
-            "message": "Something bad happened while fetching all items",
+            "message": format!("Something went wrong")
         });
-        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+        return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
     let item = query_result.unwrap();
-
     let count = item.count;
 
-    let query_result = sqlx::query_as!(
-        UserModel,
-        "SELECT * FROM users ORDER by created_at LIMIT $1 OFFSET $2",
-        limit as i32,
-        offset as i32
-    )
-    .fetch_all(&data.db)
-    .await;
+    let query = format!("SELECT * FROM users {} ORDER by created_at LIMIT ${} OFFSET ${}", sets, parameter_count+1, parameter_count+2);
+
+    let mut query  = sqlx::query_as::<_, UserModel>(&query);
+    for param in params {
+        query  = query.bind(param);
+    }
+
+    query = query.bind(limit as i32).bind(offset as i32);
+
+    let query_result = query.fetch_all(&data.db).await;
 
     if query_result.is_err() {
         let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
             "message": "Something bad happened while fetching all items",
         });

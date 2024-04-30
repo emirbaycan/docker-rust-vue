@@ -12,7 +12,7 @@ use tower_sessions::Session;
 
 use crate::{auth::handler::login_handler, AppState};
 
-use super::handler::{logout_handler, test_login_handler};
+use super::handler::{logout_handler, register_handler, test_login_handler};
 
 pub async fn authenticate(
     session: Session,
@@ -102,6 +102,7 @@ pub async fn auth_user(
 
 pub fn auth_router(app_state: Arc<AppState>) -> Router {
     Router::new()
+        .route("/auth/register", post(register_handler))
         .route("/auth/login", post(login_handler))
         .route("/auth/test_login", get(test_login_handler))
         .route("/auth/logout", get(logout_handler))

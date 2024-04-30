@@ -37,9 +37,10 @@ const sortByVModel = useVModel(props, 'sortBy', emit)
 const sortingOrderVModel = useVModel(props, 'sortingOrder', emit)
 
 const roleColors: Record<UserRole, string> = {
-  admin: 'danger',
-  user: 'background-element',
-  owner: 'warning',
+  1: 'secondary',
+  2: 'background-element',
+  3: 'danger',
+  4: 'warning', 
 }
 
 const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagination.perPage))
