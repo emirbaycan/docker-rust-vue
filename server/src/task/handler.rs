@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoResponse, Json };
 
-use crate::task::{ model::TaskModel, schema::{ CreateTaskSchema, UpdateTaskSchema } };
+use crate::task::{ model::TaskModel, schema::CreateTaskSchema };
 use crate::AppState;
 
 use super::schema::TaskFilters;
@@ -121,63 +121,9 @@ pub async fn create_task_handler(
         }
     }
 }
- 
-pub async fn edit_task_handler(
-    Path(id): Path<uuid::Uuid>,
-    State(data): State<Arc<AppState>>,
-    Json(body): Json<UpdateTaskSchema>
-) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    let query_result = sqlx
-        ::query_as!(TaskModel, "SELECT * FROM tasks WHERE id = $1", id)
-        .fetch_one(&data.db).await;
-
-    if query_result.is_err() {
-        let error_response =
-            serde_json::json!({
-            "status": "fail",
-            "message": format!("Item with ID: {} not found", id)
-        });
-        return Err((StatusCode::NOT_FOUND, Json(error_response)));
-    }
-
-    let now = chrono::Utc::now();
-    let item = query_result.unwrap();
-
-    let query_result = sqlx
-        ::query_as!(
-            TaskModel,
-            "UPDATE tasks SET title = $1, description = $2, imgs = $3, demo = $4, git = $5, stacks = $6, updated_at = $7 WHERE id = $8 RETURNING *",
-            body.title.to_owned().unwrap_or(item.title),
-            body.description.to_owned().unwrap_or(item.description),
-            &body.imgs.to_owned().unwrap_or(item.imgs),
-            body.demo.to_owned().unwrap_or(item.demo),
-            body.git.to_owned().unwrap_or(item.git),
-            &body.stacks.to_owned().unwrap_or(item.stacks),
-            now,
-            id
-        )
-        .fetch_one(&data.db).await;
-
-    match query_result {
-        Ok(item) => {
-            let item_response =
-                serde_json::json!({"status": "success","data": serde_json::json!({
-                "item": item
-            })});
-
-            return Ok(Json(item_response));
-        }
-        Err(err) => {
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"status": "error","message": format!("{:?}", err)})),
-            ));
-        }
-    }
-}
 
 pub async fn delete_task_handler(
-    Path(id): Path<usize>,
+    Path(id): Path<i32>,
     State(data): State<Arc<AppState>>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let rows_affected = sqlx

@@ -10,6 +10,7 @@ use crate::{
     job::route::job_router,
     project::route::project_router,
     server::route::server_router,
+    task::route::task_router,
     testimonial::route::testimonial_router,
     user::route::{all_user_router, user_router},
     AppState,
@@ -25,6 +26,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
     let testimonial_route = testimonial_router(app_state.clone());
     let user_route = user_router(app_state.clone());
     let server_route = server_router(app_state.clone());
+    let task_route = task_router(app_state.clone());
 
     let admin_prefix = "/api/admin";
 
@@ -43,6 +45,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
     let user_prefix = "/api/user";
 
     let user_route = Router::new()
+        .nest(user_prefix, task_route)
         .nest(user_prefix, user_image_router(app_state.clone()))
         .nest(user_prefix, all_user_router(app_state.clone()))
         .layer(middleware::from_fn(auth_user));
