@@ -73,6 +73,28 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS tasks (
+    task_id SERIAL PRIMARY KEY,
+    group_id INTEGER NOT NULL,
+    name VARCHAR(10000) NOT NULL,
+    date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    expiration_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    status SMALLINT NOT NULL DEFAULT 1,
+    priority SMALLINT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS task_statuses (
+    status_id SERIAL PRIMARY KEY, 
+    name VARCHAR(1000) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS task_priorities (
+    priority_id SERIAL PRIMARY KEY, 
+    name VARCHAR(1000) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS task_supervisors (
     supervisor_id SERIAL PRIMARY KEY,
     task_id INTEGER NOT NULL,
@@ -93,19 +115,7 @@ CREATE TABLE IF NOT EXISTS task_updates (
     update_id SERIAL PRIMARY KEY,
     task_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    text VARCHAR(10000) NOT NULL, 
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS tasks (
-    task_id SERIAL PRIMARY KEY,
-    group_id INTEGER NOT NULL,
-    name VARCHAR(10000) NOT NULL,
-    date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    expiration_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    status SMALLINT NOT NULL DEFAULT 1,
-    priority SMALLINT NOT NULL DEFAULT 1,
+    text VARCHAR(10000) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -132,6 +142,91 @@ CREATE TABLE IF NOT EXISTS user_roles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+INSERT INTO
+    task_statuses (name)
+VALUES
+    (
+        'Başlamadı'
+    ),
+    (
+        'Yapılmakta'
+    ),
+    (
+        'Takılı'
+    ),
+    (
+        'Tamamlandı'
+    );
+
+INSERT INTO
+    task_priorities (name)
+VALUES
+    (
+        'Düşük'
+    ),
+    (
+        'Normal'
+    ),
+    (
+        'Yüksek'
+    ),
+    (
+        'Kritik'
+    );
+
+INSERT INTO
+    task_agendas (title, user_id)
+VALUES
+    (
+        'Portfolio Management',
+        1
+    );
+
+INSERT INTO
+    task_groups (agenda_id, title)
+VALUES
+    (
+        1,
+        'Mayıs'
+    );
+
+INSERT INTO
+    task_updates (task_id, user_id, text)
+VALUES
+    (
+        1,
+        1,
+        'Task created'
+    );
+
+INSERT INTO
+    task_visors (task_id, user_id)
+VALUES
+    (
+        1,
+        1
+    );
+
+INSERT INTO
+    task_supervisors (task_id, user_id)
+VALUES
+    (
+        1,
+        1
+    );
+
+INSERT INTO
+    tasks (group_id, name, date, expiration_date, status, priority)
+VALUES
+    (
+        1,
+        'Fix the bugs in the tasks',
+        NOW(),
+        NOW(),
+        1,
+        1
+    );
 
 INSERT INTO
     jobs (company, title, date, description)

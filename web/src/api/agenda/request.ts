@@ -279,7 +279,7 @@ export const updateTaskAgenda = async (item: UpdateTaskAgenda) => {
 }
  
 export const removeTask = async (item: Task) => {
-    const response = await fetch(user_api_url + 'tasks/' + item.id, {
+    const response = await fetch(user_api_url + 'tasks/' + item.task_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
