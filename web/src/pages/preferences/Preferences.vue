@@ -1,5 +1,4 @@
 <template>
-  <h1 class="page-title">Preferences</h1>
   <div class="flex flex-col p-4 space-y-10 bg-backgroundSecondary rounded-lg">
     <div class="flex space-x-5">
       <PreferencesHeader />

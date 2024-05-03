@@ -19,6 +19,13 @@ export default {
       },
     },
     {
+      name: 'agenda',
+      displayName: 'menu.agenda',
+      meta: {
+        icon: 'comment',
+      },
+    },
+    {
       name: 'projects',
       displayName: 'menu.projects',
       meta: {

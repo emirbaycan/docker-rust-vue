@@ -8,6 +8,7 @@ import {
 import { Task } from '../../../api/agenda/types'
 
 const makeFiltersRef = () => ref<Partial<Filters>>({ agenda_id: 1 })
+const makeSortingRef = () => ref<Sorting>({ sortBy: 'name', sortingOrder: null })
 
 export const useItems = (options?: {
   sorting?: Ref<Sorting>
@@ -16,7 +17,7 @@ export const useItems = (options?: {
   const isLoading = ref(false)
   const tasks = ref<Task[]>([])
 
-  const { filters = makeFiltersRef()} = options || {}
+  const { filters = makeFiltersRef(), sorting = makeSortingRef()} = options || {}
 
   const fetch = async () => {
     isLoading.value = true
@@ -27,7 +28,6 @@ export const useItems = (options?: {
 
     isLoading.value = false
   }
-
 
   watch(
     filters,
@@ -42,6 +42,7 @@ export const useItems = (options?: {
   return {
     isLoading,
 
+    sorting,
     filters,
 
     tasks,

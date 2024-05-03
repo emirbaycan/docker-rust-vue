@@ -18,8 +18,7 @@
           <VaButton class="px-4 py-4" icon="md_close" preset="plain" @click="onCloseSidebarButtonClick" />
         </div>
       </div>
-      <AppLayoutNavigation v-if="!isMobile" class="p-4" />
-      <main class="p-4 pt-0">
+      <main class="p-4 pt-4">
         <article>
           <RouterView />
         </article>

@@ -16,7 +16,6 @@
       </main>
     </template>
   </VaLayout>
-
   <VaLayout v-else class="h-screen bg-[var(--va-background-secondary)]">
     <template #content>
       <div class="p-4">

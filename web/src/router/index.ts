@@ -12,6 +12,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/:pathMatch(.*)*',
     redirect: { name: 'dashboard' },
   },
+  
   {
     name: 'admin',
     path: '/',
@@ -25,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'dashboard',
         path: 'dashboard',
         component: () => import('../pages/admin/dashboard/Dashboard.vue'),
+      },
+      {
+        name: 'agenda',
+        path: 'agenda',
+        component: () => import('../pages/agenda/AgendaPage.vue'),
       },
       {
         name: 'settings',
