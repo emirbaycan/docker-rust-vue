@@ -43,12 +43,10 @@ const emit = defineEmits<{
 const sortByVModel = useVModel(props, 'sortBy', emit)
 const sortingOrderVModel = useVModel(props, 'sortingOrder', emit)
 
-
 </script>
 
 <template>
     <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :columns="columns"
         :items="tasks" :loading="$props.loading">
-
     </VaDataTable>
 </template>

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug, Default)]
 pub struct TaskFilters {
-    pub agenda_id: Option<String>,
+    pub agenda_id: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

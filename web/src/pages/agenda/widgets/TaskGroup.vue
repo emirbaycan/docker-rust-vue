@@ -1,7 +1,29 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import Tasks from './Tasks.vue';
+import { useItems } from '../composables/useTasks'
+import { useModal, useToast } from 'vuestic-ui'
+
 import { PropType } from 'vue';
 import { Task, TaskGroup } from '../../../api/agenda/types';
 
+const doShowEditImageModal = ref(false)
+
+const { tasks, isLoading, filters, sorting, ...itemsApi } = useItems()
+
+const itemToEdit = ref<Task | null>(null)
+
+const showEditImageModal = (task: Task) => {
+  itemToEdit.value = task
+  doShowEditImageModal.value = true
+}
+
+const showAddImageModal = () => {
+  itemToEdit.value = null
+  doShowEditImageModal.value = true
+}
+
+const { init: notify } = useToast()
 
 defineProps({
     tasks: {
@@ -16,8 +38,8 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex">
-        <div class="flex">
+    <div class="task-group">
+        <div class="task-group-options">
             <VaMenu>
                 <template #anchor>
                     <VaIcon name="dots" color="secondary"></VaIcon>
@@ -55,10 +77,14 @@ defineProps({
                 </VaMenuItem>
             </VaMenu>
         </div>
-        <div class="flex">
-            <VaCardTitle>
+        <div class="task-group-holder">
+            <VaCardTitle class="task-group-title">
                 {{ group.title }}
             </VaCardTitle>
+            <VaCard class="tasks">
+                <Tasks v-model:sort-by="sorting.sortBy" v-model:sorting-order="sorting.sortingOrder" :tasks="tasks"
+                :loading="isLoading" @edit="showEditImageModal"></Tasks>
+            </VaCard>
         </div>
     </div>
 </template>

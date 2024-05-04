@@ -24,7 +24,7 @@ pub struct TaskGroupModel {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct TaskAgenda {
+pub struct TaskAgendaModel {
     pub agenda_id: i32,
     pub title: String, 
     pub user_id: i32,
@@ -33,7 +33,7 @@ pub struct TaskAgenda {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct TaskUpdate {
+pub struct TaskUpdateModel {
     pub update_id: i32,
     pub user_id: i32,
     pub text: String, 
@@ -42,7 +42,7 @@ pub struct TaskUpdate {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct TaskVisor {
+pub struct TaskVisorModel {
     pub visor_id: i32,
     pub task_id: i32,
     pub user_id: i32, 
@@ -51,7 +51,7 @@ pub struct TaskVisor {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct TaskSupervisor {
+pub struct TaskSupervisorModel {
     pub supervisor_id: i32,
     pub task_id: i32,
     pub user_id: i32, 

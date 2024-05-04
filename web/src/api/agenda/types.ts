@@ -21,7 +21,7 @@ export type TaskVisor = {
     email: string,
     fullname: string,
     created_at: string,
-    updated_at:string,
+    updated_at: string,
 }
 
 export type CreateTaskVisor = {
@@ -41,7 +41,7 @@ export type TaskSuperVisor = {
     email: string,
     fullname: string,
     created_at: string,
-    updated_at:string,
+    updated_at: string,
 }
 
 export type CreateTaskSuperVisor = {
@@ -90,6 +90,13 @@ export type CreateTask = {
     expiration_date: string,
     status: TaskStatus
     priority: TaskPriority
+}
+
+export type DisplayTaskGroup = {
+    group_id: number
+    agenda_id: number
+    title: string
+    tasks: Array<Task>
 }
 
 export type TaskGroup = {

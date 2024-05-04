@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use uuid::Uuid;
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
 #[allow(non_snake_case)]
 pub struct UserModel {
-    pub id: Uuid,
+    pub id: i32,
     pub username: String,
     pub password: String,
     pub email: String,

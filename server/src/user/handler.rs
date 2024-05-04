@@ -10,7 +10,6 @@ use axum::{
 };
 
 use tower_sessions::Session;
-use uuid::Uuid;
 
 use crate::general::schema::{FilterOptions, Table};
 use crate::user::{
@@ -142,7 +141,7 @@ pub async fn create_user_handler(
 }
 
 pub async fn get_user_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<i32>,
     State(data): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let query_result = sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", id)
@@ -221,7 +220,7 @@ pub async fn new_user_list_handler(
 }
 
 pub async fn edit_user_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<i32>,
     State(data): State<Arc<AppState>>,
     Json(body): Json<UpdateUserSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
@@ -275,7 +274,7 @@ pub async fn edit_user_handler(
 }
 
 pub async fn delete_user_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<i32>,
     State(data): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let rows_affected = sqlx::query!("DELETE FROM users WHERE id = $1", id)
@@ -301,7 +300,7 @@ pub async fn update_user_handler(
     Json(body): Json<UpdateUserSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
 
-    let id = session.get::<Uuid>("id").await.unwrap().unwrap();
+    let id = session.get::<i32>("id").await.unwrap().unwrap();
 
     let query_result = sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", id)
         .fetch_one(&data.db)

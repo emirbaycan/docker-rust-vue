@@ -1,33 +1,40 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import Tasks from './widgets/Tasks.vue';
 import { Task } from '../../api/agenda/types';
-import { useItems } from './composables/useTasks'
-import { useModal, useToast } from 'vuestic-ui'
+import { useItems } from './composables/useTasks';
+import TaskGroups from './widgets/TaskGroups.vue';
 
-const doShowEditImageModal = ref(false)
+const { tasks, isLoading, filters, ...itemsApi } = useItems()
 
-const { tasks, isLoading, filters, sorting, ...itemsApi } = useItems()
-
-const itemToEdit = ref<Task | null>(null)
-
-const showEditImageModal = (task: Task) => {
-  itemToEdit.value = task
-  doShowEditImageModal.value = true
+type DisplayTaskGroup = {
+    group_id: number
+    agenda_id: number
+    title: string
+    tasks: Array<Task>
 }
 
-const showAddImageModal = () => {
-  itemToEdit.value = null
-  doShowEditImageModal.value = true
-}
+const groups = (tasks: Array<Task>) => {
+  var task: Task;
+  var groups: Array<DisplayTaskGroup> = [];
 
-const { init: notify } = useToast()
+  tasks.forEach(task => {
+    var group: DisplayTaskGroup = {
+      group_id: 0,
+      agenda_id: 0,
+      title: "",
+      tasks: []
+    };
+    group.tasks.push(task);
+    group.group_id = task.group_id;
+  });
+
+  return groups;
+}
 
 </script>
 
 <template>
-  <VaCard>
-    <VaCard>
+  <VaCard class="agenda">
+    <VaCard class="agenda-top">
       <VaCardContent>
         <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
           <VaMenu>
@@ -41,10 +48,6 @@ const { init: notify } = useToast()
         </div>
       </VaCardContent>
     </VaCard>
-    <VaCard>
-      <Tasks v-model:sort-by="sorting.sortBy" v-model:sorting-order="sorting.sortingOrder" :tasks="tasks"
-        :loading="isLoading" @edit="showEditImageModal"></Tasks>
-    </VaCard>
+    <TaskGroups :groups="groups(tasks)"></TaskGroups>
   </VaCard>
-
 </template>

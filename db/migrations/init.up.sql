@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS images (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY NOT NULL DEFAULT (uuid_generate_v4()),
+    id SERIAL PRIMARY KEY, 
     username VARCHAR(1000) NOT NULL,
     password VARCHAR(1000) NOT NULL,
     email VARCHAR(1000) NOT NULL,

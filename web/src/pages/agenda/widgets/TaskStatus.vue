@@ -13,7 +13,6 @@ const statusName = (status: number) => {
     return names[status];
 }
 
-
 defineProps({
     status: {
         type: Object as PropType<TaskStatus>,

@@ -13,7 +13,6 @@ const priorityName = (priority: number) => {
     return names[priority];
 }
 
-
 defineProps({
     priority: {
         type: Object as PropType<TaskPriority>,

@@ -1,6 +1,5 @@
 use serde::{Deserialize,Serialize};
 use sqlx::FromRow;
-use uuid::Uuid;
 
 #[derive(Deserialize, Debug, Default)]
 pub struct Login {
@@ -13,7 +12,7 @@ pub struct Logged(bool);
 
 #[derive(Debug, Default, FromRow, Deserialize, Serialize)]
 pub struct User {
-    pub id: Uuid,
+    pub id: i32,
     pub email: String,
     pub username: String,
     pub password: String,
@@ -25,5 +24,5 @@ pub struct User {
 
 #[derive(Debug, Default, FromRow, Deserialize, Serialize)]
 pub struct NewUser {
-    pub id: Uuid
+    pub id: i32
 }

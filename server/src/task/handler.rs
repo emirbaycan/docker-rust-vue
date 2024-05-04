@@ -1,4 +1,5 @@
 use serde_json::json;
+use tower_sessions::Session;
 use std::sync::Arc;
 
 use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoResponse, Json };
@@ -6,58 +7,39 @@ use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoRes
 use crate::task::{ model::TaskModel, schema::CreateTaskSchema };
 use crate::AppState;
 
-use super::schema::TaskFilters;
+use super::{model::{TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskVisorModel}, schema::TaskFilters};
 
 use chrono::DateTime;
 
-pub async fn task_list_handler(
+pub async fn all_tasks_list_handler(
+    session:Session,
     opts: Option<Query<TaskFilters>>,
     State(data): State<Arc<AppState>>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let Query(opts) = opts.unwrap_or_default();
 
-    let agenda_id = opts.agenda_id.unwrap_or("".to_string());
+    let agenda_id = opts.agenda_id.unwrap_or(0);
 
-    let mut sets = "WHERE ".to_string();
-    let mut params: Vec<String> = Vec::new(); 
-    let mut parameter_count = 0;
-
-    if !agenda_id.is_empty(){
-        sets.push_str("a.agenda_id = $");
-        parameter_count += 1;
-        sets.push_str(&parameter_count.to_string());
-        params.push(agenda_id);
-    }else {
+    if agenda_id==0 {
         let error_response = serde_json::json!({
             "status": "fail",
             "message": format!("Something went wrong")
         });
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
+
+    let user_id = session.get::<i32>("id").await.unwrap().unwrap();
+
+    let query = "SELECT a.* FROM tasks a
+        LEFT JOIN task_groups b ON b.group_id = a.task_id
+        LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
+        WHERE c.agenda_id = $1 and c.user_id = $2";
  
-    let query = if parameter_count > 0 {
-        format!("SELECT * FROM tasks a {} 
-        INNER JOIN task_groups b ON a.group_id = b.group_id
-        INNER JOIN task_updates c ON a.task_id = c.task_id        
-        INNER JOIN task_visors d ON a.task_id = d.task_id
-        INNER JOIN task_supervisors e ON a.task_id = e.task_id
-        INNER JOIN task_agendas f ON a.agenda_id = b.agenda_id
-        ORDER by a.created_at", sets)
-    } else {
-        "SELECT * FROM tasks a
-        INNER JOIN task_groups b ON a.group_id = b.group_id
-        INNER JOIN task_updates c ON a.task_id = c.task_id        
-        INNER JOIN task_visors d ON a.task_id = d.task_id
-        INNER JOIN task_supervisors e ON a.task_id = e.task_id
-        INNER JOIN task_agendas f ON a.agenda_id = b.agenda_id
-        ORDER by a.created_at".to_string()
-    };
-
     let mut query  = sqlx::query_as::<_, TaskModel>(&query);
-    for param in params {
-        query  = query.bind(param);
-    }
-
+    
+    query = query.bind(agenda_id);
+    query = query.bind(user_id);
+ 
     let query_result = query.fetch_all(&data.db).await;
 
     if query_result.is_err() {
@@ -69,11 +51,103 @@ pub async fn task_list_handler(
         return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
     }
 
-    let items = query_result.unwrap();
+    let tasks = query_result.unwrap();
+    
+    let query = "SELECT * FROM task_groups WHERE agenda_id = $1";
+    let mut query  = sqlx::query_as::<_, TaskGroupModel>(&query);
+
+    query = query.bind(agenda_id);
+    
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let groups = query_result.unwrap();
+
+    let mut visors:Vec<Vec<TaskVisorModel>> = Vec::new();    
+    let mut supervisors:Vec<Vec<TaskSupervisorModel>> = Vec::new();
+    let mut updates:Vec<Vec<TaskUpdateModel>> = Vec::new();
+
+    for task in tasks.iter(){
+        
+        let query = "SELECT * FROM task_visors WHERE task_id = $1";
+        let mut query  = sqlx::query_as::<_, TaskVisorModel>(&query);
+
+        query = query.bind(task.task_id);
+        
+        let query_result = query.fetch_all(&data.db).await;
+
+        if query_result.is_err() {
+            let error_response = serde_json::json!({
+                "error": query_result.unwrap_err().to_string(),
+                "status": "fail",
+                "message": "Something bad happened while fetching all items",
+            });
+            return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+        }
+
+        let visor = query_result.unwrap();
+
+        visors.push(visor);
+
+        let query = "SELECT * FROM task_supervisors WHERE task_id = $1";
+        let mut query  = sqlx::query_as::<_, TaskSupervisorModel>(&query);
+
+        query = query.bind(task.task_id);
+        
+        let query_result = query.fetch_all(&data.db).await;
+
+        if query_result.is_err() {
+            let error_response = serde_json::json!({
+                "error": query_result.unwrap_err().to_string(),
+                "status": "fail",
+                "message": "Something bad happened while fetching all items",
+            });
+            return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+        }
+
+        let supervisor = query_result.unwrap();
+
+        supervisors.push(supervisor);
+
+        let query = "SELECT * FROM task_updates WHERE task_id = $1";
+        let mut query  = sqlx::query_as::<_, TaskUpdateModel>(&query);
+
+        query = query.bind(task.task_id);
+        
+        let query_result = query.fetch_all(&data.db).await;
+
+        if query_result.is_err() {
+            let error_response = serde_json::json!({
+                "error": query_result.unwrap_err().to_string(),
+                "status": "fail",
+                "message": "Something bad happened while fetching all items",
+            });
+            return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+        }
+
+        let update = query_result.unwrap();
+
+        updates.push(update);
+    }
+
 
     let json_response = serde_json::json!({
         "status": "success",
-        "items": items
+        "data": {
+            "tasks": tasks,
+            "groups": groups,
+            "visors": visors,
+            "supervisors": supervisors,
+            "updates": updates
+        }
     });
     Ok(Json(json_response))
 }
