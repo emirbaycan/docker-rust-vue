@@ -1,16 +1,21 @@
-<script setup lang="ts">
-import { PropType } from 'vue';
-import { Task } from '../../../api/agenda/types';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-defineProps({
-    value: {
-        type: Object as PropType<Task>,
-        required: true,
+export default defineComponent({
+    props: {
+        date: {
+            type: String,
+            required: true
+        }
+    },
+    data() {
+        return {
+            single: new Date(this.date.replace('T',' ').split('.')[0])
+        };
     }
-})
-
+});
 </script>
 
 <template>
-    <VaDateInput v-model="value.date" />
+    <VaDateInput v-model="single" />
 </template>
