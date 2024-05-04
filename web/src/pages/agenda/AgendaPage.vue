@@ -1,33 +1,53 @@
 <script setup lang="ts">
-import { Task } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, Task } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 
-const { tasks, isLoading, filters, ...itemsApi } = useItems()
+const { items, isLoading, filters, ...itemsApi } = useItems()
+ 
+const groups = (items: AllTasks|undefined) => {
 
-type DisplayTaskGroup = {
-    group_id: number
-    agenda_id: number
-    title: string
-    tasks: Array<Task>
-}
-
-const groups = (tasks: Array<Task>) => {
-  var task: Task;
-  var groups: Array<DisplayTaskGroup> = [];
+  if(!items){
+    return;
+  }
+  var groups = items.groups;
+  var tasks = items.tasks;
+  var updates = items.updates;
+  var supervisors = items.supervisors;
+  var visors = items.visors;
+ 
+  var new_groups: Array<CollectedTaskGroup> = []
 
   tasks.forEach(task => {
-    var group: DisplayTaskGroup = {
+    var group: CollectedTaskGroup = {
       group_id: 0,
       agenda_id: 0,
       title: "",
       tasks: []
     };
+
+    task.updates = updates;
+    task.supervisors = supervisors;
+    task.visors = visors;
+
+    if (group.title == "") {
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i];
+        if (g.group_id == task.group_id) {
+          group.title = group.title;
+          group.agenda_id = group.agenda_id;
+          break;
+        }
+      }
+    }
+
     group.tasks.push(task);
     group.group_id = task.group_id;
+
+    new_groups.push(group);
   });
 
-  return groups;
+  return new_groups;
 }
 
 </script>
@@ -48,6 +68,6 @@ const groups = (tasks: Array<Task>) => {
         </div>
       </VaCardContent>
     </VaCard>
-    <TaskGroups :groups="groups(tasks)"></TaskGroups>
+    <TaskGroups :groups="groups(items)"></TaskGroups>
   </VaCard>
 </template>

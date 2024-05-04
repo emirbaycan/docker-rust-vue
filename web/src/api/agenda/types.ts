@@ -2,6 +2,14 @@ export type TaskStatus = 1 | 2 | 3 | 4;
 
 export type TaskPriority = 1 | 2 | 3 | 4;
 
+export type AllTasks = {
+    tasks: Array<Task>,
+    groups: Array<TaskGroup>,
+    updates: Array<TaskUpdate>,
+    supervisors: Array<TaskSuperVisor>,
+    visors: Array<TaskVisor>,
+}
+
 export type TaskUpdate = {
     update_id: number,
     user_id: number,
@@ -55,12 +63,19 @@ export type UpdateTaskSuperVisor = {
     email: string,
 }
 
+export type CollectedTaskGroup = {
+    group_id: number
+    agenda_id: number
+    title: string
+    tasks: Array<Task> 
+}
+
 export type Task = {
     task_id: number
     group_id: number
     name: string
     updates: Array<TaskUpdate>
-    supervisors: Array<TaskVisor>,
+    supervisors: Array<TaskSuperVisor>,
     visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,
@@ -84,7 +99,7 @@ export type CreateTask = {
     group_id: number
     name: string
     updates: Array<TaskUpdate>
-    supervisors: Array<TaskVisor>,
+    supervisors: Array<TaskSuperVisor>,
     visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,

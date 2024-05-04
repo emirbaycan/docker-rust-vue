@@ -4,8 +4,9 @@ import {
     addTask, addTaskGroup, addTaskSupervisor, addTaskVisor, addTaskAgenda,
     updateTask, updateTaskGroup, updateTaskSupervisor, updateTaskVisor, updateTaskAgenda,
     removeTask, removeTaskGroup, removeTaskSupervisor, removeTaskVisor, removeTaskAgenda,
-    type Filters, Sorting } from '../../../api/agenda/request'
-import { Task } from '../../../api/agenda/types'
+    type Filters, Sorting, 
+    getAllTasks} from '../../../api/agenda/request'
+import { AllTasks, Task } from '../../../api/agenda/types'
 
 const makeFiltersRef = () => ref<Partial<Filters>>({ agenda_id: 1 })
 const makeSortingRef = () => ref<Sorting>({ sortBy: 'name', sortingOrder: null })
@@ -15,16 +16,16 @@ export const useItems = (options?: {
   filters?: Ref<Partial<Filters>>
 }) => {
   const isLoading = ref(false)
-  const tasks = ref<Task[]>([])
+  const items = ref<AllTasks>()
 
   const { filters = makeFiltersRef(), sorting = makeSortingRef()} = options || {}
 
   const fetch = async () => {
     isLoading.value = true
-    const { data } = await getTasks({
+    const { data } = await getAllTasks({
       ...unref(filters),
     })
-    tasks.value = data
+    items.value = data
 
     isLoading.value = false
   }
@@ -45,7 +46,7 @@ export const useItems = (options?: {
     sorting,
     filters,
 
-    tasks,
+    items,
 
     fetch,
 

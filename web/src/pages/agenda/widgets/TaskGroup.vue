@@ -5,11 +5,11 @@ import { useItems } from '../composables/useTasks'
 import { useModal, useToast } from 'vuestic-ui'
 
 import { PropType } from 'vue';
-import { Task, TaskGroup } from '../../../api/agenda/types';
+import { CollectedTaskGroup, Task, TaskGroup } from '../../../api/agenda/types';
 
 const doShowEditImageModal = ref(false)
 
-const { tasks, isLoading, filters, sorting, ...itemsApi } = useItems()
+const { isLoading, sorting } = useItems()
 
 const itemToEdit = ref<Task | null>(null)
 
@@ -26,12 +26,8 @@ const showAddImageModal = () => {
 const { init: notify } = useToast()
 
 defineProps({
-    tasks: {
-        type: Object as PropType<Array<Task>>,
-        required: true,
-    },
     group: {
-        type: Object as PropType<TaskGroup>,
+        type: Object as PropType<CollectedTaskGroup>,
         required: true,
     },})
 
@@ -82,7 +78,7 @@ defineProps({
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks v-model:sort-by="sorting.sortBy" v-model:sorting-order="sorting.sortingOrder" :tasks="tasks"
+                <Tasks v-model:sort-by="sorting.sortBy" v-model:sorting-order="sorting.sortingOrder" :tasks="group.tasks"
                 :loading="isLoading" @edit="showEditImageModal"></Tasks>
             </VaCard>
         </div>

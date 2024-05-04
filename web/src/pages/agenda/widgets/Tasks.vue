@@ -24,14 +24,6 @@ const props = defineProps({
         type: Boolean,
         required: true,
     },
-    sortBy: {
-        type: Object as PropType<Sorting['sortBy']>,
-        required: true,
-    },
-    sortingOrder: {
-        type: Object as PropType<Sorting['sortingOrder']>,
-        required: true,
-    },
 })
 
 
@@ -40,13 +32,10 @@ const emit = defineEmits<{
   (event: 'delete', item: Task): void
 }>()
 
-const sortByVModel = useVModel(props, 'sortBy', emit)
-const sortingOrderVModel = useVModel(props, 'sortingOrder', emit)
-
 </script>
 
 <template>
-    <VaDataTable v-model:sort-by="sortByVModel" v-model:sorting-order="sortingOrderVModel" :columns="columns"
+    <VaDataTable :columns="columns"
         :items="tasks" :loading="$props.loading">
     </VaDataTable>
 </template>

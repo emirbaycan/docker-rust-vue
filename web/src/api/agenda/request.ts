@@ -1,4 +1,4 @@
-import { CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskVisor, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskVisor } from './types';
+import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskVisor, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskVisor } from './types';
 
 // Simulate API calls
 
@@ -12,6 +12,25 @@ export type Filters = {
 }
 
 const user_api_url = import.meta.env.VITE_API_URL + 'api/user/'
+
+export const getAllTasks = async (filters: Partial<Filters & Sorting>) => {
+
+    const response = await fetch(user_api_url +
+        'all_tasks?agenda_id=' + filters.agenda_id, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
+
+    const result = await response.json()
+    const items: AllTasks = result.data
+
+    return {
+        data: items
+    }
+}
 
 export const getTasks = async (filters: Partial<Filters & Sorting>) => {
 
