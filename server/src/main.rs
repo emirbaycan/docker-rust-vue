@@ -65,7 +65,7 @@ async fn main() {
  
     let session_layer = SessionManagerLayer::new(session_store)
         .with_secure(true)
-        .with_expiry(Expiry::OnInactivity(Duration::seconds(1800)));
+        .with_expiry(Expiry::OnInactivity(Duration::seconds(60*60*24)));
 
     let cors = CorsLayer::new()
         .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())

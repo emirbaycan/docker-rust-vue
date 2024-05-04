@@ -38,7 +38,7 @@ defineProps({
         <div class="task-group-options">
             <VaMenu>
                 <template #anchor>
-                    <VaIcon name="dots" color="secondary"></VaIcon>
+                    <VaIcon name="more_horiz" color="secondary"></VaIcon>
                 </template>
                 <VaMenuItem>
                     <VaButton>
