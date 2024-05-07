@@ -33,12 +33,25 @@ defineProps({
 
 </script>
 
+<style lang="scss">
+    .task-group{
+        display: flex;
+        .task-group-options{
+            .va-dropdown{
+
+            }
+        }
+    }
+</style>
+
 <template>
     <div class="task-group">
         <div class="task-group-options">
             <VaMenu>
                 <template #anchor>
-                    <VaIcon name="more_horiz" color="secondary"></VaIcon>
+                    <div>
+                        <VaIcon name="more_horiz" color="secondary"></VaIcon>
+                    </div>
                 </template>
                 <VaMenuItem>
                     <VaButton>

@@ -6,6 +6,11 @@ pub struct TaskFilters {
     pub agenda_id: Option<i32>,
 }
 
+#[derive(Deserialize, Debug, Default)]
+pub struct TaskUpdateFilters {
+    pub task_id: Option<i32>,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskSchema {
     pub group_id: i32,
@@ -31,48 +36,42 @@ pub struct CreateTaskGroupSchema {
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskGroupSchema {
-    pub agenda_id: Option<i32>,
     pub title: Option<String>,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskAgendaSchema {
     pub title: String,
-    pub user_id: i32,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskAgendaSchema {
     pub title: Option<String>,
-    pub user_id: Option<i32>,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskUpdateSchema {
-    pub update_id: i32,
-    pub user_id: i32,
+    pub task_id: i32,
     pub text: String,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskUpdateSchema {
-    pub update_id: Option<i32>,
-    pub user_id: Option<i32>,
     pub text: Option<String>,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskVisorSchema {
     pub task_id: i32,
-    pub user_id: i32,
+    pub email: String,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskVisorSchema {
-    pub task_id: Option<i32>,
-    pub user_id: Option<i32>,
+    pub visor_id: Option<i32>,
+    pub email: Option<String>,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskSupervisorSchema {
     pub task_id: i32,
-    pub user_id: i32,
+    pub email: String,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskSupervisorSchema {
-    pub task_id: Option<i32>,
-    pub user_id: Option<i32>,
+    pub supervisor_id: Option<i32>,
+    pub email: Option<String>,
 }

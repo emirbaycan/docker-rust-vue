@@ -35,6 +35,7 @@ pub struct TaskAgendaModel {
 #[derive(Debug, FromRow, Deserialize, Serialize)]
 pub struct TaskUpdateModel {
     pub update_id: i32,
+    pub task_id: i32,
     pub user_id: i32,
     pub text: String, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
