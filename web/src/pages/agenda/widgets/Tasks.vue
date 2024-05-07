@@ -5,6 +5,8 @@ import { Task, TaskStatus, TaskUpdate } from '../../../api/agenda/types';
 import { useVModel } from '@vueuse/core';
 import TaskDate from './TaskDate.vue';
 import TaskDateRange from './TaskDateRange.vue';
+import TaskPriorities from './TaskPriorities.vue';
+import TaskStatuses from './TaskStatuses.vue';
 
 const columns = defineVaDataTableColumns([
   { key: 'selection' },
@@ -219,35 +221,11 @@ const taskPriorityTexts: Record<any, string> = {
         </template>
 
         <template #cell(status)="{ rowData }">
-            <div class="task-status-holder">
-                <VaMenu class="task-status-picker">
-                    <template #anchor>
-                        <VaButton> {{ taskStatusTexts[rowData.status] }} </VaButton>
-                    </template>
-                    
-                    <VaMenuItem v-for="(key,value,index) in taskStatusTexts" class="task-status-outer">
-                        <div class="task-status" :class="'bg-'+taskStatusClasses[value]" >
-                            {{ key }}
-                        </div>
-                    </VaMenuItem> 
-                </VaMenu>
-            </div>
+            <TaskStatuses :status="rowData.priority" :task="rowData"></TaskStatuses>
         </template>
         
         <template #cell(priority)="{ rowData }">
-            <div class="task-priority-holder">
-                <VaMenu>
-                    <template #anchor>
-                        <VaButton> {{ taskPriorityTexts[rowData.status] }} </VaButton>
-                    </template>
-                    
-                    <VaMenuItem v-for="(key,value,index) in taskPriorityTexts">
-                        <div class="task-priority" :class="'bg-'+taskPriorityClasses[value]" >
-                            {{ key }}
-                        </div>
-                    </VaMenuItem> 
-                </VaMenu>
-            </div>
+            <TaskPriorities :priority="rowData.priority" :task="rowData"></TaskPriorities>
         </template>
 
         <template #cell(date)="{ rowData }">
@@ -258,7 +236,7 @@ const taskPriorityTexts: Record<any, string> = {
 
         <template #cell(expiration_date)="{ rowData }">
             <div class="task-expiration_date-holder">
-                <TaskDate :date="rowData.expiration_date"/>
+                <TaskDate :date="rowData.expiration_date" :task="rowData"/>
             </div>
         </template>
     </VaDataTable>

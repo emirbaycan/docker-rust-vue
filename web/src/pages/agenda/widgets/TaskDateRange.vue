@@ -8,7 +8,8 @@ const formatDate = (dateString: string): Date => {
     if (!dateString) {
         return new Date();
     }
-    return new Date(dateString.replace('T', ' ').split('.')[0]);
+    return new Date(parseInt(dateString));
+    //return new Date(dateString.replace('T', ' ').split('.')[0]);
 };
 
 export default defineComponent({
@@ -40,6 +41,7 @@ export default defineComponent({
             end: end
         }
 
+
         return { rangeDate };
     },
     watch: {
@@ -48,13 +50,12 @@ export default defineComponent({
                 if (!(newValue.start && newValue.end)) {
                     return;
                 }
-                console.log(this.task);
                 var newTask: UpdateTask = {
                     task_id: this.task.task_id,
                     group_id: this.task.group_id,
                     name: this.task.name,
                     date: newValue.start.getTime() + " - " + newValue.end.getTime(),
-                    expiration_date: formatDate(this.task.expiration_date).getTime(),
+                    expiration_date: this.task.expiration_date,
                     status: this.task.status,
                     priority: this.task.priority,
                 };
