@@ -9,7 +9,7 @@ import { CollectedTaskGroup, Task, TaskGroup } from '../../../api/agenda/types';
 
 const doShowEditImageModal = ref(false)
 
-const { isLoading, sorting } = useItems()
+const { isLoading } = useItems()
 
 const itemToEdit = ref<Task | null>(null)
 
@@ -38,7 +38,7 @@ defineProps({
         display: flex;
         .task-group-options{
             .va-dropdown{
-
+                
             }
         }
     }
@@ -91,8 +91,7 @@ defineProps({
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks v-model:sort-by="sorting.sortBy" v-model:sorting-order="sorting.sortingOrder" :tasks="group.tasks"
-                :loading="isLoading" @edit="showEditImageModal"></Tasks>
+                <Tasks :tasks="group.tasks" :loading="isLoading" @edit="showEditImageModal"></Tasks>
             </VaCard>
         </div>
     </div>

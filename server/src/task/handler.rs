@@ -231,8 +231,8 @@ pub async fn create_task_handler(
             "INSERT INTO tasks (group_id,name,date,expiration_date,status,priority) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
             body.group_id,
             body.name.to_string(),
-            DateTime::from_timestamp(body.date, 0),
-            DateTime::from_timestamp(body.expiration_date, 0),
+            body.date,
+            body.expiration_date,
             body.status,
             body.priority,
         )
@@ -298,8 +298,8 @@ pub async fn edit_task_handler(
             "UPDATE tasks SET group_id = $1, name = $2, date = $3, expiration_date = $4, status = $5, priority = $6, updated_at = $7 WHERE task_id = $8 RETURNING *",
             body.group_id.to_owned().unwrap_or(item.group_id),
             body.name.to_owned().unwrap_or(item.name),
-            DateTime::from_timestamp(body.date.unwrap(), 0),
-            DateTime::from_timestamp(body.expiration_date.unwrap(), 0),
+            body.date.unwrap(),
+            body.expiration_date.unwrap(),
             body.status.to_owned().unwrap_or(item.status),
             body.priority.to_owned().unwrap_or(item.priority),            
             now,
@@ -527,7 +527,7 @@ pub async fn task_groups_list_handler(
     session:Session,
     State(data): State<Arc<AppState>>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    
+
     let Query(opts) = opts.unwrap_or_default();
 
     let agenda_id = opts.agenda_id.unwrap_or(0);

@@ -90,7 +90,7 @@ export type UpdateTask = {
     group_id: number
     name: string
     date: string,
-    expiration_date: string,
+    expiration_date: number,
     status: TaskStatus
     priority: TaskPriority
 }
@@ -98,9 +98,6 @@ export type UpdateTask = {
 export type CreateTask = {
     group_id: number
     name: string
-    updates: Array<TaskUpdate>
-    supervisors: Array<TaskSuperVisor>,
-    visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,
     status: TaskStatus

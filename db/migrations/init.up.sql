@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS tasks (
     task_id SERIAL PRIMARY KEY,
     group_id INTEGER NOT NULL,
     name VARCHAR(10000) NOT NULL,
-    date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    expiration_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    date VARCHAR(100) NOT NULL,
+    expiration_date VARCHAR(100) NOT NULL,
     status SMALLINT NOT NULL DEFAULT 1,
     priority SMALLINT NOT NULL DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -222,8 +222,8 @@ VALUES
     (
         1,
         'Fix the bugs in the tasks',
-        NOW(),
-        NOW(),
+        '1715101808294 - 1715101808294',
+        '1715101808294',
         1,
         1
     );

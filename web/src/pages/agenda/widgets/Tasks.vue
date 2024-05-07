@@ -2,7 +2,6 @@
 import { ref, computed, PropType } from 'vue';
 import { defineVaDataTableColumns } from 'vuestic-ui'
 import { Task, TaskStatus, TaskUpdate } from '../../../api/agenda/types';
-import { Sorting } from '../../../api/agenda/request'
 import { useVModel } from '@vueuse/core';
 import TaskDate from './TaskDate.vue';
 import TaskDateRange from './TaskDateRange.vue';
@@ -18,7 +17,6 @@ const columns = defineVaDataTableColumns([
 ])
 
 const props = defineProps({
-    
     tasks: {
         type: Object as PropType<Array<Task>>,
         required: true,
@@ -62,13 +60,6 @@ const taskPriorityTexts: Record<any, string> = {
   3: 'Yüksek',
   4: 'Kritik', 
 }
-
-const formattedDate = (dateString: string) => {
-    return computed({
-        get: () => new Date(dateString.replace('T',' ').split('.')[0]),
-        set: (newValue: Date) => newValue.toISOString() 
-    });
-};
 
 </script>
 
@@ -185,9 +176,7 @@ const formattedDate = (dateString: string) => {
         background:transparent !important;
     }
 }
-
-
-
+ 
 </style>
 
 <template>
@@ -263,7 +252,7 @@ const formattedDate = (dateString: string) => {
 
         <template #cell(date)="{ rowData }">
             <div class="task-date-holder">
-                <TaskDateRange :range="rowData.date"/>
+                <TaskDateRange :range="rowData.date" :task="rowData"/>
             </div>
         </template> 
 

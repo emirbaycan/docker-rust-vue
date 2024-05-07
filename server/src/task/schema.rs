@@ -15,8 +15,8 @@ pub struct TaskUpdateFilters {
 pub struct CreateTaskSchema {
     pub group_id: i32,
     pub name: String,
-    pub date: i64,
-    pub expiration_date: i64,
+    pub date: String,
+    pub expiration_date: String,
     pub status: i16,
     pub priority: i16,
 }
@@ -24,8 +24,8 @@ pub struct CreateTaskSchema {
 pub struct UpdateTaskSchema {
     pub group_id: Option<i32>,
     pub name: Option<String>,
-    pub date: Option<i64>,
-    pub expiration_date: Option<i64>,
+    pub date: Option<String>,
+    pub expiration_date: Option<String>,
     pub status: Option<i16>,
     pub priority: Option<i16>,
 }

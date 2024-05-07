@@ -4,21 +4,20 @@ import {
     addTask, addTaskGroup, addTaskSupervisor, addTaskVisor, addTaskAgenda,
     updateTask, updateTaskGroup, updateTaskSupervisor, updateTaskVisor, updateTaskAgenda,
     removeTask, removeTaskGroup, removeTaskSupervisor, removeTaskVisor, removeTaskAgenda,
-    type Filters, Sorting, 
-    getAllTasks} from '../../../api/agenda/request'
+    getAllTasks,
+    AgendaFilters,
+    TaskFilters} from '../../../api/agenda/request'
 import { AllTasks, Task } from '../../../api/agenda/types'
 
-const makeFiltersRef = () => ref<Partial<Filters>>({ agenda_id: 1 })
-const makeSortingRef = () => ref<Sorting>({ sortBy: 'name', sortingOrder: null })
+const makeFiltersRef = () => ref<Partial<AgendaFilters & TaskFilters>>({ agenda_id: 1, task_id: 0 })
 
 export const useItems = (options?: {
-  sorting?: Ref<Sorting>
-  filters?: Ref<Partial<Filters>>
+  filters?: Ref<Partial<AgendaFilters & TaskFilters>>
 }) => {
   const isLoading = ref(false)
   const items = ref<AllTasks>()
 
-  const { filters = makeFiltersRef(), sorting = makeSortingRef()} = options || {}
+  const { filters = makeFiltersRef()} = options || {}
 
   const fetch = async () => {
     isLoading.value = true
@@ -43,7 +42,6 @@ export const useItems = (options?: {
   return {
     isLoading,
 
-    sorting,
     filters,
 
     items,
@@ -70,5 +68,6 @@ export const useItems = (options?: {
       await fetch()
       isLoading.value = false
     },
+ 
   }
 }
