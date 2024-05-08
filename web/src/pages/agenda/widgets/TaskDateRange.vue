@@ -68,5 +68,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <VaDateInput v-model="rangeDate" />
+    <div class="task-date-holder">
+        <VaDateInput v-model="rangeDate" />
+    </div>
 </template>

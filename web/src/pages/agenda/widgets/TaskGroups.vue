@@ -20,7 +20,4 @@ defineProps({
     <div class="task-groups" v-for="group in groups">
         <TaskGroup :group="group"></TaskGroup>
     </div>
-    <div class="task-groups" v-for="group in groups">
-        <TaskGroup :group="group"></TaskGroup>
-    </div>
 </template>

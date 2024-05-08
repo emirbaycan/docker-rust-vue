@@ -49,5 +49,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <VaDateInput v-model="single" />
+    <div class="task-expiration-date-holder">
+        <VaDateInput v-model="single" />
+    </div>
 </template>

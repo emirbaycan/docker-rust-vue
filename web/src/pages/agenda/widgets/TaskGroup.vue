@@ -13,35 +13,23 @@ const { isLoading } = useItems()
 
 const itemToEdit = ref<Task | null>(null)
 
-const showEditImageModal = (task: Task) => {
-  itemToEdit.value = task
-  doShowEditImageModal.value = true
-}
-
-const showAddImageModal = () => {
-  itemToEdit.value = null
-  doShowEditImageModal.value = true
-}
-
-const { init: notify } = useToast()
-
 defineProps({
     group: {
         type: Object as PropType<CollectedTaskGroup>,
         required: true,
-    },})
+    },
+})
 
 </script>
 
 <style lang="scss">
-    .task-group{
-        display: flex;
-        .task-group-options{
-            .va-dropdown{
-                
-            }
-        }
+.task-group {
+    display: flex;
+
+    .task-group-options {
+        .va-dropdown {}
     }
+}
 </style>
 
 <template>
@@ -91,7 +79,7 @@ defineProps({
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks :tasks="group.tasks" :loading="isLoading" @edit="showEditImageModal"></Tasks>
+                <Tasks :tasks="group.tasks" :loading="isLoading"></Tasks>
             </VaCard>
         </div>
     </div>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { AllTasks, CollectedTaskGroup, Task } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, Task, TaskUpdate } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 
 const { items, isLoading, filters, ...itemsApi } = useItems()
- 
-const groups = (items: AllTasks|undefined) => {
 
-  if(!items){
+const groups = (items: AllTasks | undefined) => {
+
+  if (!items) {
     return;
   }
   var groups = items.groups;
@@ -15,36 +15,33 @@ const groups = (items: AllTasks|undefined) => {
   var updates = items.updates;
   var supervisors = items.supervisors;
   var visors = items.visors;
- 
+
   var new_groups: Array<CollectedTaskGroup> = []
 
-  tasks.forEach(task => {
-    var group: CollectedTaskGroup = {
-      group_id: 0,
-      agenda_id: 0,
-      title: "",
+  groups.forEach(group => {
+    var new_group: CollectedTaskGroup = {
+      group_id: group.group_id,
+      agenda_id: group.agenda_id,
+      title: group.title,
       tasks: []
-    };
-
-    task.updates = updates;
-    task.supervisors = supervisors;
-    task.visors = visors;
-
-    if (group.title == "") {
-      for (var i = 0; i < groups.length; i++) {
-        var g = groups[i];
-        if (g.group_id == task.group_id) {
-          group.title = group.title;
-          group.agenda_id = group.agenda_id;
-          break;
-        }
-      }
     }
+    tasks.forEach(task => {
+      if (group.group_id !=0 && task.group_id != group.group_id) {
+        return;
+      }
 
-    group.tasks.push(task);
-    group.group_id = task.group_id;
+      task.updates = updates.filter(update => update[0].task_id == task.task_id );
+      task.supervisors = supervisors.filter(supervisor => supervisor[0].task_id == task.task_id);;
+      task.visors = visors.filter(visor => visor[0].task_id == task.task_id);;
+ 
+      new_group.tasks.push(task);
+      new_group.group_id = task.group_id;
 
-    new_groups.push(group);
+    });
+    if(new_group.group_id==0){
+      return;
+    }
+    new_groups.push(new_group);
   });
 
   return new_groups;

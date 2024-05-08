@@ -9,8 +9,6 @@ use crate::AppState;
 
 use super::{model::{TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskVisorModel}, schema::{CreateTaskAgendaSchema, CreateTaskGroupSchema, CreateTaskSupervisorSchema, CreateTaskUpdateSchema, CreateTaskVisorSchema, TaskFilters, TaskUpdateFilters, UpdateTaskAgendaSchema, UpdateTaskGroupSchema, UpdateTaskSchema, UpdateTaskSupervisorSchema, UpdateTaskUpdateSchema, UpdateTaskVisorSchema}};
 
-use chrono::DateTime;
-
 pub async fn all_tasks_list_handler(
     session:Session,
     opts: Option<Query<TaskFilters>>,
@@ -31,8 +29,8 @@ pub async fn all_tasks_list_handler(
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
     let query = "SELECT a.* FROM tasks a
-        LEFT JOIN task_groups b ON b.group_id = a.task_id
-        LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
+        INNER JOIN task_groups b ON b.group_id = a.group_id
+        INNER JOIN task_agendas c ON c.agenda_id = b.agenda_id 
         WHERE c.agenda_id = $1 and c.user_id = $2";
  
     let mut query  = sqlx::query_as::<_, TaskModel>(&query);
@@ -95,7 +93,9 @@ pub async fn all_tasks_list_handler(
 
         let visor = query_result.unwrap();
 
-        visors.push(visor);
+        if !visors.is_empty() {
+            visors.push(visor);
+        }
 
         let query = "SELECT * FROM task_supervisors WHERE task_id = $1";
         let mut query  = sqlx::query_as::<_, TaskSupervisorModel>(&query);
@@ -115,7 +115,9 @@ pub async fn all_tasks_list_handler(
 
         let supervisor = query_result.unwrap();
 
-        supervisors.push(supervisor);
+        if !supervisor.is_empty() {
+            supervisors.push(supervisor);
+        }
 
         let query = "SELECT * FROM task_updates WHERE task_id = $1";
         let mut query  = sqlx::query_as::<_, TaskUpdateModel>(&query);
@@ -135,7 +137,9 @@ pub async fn all_tasks_list_handler(
 
         let update = query_result.unwrap();
 
-        updates.push(update);
+        if !update.is_empty() {
+            updates.push(update);
+        }
     }
 
 
