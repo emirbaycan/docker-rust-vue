@@ -7,7 +7,7 @@ use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoRes
 use crate::{auth::model::UserModel, task::{ model::{TaskAgendaModel, TaskModel}, schema::CreateTaskSchema }};
 use crate::AppState;
 
-use super::{model::{TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskVisorModel}, schema::{CreateTaskAgendaSchema, CreateTaskGroupSchema, CreateTaskSupervisorSchema, CreateTaskUpdateSchema, CreateTaskVisorSchema, TaskFilters, TaskUpdateFilters, UpdateTaskAgendaSchema, UpdateTaskGroupSchema, UpdateTaskSchema, UpdateTaskSupervisorSchema, UpdateTaskUpdateSchema, UpdateTaskVisorSchema}};
+use super::{model::{DisplayTaskSupervisorModel, DisplayTaskUpdateModel, DisplayTaskVisorModel, TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskVisorModel}, schema::{CreateTaskAgendaSchema, CreateTaskGroupSchema, CreateTaskSupervisorSchema, CreateTaskUpdateSchema, CreateTaskVisorSchema, TaskFilters, TaskUpdateFilters, UpdateTaskAgendaSchema, UpdateTaskGroupSchema, UpdateTaskSchema, UpdateTaskSupervisorSchema, UpdateTaskUpdateSchema, UpdateTaskVisorSchema}};
 
 pub async fn all_tasks_list_handler(
     session:Session,
@@ -69,14 +69,16 @@ pub async fn all_tasks_list_handler(
 
     let groups = query_result.unwrap();
 
-    let mut visors:Vec<TaskVisorModel> = Vec::new();    
-    let mut supervisors:Vec<TaskSupervisorModel> = Vec::new();
-    let mut updates:Vec<TaskUpdateModel> = Vec::new();
+    let mut visors:Vec<DisplayTaskVisorModel> = Vec::new();    
+    let mut supervisors:Vec<DisplayTaskSupervisorModel> = Vec::new();
+    let mut updates:Vec<DisplayTaskUpdateModel> = Vec::new();
 
     for task in tasks.iter(){
         
-        let query = "SELECT * FROM task_visors WHERE task_id = $1";
-        let mut query  = sqlx::query_as::<_, TaskVisorModel>(&query);
+        let query = "SELECT a.*,b.email,b.fullname FROM task_visors a
+        INNER JOIN users b on a.user_id = b.id
+        WHERE a.task_id = $1";
+        let mut query  = sqlx::query_as::<_, DisplayTaskVisorModel>(&query);
 
         query = query.bind(task.task_id);
         
@@ -99,8 +101,10 @@ pub async fn all_tasks_list_handler(
             }
         }
 
-        let query = "SELECT * FROM task_supervisors WHERE task_id = $1";
-        let mut query  = sqlx::query_as::<_, TaskSupervisorModel>(&query);
+        let query = "SELECT a.*,b.email,b.fullname FROM task_supervisors a
+        INNER JOIN users b on a.user_id = b.id
+        WHERE a.task_id = $1";
+        let mut query  = sqlx::query_as::<_, DisplayTaskSupervisorModel>(&query);
 
         query = query.bind(task.task_id);
         
@@ -123,8 +127,10 @@ pub async fn all_tasks_list_handler(
             }
         }
 
-        let query = "SELECT * FROM task_updates WHERE task_id = $1";
-        let mut query  = sqlx::query_as::<_, TaskUpdateModel>(&query);
+        let query = "SELECT a.*,b.email,b.fullname FROM task_updates a
+        INNER JOIN users b on a.user_id = b.id
+        WHERE a.task_id = $1";
+        let mut query  = sqlx::query_as::<_, DisplayTaskUpdateModel>(&query);
 
         query = query.bind(task.task_id);
         

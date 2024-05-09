@@ -43,6 +43,19 @@ pub struct TaskUpdateModel {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
+pub struct DisplayTaskUpdateModel {
+    pub update_id: i32,
+    pub task_id: i32,
+    pub user_id: i32,
+    pub text: String, 
+    pub email: String, 
+    pub fullname: String, 
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+
+#[derive(Debug, FromRow, Deserialize, Serialize)]
 pub struct TaskVisorModel {
     pub visor_id: i32,
     pub task_id: i32,
@@ -52,10 +65,32 @@ pub struct TaskVisorModel {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
+pub struct DisplayTaskVisorModel {
+    pub visor_id: i32,
+    pub task_id: i32,
+    pub user_id: i32, 
+    pub email: String, 
+    pub fullname: String, 
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Debug, FromRow, Deserialize, Serialize)]
 pub struct TaskSupervisorModel {
     pub supervisor_id: i32,
     pub task_id: i32,
     pub user_id: i32, 
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Debug, FromRow, Deserialize, Serialize)]
+pub struct DisplayTaskSupervisorModel {
+    pub supervisor_id: i32,
+    pub task_id: i32,
+    pub user_id: i32, 
+    pub email: String, 
+    pub fullname: String, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
