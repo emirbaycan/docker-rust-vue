@@ -50,10 +50,10 @@ pub struct DisplayTaskUpdateModel {
     pub text: String, 
     pub email: String, 
     pub fullname: String, 
+    pub avatar: String, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
-
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
 pub struct TaskVisorModel {
@@ -71,6 +71,7 @@ pub struct DisplayTaskVisorModel {
     pub user_id: i32, 
     pub email: String, 
     pub fullname: String, 
+    pub avatar: String, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
@@ -91,6 +92,7 @@ pub struct DisplayTaskSupervisorModel {
     pub user_id: i32, 
     pub email: String, 
     pub fullname: String, 
+    pub avatar: String, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }

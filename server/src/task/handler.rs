@@ -75,7 +75,7 @@ pub async fn all_tasks_list_handler(
 
     for task in tasks.iter(){
         
-        let query = "SELECT a.*,b.email,b.fullname FROM task_visors a
+        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_visors a
         INNER JOIN users b on a.user_id = b.id
         WHERE a.task_id = $1";
         let mut query  = sqlx::query_as::<_, DisplayTaskVisorModel>(&query);
@@ -101,7 +101,7 @@ pub async fn all_tasks_list_handler(
             }
         }
 
-        let query = "SELECT a.*,b.email,b.fullname FROM task_supervisors a
+        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_supervisors a
         INNER JOIN users b on a.user_id = b.id
         WHERE a.task_id = $1";
         let mut query  = sqlx::query_as::<_, DisplayTaskSupervisorModel>(&query);
@@ -127,7 +127,7 @@ pub async fn all_tasks_list_handler(
             }
         }
 
-        let query = "SELECT a.*,b.email,b.fullname FROM task_updates a
+        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_updates a
         INNER JOIN users b on a.user_id = b.id
         WHERE a.task_id = $1";
         let mut query  = sqlx::query_as::<_, DisplayTaskUpdateModel>(&query);
@@ -1126,7 +1126,6 @@ pub async fn edit_task_visor_handler(
     }
 
     let now = chrono::Utc::now();
-    let item = query_result.unwrap();
 
     let query = "SELECT a.user_id FROM users a 
     WHERE a.email = $1"; 
@@ -1380,7 +1379,6 @@ pub async fn edit_task_supervisor_handler(
     }
 
     let now = chrono::Utc::now();
-    let item = query_result.unwrap();
 
     let query = "SELECT a.user_id FROM users a 
     WHERE a.email = $1"; 

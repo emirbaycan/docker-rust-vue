@@ -110,7 +110,7 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
                         <span class="task-update-count">{{ rowData.updates.length }}</span>
                     </VaButton>
                     <VaButton v-else class="task-update-btn">
-                        <VaIcon name="plus" class="va-text-secondary"></VaIcon>
+                        <VaIcon name="add_comment" class="va-text-secondary"></VaIcon>
                     </VaButton>
                 </div>
             </div>
@@ -119,21 +119,34 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         <template #cell(supervisor)="{ rowData }">
             <div class="task-visor-holder">
                 <VaButton v-if="rowData.supervisors.length" class="task-update-btn">
-                    <va-menu>
+                    <VaMenu :close-on-content-click="false">
                         <template #anchor>
                             <div>
                                 <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
                             </div>
                         </template>
-                        <va-menu-item v-for="(value, key) in rowData.supervisors" :key="key">
-                            <va-button class="task-status">
-                                {{ value }}
-                            </va-button>
-                        </va-menu-item>
-                    </va-menu>
+                        <VaMenuItem>
+                            <div class="task-supervisors" v-for="(supervisor, index) in rowData.supervisors"
+                                :key="index">
+                                <div class="task-supervisor">
+                                    <VaAvatar size="small" :src="supervisor.avatar" />
+                                    <span class="task-supervisor-name">
+                                        {{ supervisor.fullname }}
+                                    </span>
+                                    <VaIcon name="close" />
+                                </div>
+                            </div>
+                            <div class="task-supervisor-add">
+                                <VaInput placeholder="E-posta ile ekleyin"></VaInput>
+                                <VaButton>
+                                    <VaIcon name="add" />
+                                </VaButton>
+                            </div>
+                        </VaMenuItem>
+                    </VaMenu>
                 </VaButton>
                 <VaButton v-else class="task-update-btn">
-                    <VaIcon name="person" class="va-text-secondary"></VaIcon>
+                    <VaIcon name="person_add" class="va-text-secondary"></VaIcon>
                 </VaButton>
             </div>
         </template>
@@ -186,9 +199,11 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 
 .task-holder {
     display: flex;
-    .task{
-        width:100%;
+
+    .task {
+        width: 100%;
     }
+
     .task-updates {
         .va-button {
             background: transparent;
@@ -324,4 +339,65 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         }
     }
 }
+
+.task-supervisor {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    padding: 0 .5rem;
+    position: relative;
+    border-radius: 3rem;
+    background: var(--va-background-element);
+}
+
+.task-supervisor:hover .va-icon {
+    opacity: 1 !important;
+}
+
+.task-supervisor .va-avatar {
+    margin-right: .5rem;
+}
+
+.task-supervisor .va-icon.va-icon {
+    font-size: 13px !important;
+    height: 13px !important;
+    line-height: 13px !important;
+    position: absolute;
+    right: .25rem;
+    top: .125rem;
+    color: var(--va-danger);
+    opacity: 0;
+    transition: .5s;
+}
+
+.task-supervisors {
+    display: flex;
+}
+
+.task-supervisor:hover {
+    background: var(--va-background-secondary);
+}
+
+.task-supervisor-add {
+    display: flex;
+    margin-top: 1rem;
+}
+
+.task-supervisor-add .va-button {
+    border: 0;
+    border-radius: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.task-supervisor-add .va-input-wrapper__field {
+    border-radius: 0;
+    border: 0;
+    border-bottom: solid 1px var(--va-input-wrapper-border-color);
+}
+
+.va-menu-item:hover::after {
+    background: transparent;
+}
+
 </style>

@@ -75,7 +75,7 @@ pub async fn upload_user_image_handler(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     while let Some(mut field) = multipart.next_field().await.unwrap() {
 
-        let file_name = session.get::<Uuid>("id").await.unwrap().unwrap().to_string();
+        let file_name = session.get::<usize>("id").await.unwrap().unwrap().to_string();
 
         let file_path = format!("images/{}.webp", file_name);
         let mut file = File::create(&file_path).unwrap();
@@ -156,7 +156,7 @@ pub async fn create_image_handler(
 }
 
 pub async fn edit_image_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<Uuid>,
     State(data): State<Arc<AppState>>,
     Json(body): Json<UpdateImageSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
@@ -307,7 +307,7 @@ pub async fn image_list_handler(
 }
 
 pub async fn get_image_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<Uuid>,
     State(data): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let query_result = sqlx::query_as!(ImageModel, "SELECT * FROM images WHERE id = $1", id)
@@ -333,7 +333,7 @@ pub async fn get_image_handler(
 }
 
 pub async fn delete_image_handler(
-    Path(id): Path<uuid::Uuid>,
+    Path(id): Path<Uuid>,
     State(data): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let query_result = sqlx::query_as!(ImageModel, "SELECT * FROM images WHERE id = $1", id)
