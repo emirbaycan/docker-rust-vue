@@ -9,6 +9,7 @@ import TaskPriorities from './TaskPriorities.vue';
 import TaskStatuses from './TaskStatuses.vue';
 import { updateTask } from '../../../api/agenda/request';
 import { Value } from 'sass';
+import TaskSupervisors from './TaskSupervisors.vue';
 
 const columns = defineVaDataTableColumns([
     { key: 'selection' },
@@ -117,38 +118,7 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         </template>
 
         <template #cell(supervisor)="{ rowData }">
-            <div class="task-visor-holder">
-                <VaButton v-if="rowData.supervisors.length" class="task-update-btn">
-                    <VaMenu :close-on-content-click="false">
-                        <template #anchor>
-                            <div>
-                                <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
-                            </div>
-                        </template>
-                        <VaMenuItem>
-                            <div class="task-supervisors" v-for="(supervisor, index) in rowData.supervisors"
-                                :key="index">
-                                <div class="task-supervisor">
-                                    <VaAvatar size="small" :src="supervisor.avatar" />
-                                    <span class="task-supervisor-name">
-                                        {{ supervisor.fullname }}
-                                    </span>
-                                    <VaIcon name="close" />
-                                </div>
-                            </div>
-                            <div class="task-supervisor-add">
-                                <VaInput placeholder="E-posta ile ekleyin"></VaInput>
-                                <VaButton>
-                                    <VaIcon name="add" />
-                                </VaButton>
-                            </div>
-                        </VaMenuItem>
-                    </VaMenu>
-                </VaButton>
-                <VaButton v-else class="task-update-btn">
-                    <VaIcon name="person_add" class="va-text-secondary"></VaIcon>
-                </VaButton>
-            </div>
+            <TaskSupervisors :supervisors="rowData.supervisors" :task="rowData"></TaskSupervisors>
         </template>
 
         <template #cell(status)="{ rowData }">
