@@ -69,9 +69,9 @@ pub async fn all_tasks_list_handler(
 
     let groups = query_result.unwrap();
 
-    let mut visors:Vec<Vec<TaskVisorModel>> = Vec::new();    
-    let mut supervisors:Vec<Vec<TaskSupervisorModel>> = Vec::new();
-    let mut updates:Vec<Vec<TaskUpdateModel>> = Vec::new();
+    let mut visors:Vec<TaskVisorModel> = Vec::new();    
+    let mut supervisors:Vec<TaskSupervisorModel> = Vec::new();
+    let mut updates:Vec<TaskUpdateModel> = Vec::new();
 
     for task in tasks.iter(){
         
@@ -93,8 +93,10 @@ pub async fn all_tasks_list_handler(
 
         let visor = query_result.unwrap();
 
-        if !visors.is_empty() {
-            visors.push(visor);
+        if !visor.is_empty() {
+            for item in visor{
+                visors.push(item);
+            }
         }
 
         let query = "SELECT * FROM task_supervisors WHERE task_id = $1";
@@ -116,7 +118,9 @@ pub async fn all_tasks_list_handler(
         let supervisor = query_result.unwrap();
 
         if !supervisor.is_empty() {
-            supervisors.push(supervisor);
+            for item in supervisor{
+                supervisors.push(item);
+            }
         }
 
         let query = "SELECT * FROM task_updates WHERE task_id = $1";
@@ -138,7 +142,9 @@ pub async fn all_tasks_list_handler(
         let update = query_result.unwrap();
 
         if !update.is_empty() {
-            updates.push(update);
+            for item in update{
+                updates.push(item);
+            }
         }
     }
 

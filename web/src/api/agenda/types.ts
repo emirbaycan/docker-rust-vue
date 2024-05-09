@@ -5,9 +5,9 @@ export type TaskPriority = 1 | 2 | 3 | 4;
 export type AllTasks = {
     tasks: Array<Task>,
     groups: Array<TaskGroup>,
-    updates: Array<TaskUpdate[]>,
-    supervisors: Array<TaskSuperVisor[]>,
-    visors: Array<TaskVisor[]>,
+    updates: Array<TaskUpdate>,
+    supervisors: Array<TaskSuperVisor>,
+    visors: Array<TaskVisor>,
 }
 
 export type TaskUpdate = {
@@ -68,9 +68,9 @@ export type Task = {
     task_id: number
     group_id: number
     name: string
-    updates: Array<TaskUpdate[]>
-    supervisors: Array<TaskSuperVisor[]>,
-    visors: Array<TaskVisor[]>,
+    updates: Array<TaskUpdate>
+    supervisors: Array<TaskSuperVisor>,
+    visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,
     status: TaskStatus

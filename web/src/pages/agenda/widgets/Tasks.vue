@@ -119,7 +119,18 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         <template #cell(supervisor)="{ rowData }">
             <div class="task-visor-holder">
                 <VaButton v-if="rowData.supervisors.length" class="task-update-btn">
-                    <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
+                    <va-menu>
+                        <template #anchor>
+                            <div>
+                                <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
+                            </div>
+                        </template>
+                        <va-menu-item v-for="(value, key) in rowData.supervisors" :key="key">
+                            <va-button class="task-status">
+                                {{ value }}
+                            </va-button>
+                        </va-menu-item>
+                    </va-menu>
                 </VaButton>
                 <VaButton v-else class="task-update-btn">
                     <VaIcon name="person" class="va-text-secondary"></VaIcon>
@@ -175,9 +186,9 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 
 .task-holder {
     display: flex;
-    align-items: center;
-    justify-content: center;
-
+    .task{
+        width:100%;
+    }
     .task-updates {
         .va-button {
             background: transparent;

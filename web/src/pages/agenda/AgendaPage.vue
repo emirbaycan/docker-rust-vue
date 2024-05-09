@@ -30,9 +30,9 @@ const groups = (items: AllTasks | undefined) => {
         return;
       }
 
-      task.updates = updates.filter(update => update[0].task_id == task.task_id );
-      task.supervisors = supervisors.filter(supervisor => supervisor[0].task_id == task.task_id);;
-      task.visors = visors.filter(visor => visor[0].task_id == task.task_id);;
+      task.updates = updates.filter(update => update.task_id == task.task_id );
+      task.supervisors = supervisors.filter(supervisor => supervisor.task_id == task.task_id);;
+      task.visors = visors.filter(visor => visor.task_id == task.task_id);;
  
       new_group.tasks.push(task);
       new_group.group_id = task.group_id;
