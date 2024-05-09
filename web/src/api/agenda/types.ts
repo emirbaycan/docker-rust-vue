@@ -29,6 +29,7 @@ export type TaskVisor = {
     task_id: number,
     email: string,
     fullname: string,
+    avatar: string,
     created_at: string,
     updated_at: string,
 }

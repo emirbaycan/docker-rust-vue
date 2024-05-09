@@ -1,14 +1,14 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { TaskStatus, TaskSuperVisor, UpdateTask, UpdateTaskSuperVisor } from '../../../api/agenda/types';
+import { TaskStatus, TaskVisor, UpdateTask, UpdateTaskVisor } from '../../../api/agenda/types';
 import { DataTableItem } from 'vuestic-ui/web-components';
-import { addTaskSupervisor, removeTaskSupervisor, updateTask } from '../../../api/agenda/request';
-import { CreateTaskSuperVisor } from '../../../api/agenda/types';
+import { addTaskVisor, removeTaskVisor, updateTask } from '../../../api/agenda/request';
+import { CreateTaskVisor } from '../../../api/agenda/types';
 
 export default defineComponent({
     props: {
-        supervisors: {
-            type: Object as PropType<Array<TaskSuperVisor>>,
+        visors: {
+            type: Object as PropType<Array<TaskVisor>>,
             required: true,
         },
         task: {
@@ -21,19 +21,19 @@ export default defineComponent({
     },
     data() {
         return {
-            selectedSupervisor: null as number | null
+            selectedvisor: null as number | null
         };
     },
     methods: {
-        addSupervisor() {
-            var item: CreateTaskSuperVisor = {
+        addvisor() {
+            var item: CreateTaskVisor = {
                 email: this.email ? this.email : "",
                 task_id: this.task.task_id,
             }
-            addTaskSupervisor(item);
+            addTaskVisor(item);
         },
-        deleteSupervisor(item: TaskSuperVisor) {
-            removeTaskSupervisor(item);
+        deletevisor(item: TaskVisor) {
+            removeTaskVisor(item);
         }
     }
 })
@@ -41,26 +41,26 @@ export default defineComponent({
 
 <template>
     <div class="task-visor-holder">
-        <VaButton v-if="supervisors.length" class="task-update-btn">
+        <VaButton v-if="visors.length" class="task-update-btn">
             <VaDropdown :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
                 <template #anchor>
                     <div>
-                        <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
+                        <VaIcon name="visor_account" class="va-text-secondary"></VaIcon>
                     </div>
                 </template>
                 <VaDropdownContent> 
-                    <div class="task-supervisors" v-for="(supervisor, index) in supervisors" :key="index">
-                        <VaButton class="task-supervisor" @click="deleteSupervisor(supervisor)">
-                            <VaAvatar size="small" :src="supervisor.avatar" />
-                            <span class="task-supervisor-name">
-                                {{ supervisor.fullname }}
+                    <div class="task-visors" v-for="(visor, index) in visors" :key="index">
+                        <VaButton class="task-visor" @click="deletevisor(visor)">
+                            <VaAvatar size="small" :src="visor.avatar" />
+                            <span class="task-visor-name">
+                                {{ visor.fullname }}
                             </span>
                             <VaIcon name="close" />
                         </VaButton>
                     </div>
-                    <div class="task-supervisor-add">
+                    <div class="task-visor-add">
                         <VaInput v-model="email" placeholder="E-posta ile ekleyin"></VaInput>
-                        <VaButton @click="addSupervisor()">
+                        <VaButton @click="addvisor()">
                             <VaIcon name="add" />
                         </VaButton>
                     </div>
@@ -75,9 +75,9 @@ export default defineComponent({
                     </div>
                 </template>
                 <VaMenuItem>
-                    <div class="task-supervisor-add">
+                    <div class="task-visor-add">
                         <VaInput v-model="email" placeholder="E-posta ile ekleyin"></VaInput>
-                        <VaButton @click="addSupervisor()">
+                        <VaButton @click="addvisor()">
                             <VaIcon name="add" />
                         </VaButton>
                     </div>
@@ -88,7 +88,7 @@ export default defineComponent({
 </template>
 
 <style>
-.task-supervisor {
+.task-visor {
     margin: auto;
     display: flex;
     align-items: center;
@@ -98,15 +98,15 @@ export default defineComponent({
     background: var(--va-background-element) !important;
 }
 
-.task-supervisor:hover .va-icon {
+.task-visor:hover .va-icon {
     opacity: 1 !important;
 }
 
-.task-supervisor .va-avatar {
+.task-visor .va-avatar {
     margin-right: .5rem;
 }
 
-.task-supervisor .va-icon.va-icon {
+.task-visor .va-icon.va-icon {
     font-size: 13px !important;
     height: 13px !important;
     line-height: 13px !important;
@@ -118,31 +118,31 @@ export default defineComponent({
     transition: .5s;
 }
 
-.task-supervisors {
+.task-visors {
     display: flex;
 }
 
-.task-supervisors .va-button:before{
+.task-visors .va-button:before{
     background:var(--va-background-secondary)
 }
 
-.task-supervisor:hover {
+.task-visor:hover {
     background: var(--va-background-secondary);
 }
 
-.task-supervisor-add {
+.task-visor-add {
     display: flex;
     margin-top: 1rem;
 }
 
-.task-supervisor-add .va-button {
+.task-visor-add .va-button {
     border: 0;
     border-radius: 0;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
 
-.task-supervisor-add .va-input-wrapper__field {
+.task-visor-add .va-input-wrapper__field {
     border-radius: 0;
     border: 0;
     border-bottom: solid 1px var(--va-input-wrapper-border-color);
@@ -152,7 +152,7 @@ export default defineComponent({
     background: transparent;
 }
 
-.task-supervisor-name {
+.task-visor-name {
     color: black;
     font-weight: 400;
 }

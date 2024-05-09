@@ -19,6 +19,7 @@ const columns = defineVaDataTableColumns([
     { label: 'Öncelik', key: 'priority', sortable: true },
     { label: 'Zaman Aralığı', key: 'date', sortable: true },
     { label: 'Son Tarih', key: 'expiration_date', sortable: true },
+    { label: 'Ziyaretçi', key: 'visor', sortable: true },
 ])
 
 const props = defineProps({
@@ -119,6 +120,10 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 
         <template #cell(supervisor)="{ rowData }">
             <TaskSupervisors :supervisors="rowData.supervisors" :task="rowData"></TaskSupervisors>
+        </template>
+
+        <template #cell(visor)="{ rowData }">
+            <TaskSupervisors :supervisors="rowData.visors" :task="rowData"></TaskSupervisors>
         </template>
 
         <template #cell(status)="{ rowData }">
@@ -308,66 +313,6 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
             border: solid 1px var(--va-input-wrapper-border-color);
         }
     }
-}
-
-.task-supervisor {
-    margin: auto;
-    display: flex;
-    align-items: center;
-    padding: 0 .5rem;
-    position: relative;
-    border-radius: 3rem;
-    background: var(--va-background-element);
-}
-
-.task-supervisor:hover .va-icon {
-    opacity: 1 !important;
-}
-
-.task-supervisor .va-avatar {
-    margin-right: .5rem;
-}
-
-.task-supervisor .va-icon.va-icon {
-    font-size: 13px !important;
-    height: 13px !important;
-    line-height: 13px !important;
-    position: absolute;
-    right: .25rem;
-    top: .125rem;
-    color: var(--va-danger);
-    opacity: 0;
-    transition: .5s;
-}
-
-.task-supervisors {
-    display: flex;
-}
-
-.task-supervisor:hover {
-    background: var(--va-background-secondary);
-}
-
-.task-supervisor-add {
-    display: flex;
-    margin-top: 1rem;
-}
-
-.task-supervisor-add .va-button {
-    border: 0;
-    border-radius: 0;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-.task-supervisor-add .va-input-wrapper__field {
-    border-radius: 0;
-    border: 0;
-    border-bottom: solid 1px var(--va-input-wrapper-border-color);
-}
-
-.va-menu-item:hover::after {
-    background: transparent;
 }
 
 </style>
