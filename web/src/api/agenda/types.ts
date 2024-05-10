@@ -1,6 +1,6 @@
-export type TaskStatus = 1 | 2 | 3 | 4;
+export type TaskStatus = 0 | 1 | 2 | 3 | 4;
 
-export type TaskPriority = 1 | 2 | 3 | 4;
+export type TaskPriority = 0 | 1 | 2 | 3 | 4;
 
 export type AllTasks = {
     tasks: Array<Task>,

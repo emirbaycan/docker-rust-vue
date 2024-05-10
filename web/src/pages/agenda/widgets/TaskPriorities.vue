@@ -63,7 +63,7 @@ export default defineComponent({
 
 <template>
     <div class="task-priority-holder">
-        <va-menu>
+        <va-menu v-if="task.priority">
             <template #anchor>
                 <va-button :color="priorityColor(selectedPriority || task.priority)" >
                     {{ priorityName(selectedPriority || task.priority) }}

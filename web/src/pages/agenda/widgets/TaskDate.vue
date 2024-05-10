@@ -50,6 +50,6 @@ export default defineComponent({
 
 <template>
     <div class="task-expiration-date-holder">
-        <VaDateInput v-model="single" />
+        <VaDateInput v-model="single" v-if="task.expiration_date"/>
     </div>
 </template>

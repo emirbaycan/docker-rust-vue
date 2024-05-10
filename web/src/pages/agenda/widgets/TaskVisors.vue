@@ -41,14 +41,15 @@ export default defineComponent({
 
 <template>
     <div class="task-visor-holder">
-        <VaButton v-if="visors.length" class="task-update-btn">
-            <VaDropdown :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
+        <div v-if="visors.length" class="task-visor-dropdown-holder">
+            <VaDropdown v-if="visors[0].visor_id != 0" :close-on-content-click="false" :keyboard-navigation="false"
+                :readonly="true">
                 <template #anchor>
                     <div>
-                        <VaIcon name="visor_account" class="va-text-secondary"></VaIcon>
+                        <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
                     </div>
                 </template>
-                <VaDropdownContent> 
+                <VaDropdownContent>
                     <div class="task-visors" v-for="(visor, index) in visors" :key="index">
                         <VaButton class="task-visor" @click="deletevisor(visor)">
                             <VaAvatar size="small" :src="visor.avatar" />
@@ -66,7 +67,7 @@ export default defineComponent({
                     </div>
                 </VaDropdownContent>
             </VaDropdown>
-        </VaButton>
+        </div>
         <VaButton v-else class="task-update-btn">
             <VaMenu :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
                 <template #anchor>
@@ -122,8 +123,8 @@ export default defineComponent({
     display: flex;
 }
 
-.task-visors .va-button:before{
-    background:var(--va-background-secondary)
+.task-visors .va-button:before {
+    background: var(--va-background-secondary)
 }
 
 .task-visor:hover {
@@ -156,5 +157,4 @@ export default defineComponent({
     color: black;
     font-weight: 400;
 }
-
 </style>

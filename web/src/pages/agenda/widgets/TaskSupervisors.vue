@@ -40,9 +40,9 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="task-visor-holder">
-        <VaButton v-if="supervisors.length" class="task-update-btn">
-            <VaDropdown :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
+    <div class="task-supervisor-holder">
+        <div v-if="supervisors.length" class="task-supervisor-dropdown-holder">
+            <VaDropdown v-if="supervisors[0].supervisor_id!=0" :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
                 <template #anchor>
                     <div>
                         <VaIcon name="supervisor_account" class="va-text-secondary"></VaIcon>
@@ -66,8 +66,8 @@ export default defineComponent({
                     </div>
                 </VaDropdownContent>
             </VaDropdown>
-        </VaButton>
-        <VaButton v-else class="task-update-btn">
+        </div>
+        <VaButton v-else class="task-supervisor-btn">
             <VaMenu :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
                 <template #anchor>
                     <div>
@@ -88,6 +88,15 @@ export default defineComponent({
 </template>
 
 <style>
+
+.task-supervisor-btn::before{
+    display:none;
+}
+.task-supervisor-holder{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+}
 .task-supervisor {
     margin: auto;
     display: flex;
@@ -155,6 +164,12 @@ export default defineComponent({
 .task-supervisor-name {
     color: black;
     font-weight: 400;
+}
+
+.task-supervisor-dropdown-holder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 </style>

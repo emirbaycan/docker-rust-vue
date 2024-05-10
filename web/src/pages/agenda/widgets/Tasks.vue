@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, PropType } from 'vue';
 import { DataTableItem, defineVaDataTableColumns } from 'vuestic-ui'
-import { Task, TaskStatus, TaskUpdate, UpdateTask } from '../../../api/agenda/types';
+import { CreateTask, Task, TaskStatus, TaskUpdate, UpdateTask } from '../../../api/agenda/types';
 import { useVModel } from '@vueuse/core';
 import TaskDate from './TaskDate.vue';
 import TaskDateRange from './TaskDateRange.vue';
 import TaskPriorities from './TaskPriorities.vue';
 import TaskStatuses from './TaskStatuses.vue';
-import { updateTask } from '../../../api/agenda/request';
-import { Value } from 'sass';
+import { addTask, updateTask } from '../../../api/agenda/request';
 import TaskSupervisors from './TaskSupervisors.vue';
+import TaskVisors from './TaskVisors.vue';
 
 const columns = defineVaDataTableColumns([
     { key: 'selection' },
@@ -83,6 +83,24 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
     updateTask(newTask);
 };
 
+
+const addNewTask = (task: Task | DataTableItem) => {
+
+    var now = new Date().getTime().toString();
+
+    const newTask: CreateTask = {
+        group_id: task.group_id,
+        name: task.name,
+        date: now,
+        expiration_date: now + " - "+ now,
+        status: 1,
+        priority: 1,
+    };
+
+    addTask(newTask);
+};
+
+
 </script>
 
 <template>
@@ -104,13 +122,16 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         <template #cell(name)="{ rowData }">
             <div class="task-holder">
                 <div class="task pr-2">
-                    <VaInput v-model="rowData.name" @blur="updateTaskTitle(rowData)"></VaInput>
+                    <VaInput v-if="rowData.name" v-model="rowData.name" @blur="updateTaskTitle(rowData)"></VaInput>
+                    <VaInput v-else v-model="rowData.name" :placeholder="'Bir görev ekleyin..'" @blur="addNewTask(rowData)"></VaInput>
                 </div>
                 <div class="task-updates">
-                    <VaButton v-if="rowData.updates.length" class="task-update-btn">
-                        <VaIcon name="comment" class="va-text-secondary"></VaIcon>
-                        <span class="task-update-count">{{ rowData.updates.length }}</span>
-                    </VaButton>
+                    <div v-if="rowData.updates.length">
+                        <VaButton v-if="rowData.updates[0].update_id!=0" class="task-update-btn">                        
+                            <VaIcon name="comment" class="va-text-secondary"></VaIcon>
+                            <span class="task-update-count">{{ rowData.updates.length }}</span>
+                        </VaButton>
+                    </div>                    
                     <VaButton v-else class="task-update-btn">
                         <VaIcon name="add_comment" class="va-text-secondary"></VaIcon>
                     </VaButton>
@@ -123,7 +144,7 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
         </template>
 
         <template #cell(visor)="{ rowData }">
-            <TaskSupervisors :supervisors="rowData.visors" :task="rowData"></TaskSupervisors>
+            <TaskVisors :visors="rowData.visors" :task="rowData"></TaskVisors>
         </template>
 
         <template #cell(status)="{ rowData }">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AllTasks, CollectedTaskGroup, Task, TaskUpdate } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskUpdate } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 
@@ -26,19 +26,60 @@ const groups = (items: AllTasks | undefined) => {
       tasks: []
     }
     tasks.forEach(task => {
-      if (group.group_id !=0 && task.group_id != group.group_id) {
+      if (group.group_id != 0 && task.group_id != group.group_id) {
         return;
       }
 
-      task.updates = updates.filter(update => update.task_id == task.task_id );
+      task.updates = updates.filter(update => update.task_id == task.task_id);
       task.supervisors = supervisors.filter(supervisor => supervisor.task_id == task.task_id);;
       task.visors = visors.filter(visor => visor.task_id == task.task_id);;
- 
+
       new_group.tasks.push(task);
       new_group.group_id = task.group_id;
 
     });
-    if(new_group.group_id==0){
+    var task_adder: Task = {
+      task_id: 0,
+      group_id: new_group.group_id,
+      name: "",
+      date: "",
+      expiration_date: "",
+      status: 0,
+      priority: 0,
+      updates: [
+        {
+          task_id: 0,
+          update_id: 0,
+          user_id: 0,
+          text: "",
+          created_at: "",
+          updated_at: "",
+        }
+      ],
+      supervisors: [{
+        supervisor_id: 0,
+        task_id: 0,
+        email: "",
+        fullname: "",
+        avatar: "",
+        created_at: "",
+        updated_at: "",
+      }
+      ],
+      visors: [{
+        visor_id: 0,
+        task_id: 0,
+        email: "",
+        fullname: "",
+        avatar: "",
+        created_at: "",
+        updated_at: "",
+      }],
+      created_at: "",
+      updated_at: "",
+    }
+    new_group.tasks.push(task_adder);
+    if (new_group.group_id == 0) {
       return;
     }
     new_groups.push(new_group);

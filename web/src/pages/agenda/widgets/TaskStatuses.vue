@@ -61,7 +61,7 @@ export default defineComponent({
 
 <template>
     <div class="task-status-holder">
-        <va-menu>
+        <va-menu v-if="task.status">
             <template #anchor>
                 <va-button :color="statusColor(selectedStatus || task.status)" >
                     {{ statusName(selectedStatus || task.status) }}
