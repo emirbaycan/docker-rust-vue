@@ -15,6 +15,9 @@ export type TaskUpdate = {
     update_id: number,
     user_id: number,
     text: string,
+    email: string,
+    fullname: string,
+    avatar: string,
     created_at: string,
     updated_at: string,
 }

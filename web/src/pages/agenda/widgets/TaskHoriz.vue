@@ -1,41 +1,38 @@
-<script lang="ts">
+<script setup lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { RemoveTask } from '../../../api/agenda/types';
+import { RemoveTask, Task } from '../../../api/agenda/types';
 import { DataTableItem } from 'vuestic-ui/web-components';
 import { useItems } from '../composables/useTasks';
 
 const { ...itemsApi } = useItems()
 
-export default defineComponent({
-    props: {
-        task: {
-            type: Object as PropType<RemoveTask | DataTableItem>,
-            required: true
-        }
+const props = defineProps({
+    task: {
+        type: Object as PropType<RemoveTask | DataTableItem>,
+        required: true
     },
-    methods:{
-        deleteTask(){
-            const item:RemoveTask = {
-                task_id:this.task.task_id,
-            }
-            itemsApi.removeTask(item);
-        }
+    index: {
+        type: Number,
+        required: true,
+    },
+});
+
+
+const emit = defineEmits<{
+    (event: 'delete-task', index:number): void
+}>()
+
+
+const deleteTask = (index:number) => {
+    emit('delete-task',index);
+
+    const item: RemoveTask = {
+        task_id: props.task.task_id,
     }
-})
+    itemsApi.removeTask(item);
+}
+
 </script>
-
-<style>
-
-.task-option-menu{
-    opacity: 0;
-    transition: .25s;
-}
-
-.task-option-menu:hover{
-    opacity: 1;
-}
-
-</style>
 
 <template>
     <div class="task-option flex align-center justify-center">
@@ -65,7 +62,7 @@ export default defineComponent({
             </VaMenuItem>
             <VaSeparator></VaSeparator>
             <VaMenuItem>
-                <VaButton @click="deleteTask()">
+                <VaButton @click="deleteTask(index)">
                     <VaIcon name="remove" color="secondary"></VaIcon>
                     <span class="group-menu-item">Sil</span>
                 </VaButton>
@@ -73,3 +70,14 @@ export default defineComponent({
         </VaMenu>
     </div>
 </template>
+
+<style>
+.task-option-menu {
+    opacity: 0;
+    transition: .25s;
+}
+
+.task-option-menu:hover {
+    opacity: 1;
+}
+</style>

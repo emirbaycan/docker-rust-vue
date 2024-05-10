@@ -7,7 +7,7 @@ import TaskDate from './TaskDate.vue';
 import TaskDateRange from './TaskDateRange.vue';
 import TaskPriorities from './TaskPriorities.vue';
 import TaskStatuses from './TaskStatuses.vue';
-import { addTask, updateTask } from '../../../api/agenda/request';
+import { updateTask } from '../../../api/agenda/request';
 import TaskSupervisors from './TaskSupervisors.vue';
 import TaskVisors from './TaskVisors.vue';
 import TaskHoriz from './TaskHoriz.vue';
@@ -35,11 +35,6 @@ const props = defineProps({
         required: true,
     }
 })
-
-const emit = defineEmits<{
-    (event: 'edit', item: Task): void
-    (event: 'delete', item: Task): void
-}>()
 
 const defaultCheckboxes = ref<boolean[]>(Array(props.tasks.length).fill(false));
 const selectedTasks = ref<number[]>([]);
@@ -87,26 +82,19 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 };
 
 
+const emit = defineEmits<{
+    (event: 'add-task', item: Task | DataTableItem): void
+    (event: 'edit-task', item: Task): void
+    (event: 'delete-task', index: number): void
+}>()
+
+const deleteTask = (index: number) => {
+    emit('delete-task', index);
+}
+
 const addNewTask = (task: Task | DataTableItem) => {
-
-    if(!task.name || task.name.length<3){
-        return;
-    }
-
-    var now = new Date().getTime().toString();
-
-    const newTask: CreateTask = {
-        group_id: task.group_id,
-        name: task.name,
-        date: now,
-        expiration_date: now + " - "+ now,
-        status: 1,
-        priority: 1,
-    };
-
-    addTask(newTask);
-};
-
+    emit('add-task', task);
+}
 
 </script>
 
@@ -117,18 +105,18 @@ const addNewTask = (task: Task | DataTableItem) => {
             <TaskGroupHoriz :tasks="tasks"></TaskGroupHoriz>
         </template>
 
-        <template #cell(horiz)="{ rowData }">
-            <TaskHoriz :task="rowData"></TaskHoriz>
+        <template #cell(horiz)="{ rowData, rowIndex }">
+            <TaskHoriz v-if="rowData.status" :task="rowData" :index="rowIndex" @delete-task="deleteTask"></TaskHoriz>
         </template>
 
         <template #header(selection)="{ label }">
-            <div class="flex align-center justify-center">
+            <div class="flex align-center justify-center" >
                 <VaCheckbox v-model="selectAll" @change="toggleAllTasks"></VaCheckbox>
             </div>
         </template>
 
         <template #cell(selection)="{ rowData }">
-            <div class="flex align-center justify-center">
+            <div class="flex align-center justify-center" v-if="rowData.status">
                 <VaCheckbox v-model="defaultCheckboxes[rowData.task_id]" @change="toggleTaskSelection(rowData.task_id)">
                 </VaCheckbox>
             </div>
@@ -137,8 +125,8 @@ const addNewTask = (task: Task | DataTableItem) => {
         <template #cell(name)="{ rowData }">
             <div class="task-holder">
                 <div class="task pr-2">
-                    <VaInput v-if="rowData.name" v-model="rowData.name" @blur="updateTaskTitle(rowData)"></VaInput>
-                    <VaInput v-else v-model="rowData.name" :placeholder="'Bir görev ekleyin..'" @blur="addNewTask(rowData)"></VaInput>
+                    <VaInput v-if="rowData.name && rowData.task_id" v-model="rowData.name" @blur="updateTaskTitle(rowData)"></VaInput>
+                    <VaInput v-else v-model="rowData.name" :placeholder="'Bir görev ekleyin..'" @blur="addNewTask(rowData);rowData.name=''"></VaInput>
                 </div>
                 <div class="task-updates">
                     <div v-if="rowData.updates.length">

@@ -151,7 +151,7 @@ router.beforeEach((to,from,next)=>{
     }else{
       var last_login_time = localStorage.getItem('last_login');
       if(last_login_time){
-        var loginValidFor = 1800 * 1000;
+        var loginValidFor = 86400 * 1000;
         if (new Date().getTime()-parseInt(last_login_time)>=loginValidFor){
           localStorage.clear();
           next({ name: 'login' })    

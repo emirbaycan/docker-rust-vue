@@ -59,7 +59,7 @@ export const addTask = async (item: CreateTask) => {
     })
 
     const result = await response.json()
-    const newItem: Task = result.item
+    const newItem: Task = result.data.item
 
     return {
         ...newItem,

@@ -13,7 +13,6 @@ export const validators = {
 
 export const parseDbDate = (date: String) => {
   var new_date = "";
-  console.log(date);
   if (date) {
     var dates = date.split('T');
     var times = dates[1].split(':');

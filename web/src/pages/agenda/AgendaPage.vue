@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskUpdate } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
@@ -51,6 +52,9 @@ const groups = (items: AllTasks | undefined) => {
           task_id: 0,
           update_id: 0,
           user_id: 0,
+          email: "",
+          fullname: "",
+          avatar: "",
           text: "",
           created_at: "",
           updated_at: "",
@@ -88,25 +92,72 @@ const groups = (items: AllTasks | undefined) => {
   return new_groups;
 }
 
+var selectedTab = ref(0);
+
 </script>
 
 
 <template>
-  <VaCard class="agenda">
-    <VaCard class="agenda-top">
-      <VaCardContent>
-        <div class="flex flex-col md:flex-row gap-2 mb-2 justify-between">
-          <VaMenu>
-            <template #anchor>
-              <VaButton>Actions</VaButton>
-            </template>
-            <VaMenuItem>
-              <VaButton>Add Task Group</VaButton>
-            </VaMenuItem>
-          </VaMenu>
+  <VaCard class="agenda" color="transparent">
+    <div class="agenda-header">
+      <div class="agenda-title">
+        <VaInput class="agenda-title-input" v-bind:model-value="'Agenda Title'"></VaInput>
+      </div>
+      <VaButton class="agenda-updates">
+        <div class="agenda-updates-title">
+          Updates
         </div>
-      </VaCardContent>
-    </VaCard>
-    <TaskGroups :groups="groups(items)"></TaskGroups>
+        <div v-if="items && items.updates.length" class="agenda-updater">
+          <VaAvatar :src="items.updates[0].avatar"></VaAvatar>
+        </div>
+      </VaButton>
+      <VaButton class="agenda-invite">
+        <VaIcon name="person_add"></VaIcon>
+        <div class="agenda-invite-title">Invite</div>
+      </VaButton>
+      <VaButton>
+        <VaMenu>
+          <template #anchor>
+            <div class="task-group-option-menu">
+              <VaIcon name="more_horiz" color="secondary"></VaIcon>
+            </div>
+          </template>
+          <VaMenuItem>
+            <VaButton>
+              <VaIcon name="remove" color="secondary"></VaIcon>
+              <span class="group-menu-item">Delete Agenda</span>
+            </VaButton>
+          </VaMenuItem>
+        </VaMenu>
+      </VaButton>
+    </div>
+    <div class="agenda-description">
+      <div class="agenda-desc"></div>
+      <VaButton>
+        See More
+      </VaButton>
+    </div>
+    <VaTabs v-model="selectedTab">
+      <template #tabs>
+        <VaTab
+          v-for="tab in ['Table', 'Gantt', 'Graph','Calendar','Kanban']"
+          :key="tab"
+        >
+          {{ tab }}
+        </VaTab>
+      </template>
+    </VaTabs>
+    <div class="tab-items">
+      <TaskGroups :groups="groups(items)" v-if="selectedTab==0"></TaskGroups>
+    </div>
   </VaCard>
 </template>
+
+
+<style lang="scss">
+.agenda {
+  .agenda-top {
+    margin-bottom: 1rem;
+  }
+}
+</style>
