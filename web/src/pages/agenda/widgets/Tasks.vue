@@ -10,8 +10,11 @@ import TaskStatuses from './TaskStatuses.vue';
 import { addTask, updateTask } from '../../../api/agenda/request';
 import TaskSupervisors from './TaskSupervisors.vue';
 import TaskVisors from './TaskVisors.vue';
+import TaskHoriz from './TaskHoriz.vue';
+import TaskGroupHoriz from './TaskGroupHoriz.vue';
 
 const columns = defineVaDataTableColumns([
+    { key: 'horiz' },
     { key: 'selection' },
     { label: 'Görev', key: 'name', sortable: true },
     { label: 'Sorumlu', key: 'supervisor', sortable: true },
@@ -86,6 +89,10 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 
 const addNewTask = (task: Task | DataTableItem) => {
 
+    if(!task.name || task.name.length<3){
+        return;
+    }
+
     var now = new Date().getTime().toString();
 
     const newTask: CreateTask = {
@@ -105,6 +112,14 @@ const addNewTask = (task: Task | DataTableItem) => {
 
 <template>
     <VaDataTable :columns="columns" :items="tasks" :loading="$props.loading">
+
+        <template #header(horiz)="{ label }">
+            <TaskGroupHoriz :tasks="tasks"></TaskGroupHoriz>
+        </template>
+
+        <template #cell(horiz)="{ rowData }">
+            <TaskHoriz :task="rowData"></TaskHoriz>
+        </template>
 
         <template #header(selection)="{ label }">
             <div class="flex align-center justify-center">

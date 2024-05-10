@@ -100,6 +100,10 @@ export type CreateTask = {
     priority: TaskPriority
 }
 
+export type RemoveTask = {
+    task_id: number
+}
+
 export type DisplayTaskGroup = {
     group_id: number
     agenda_id: number

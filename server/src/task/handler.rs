@@ -380,7 +380,20 @@ pub async fn delete_task_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let _result = sqlx
+        ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
+        .execute(&data.db).await;
+    let _result = sqlx
+        ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
+        .execute(&data.db).await;
+    let _result = sqlx
+        ::query!("DELETE FROM task_updates WHERE task_id = $1", task_id)
+        .execute(&data.db).await;
+
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+    Ok(Json(json_response))
 }
 
 pub async fn task_agendas_list_handler(
@@ -535,7 +548,55 @@ pub async fn delete_task_agenda_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let query = "SELECT a.* FROM tasks a
+        LEFT JOIN task_groups b ON b.group_id = a.task_id
+        LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
+        WHERE c.agenda_id = $1";
+
+    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+
+    query = query.bind(agenda_id);
+
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let items = query_result.unwrap();
+
+    for item in items{
+        let task_id = item.task_id;
+
+        let _result = sqlx
+            ::query!("DELETE FROM tasks WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+        let _result = sqlx
+            ::query!("DELETE FROM task_updates WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+        let _result = sqlx
+            ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+        let _result = sqlx
+            ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+    }
+
+    let _result = sqlx
+        ::query!("DELETE FROM task_groups WHERE agenda_id = $1", agenda_id)
+        .execute(&data.db).await;
+
+
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+
+    Ok(Json(json_response))
 }
 
 pub async fn task_groups_list_handler(
@@ -744,7 +805,48 @@ pub async fn delete_task_group_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let query = "SELECT a.* FROM tasks a
+        INNER JOIN task_groups b ON b.group_id = a.task_id
+        WHERE b.group_id = $1";
+
+    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+
+    query = query.bind(group_id);
+
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let items = query_result.unwrap();
+
+    for item in items{
+        let task_id = item.task_id;
+        let _result = sqlx
+            ::query!("DELETE FROM task_updates WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+        let _result = sqlx
+            ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+        let _result = sqlx
+            ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
+            .execute(&data.db).await;
+    }
+
+    let _result = sqlx
+        ::query!("DELETE FROM tasks WHERE group_id = $1", group_id)
+        .execute(&data.db).await;
+
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+    Ok(Json(json_response))
 }
 
 pub async fn task_updates_list_handler(
@@ -961,7 +1063,10 @@ pub async fn delete_task_update_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+    Ok(Json(json_response))
 }
 
 pub async fn task_visors_list_handler(
@@ -1214,7 +1319,10 @@ pub async fn delete_task_visor_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+    Ok(Json(json_response))
 }
 
 pub async fn task_supervisors_list_handler(
@@ -1467,5 +1575,8 @@ pub async fn delete_task_supervisor_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    Ok(StatusCode::NO_CONTENT)
+    let json_response = serde_json::json!({
+        "status": "success"
+    });
+    Ok(Json(json_response))
 }

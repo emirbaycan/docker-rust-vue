@@ -29,7 +29,7 @@ export default defineComponent({
                 3: 'Takılı',
                 4: 'Tamamlandı'
             } as Record<number, string>,
-            selectedStatus: null as number | null 
+            selectedStatus: null as number | null
         };
     },
     methods: {
@@ -41,7 +41,7 @@ export default defineComponent({
         },
         selectStatus(status: number) {
             this.selectedStatus = status;
-            this.$emit('statusSelected', status); 
+            this.$emit('statusSelected', status);
 
             const newTask: UpdateTask = {
                 task_id: this.task.task_id,
@@ -50,7 +50,7 @@ export default defineComponent({
                 date: this.task.date,
                 expiration_date: this.task.expiration_date,
                 status: parseInt(status.toString()) as TaskStatus,
-                priority:  this.task.priority,
+                priority: this.task.priority,
             };
 
             updateTask(newTask);
@@ -63,7 +63,7 @@ export default defineComponent({
     <div class="task-status-holder">
         <va-menu v-if="task.status">
             <template #anchor>
-                <va-button :color="statusColor(selectedStatus || task.status)" >
+                <va-button :color="statusColor(selectedStatus || task.status)">
                     {{ statusName(selectedStatus || task.status) }}
                 </va-button>
             </template>

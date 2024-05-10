@@ -7,7 +7,7 @@ import {
     getAllTasks,
     AgendaFilters,
     TaskFilters} from '../../../api/agenda/request'
-import { AllTasks, Task, UpdateTask } from '../../../api/agenda/types'
+import { AllTasks, RemoveTask, Task, UpdateTask } from '../../../api/agenda/types'
 
 const makeFiltersRef = () => ref<Partial<AgendaFilters & TaskFilters>>({ agenda_id: 1, task_id: 0 })
 
@@ -56,7 +56,7 @@ export const useItems = (options?: {
       isLoading.value = false
     },
 
-    async removeTask(task: Task) {
+    async removeTask(task: RemoveTask) {
       isLoading.value = true
       await removeTask(task)
       await fetch()

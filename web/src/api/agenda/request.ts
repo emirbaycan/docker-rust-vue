@@ -1,4 +1,4 @@
-import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskVisor, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskVisor } from './types';
+import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskVisor, RemoveTask, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskVisor } from './types';
 
 export type AgendaFilters = {
     agenda_id: number,
@@ -82,7 +82,7 @@ export const updateTask = async (item: UpdateTask) => {
     return newItem
 }
 
-export const removeTask = async (item: Task) => {
+export const removeTask = async (item: RemoveTask) => {
     const response = await fetch(user_api_url + 'tasks/' + item.task_id, {
         method: 'DELETE',
         headers: {
