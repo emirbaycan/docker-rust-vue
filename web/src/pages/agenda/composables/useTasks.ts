@@ -1,9 +1,9 @@
 import { Ref, ref, unref, watch } from 'vue'
 import { 
     getTasks, 
-    addTask, addTaskGroup, addTaskSupervisor, addTaskVisor, addTaskAgenda,
-    updateTask, updateTaskGroup, updateTaskSupervisor, updateTaskVisor, updateTaskAgenda,
-    removeTask, removeTaskGroup, removeTaskSupervisor, removeTaskVisor, removeTaskAgenda,
+    addTask, addTaskGroup, addTaskSupervisor, addTaskAgenda,
+    updateTask, updateTaskGroup, updateTaskSupervisor, updateTaskAgenda,
+    removeTask, removeTaskGroup, removeTaskSupervisor, removeTaskAgenda,
     getAllTasks,
     AgendaFilters,
     TaskFilters} from '../../../api/agenda/request'
@@ -28,7 +28,6 @@ export const useItems = (options?: {
   
     isLoading.value = false
   }
-
 
 
   fetch()

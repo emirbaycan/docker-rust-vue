@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
+import TaskCalendar from './widgets/TaskCalendar.vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -22,13 +23,13 @@ var filters = ref({
   agenda_id: agenda_id
 });
 
-const { items, isLoading, ...itemsApi } = useItems(
+const { items, isLoading } = useItems(
   {
     filters: filters
   }
 )
 
-const groups = (items: AllTasks | undefined) => {
+const parseGroups = (items: AllTasks | undefined) => {
 
   if (!items) {
     return;
@@ -105,6 +106,69 @@ const groups = (items: AllTasks | undefined) => {
 
 var selectedTab = ref(0);
 
+type CalendarTask = {
+  id: number,
+  title: string,
+  start: number,
+  end: number,
+}
+
+var taskStatusClasses = {
+  0: {
+    textColor: 'white',
+    borderColor: 'transparent',
+    backgroundColor: '#767C88',
+  },
+  1: {
+    textColor: 'white',
+    borderColor: 'transparent',
+    backgroundColor: '#767C88',
+  },
+  2: {
+    textColor: 'black',
+    borderColor: 'transparent',
+    backgroundColor: '#FFD43A',
+  },
+  3: {
+    textColor: 'white',
+    borderColor: 'transparent',
+    backgroundColor: '#E42222',
+  },
+  4: {
+    textColor: 'white',
+    borderColor: 'transparent',
+    backgroundColor: '#154EC1',
+  }
+}
+
+const calendarData = (tasks: Array<Task> | undefined) => {
+  var data: Array<CalendarTask> = [];
+
+  if (!tasks) {
+    return;
+  }
+
+  tasks.forEach(task => {
+
+    var date = task.date.split(' - ');
+    var status = taskStatusClasses[parseInt(task.status)];
+    var new_task: GantTask = {
+      id: task.task_id,
+      title: task.name,
+      start: parseInt(date[0]),
+      end: parseInt(date[1]),
+      backgroundColor: status.backgroundColor,
+      textColor: status.textColor,
+      borderColor: status.borderColor,
+    }
+
+    data.push(new_task)
+
+  });
+  return data;
+}
+
+
 </script>
 
 
@@ -150,13 +214,14 @@ var selectedTab = ref(0);
     </div>
     <VaTabs v-model="selectedTab">
       <template #tabs>
-        <VaTab v-for="tab in ['Table', 'Gantt', 'Graph', 'Calendar', 'Kanban']" :key="tab">
+        <VaTab v-for="tab in ['Table', 'Calendar']" :key="tab">
           {{ tab }}
         </VaTab>
       </template>
     </VaTabs>
     <div class="tab-items">
-      <TaskGroups :groups="groups(items)" v-if="selectedTab == 0"></TaskGroups>
+      <TaskGroups :groups="parseGroups(items)" :loading="isLoading" v-if="selectedTab == 0"></TaskGroups>
+      <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
     </div>
   </VaCard>
 </template>

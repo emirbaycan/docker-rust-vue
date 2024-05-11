@@ -4,8 +4,6 @@ import { RemoveTask, Task } from '../../../api/agenda/types';
 import { DataTableItem } from 'vuestic-ui/web-components';
 import { useItems } from '../composables/useTasks';
 
-const { ...itemsApi } = useItems()
-
 const props = defineProps({
     task: {
         type: Object as PropType<RemoveTask | DataTableItem>,
@@ -25,11 +23,6 @@ const emit = defineEmits<{
 
 const deleteTask = (index:number) => {
     emit('delete-task',index);
-
-    const item: RemoveTask = {
-        task_id: props.task.task_id,
-    }
-    itemsApi.removeTask(item);
 }
 
 </script>

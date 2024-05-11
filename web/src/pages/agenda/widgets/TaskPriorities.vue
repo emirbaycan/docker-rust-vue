@@ -53,8 +53,6 @@ export default defineComponent({
                 priority: parseInt(priority.toString()) as TaskPriority, 
             };
 
-            console.log(newTask);
-
             updateTask(newTask);
         }
     }

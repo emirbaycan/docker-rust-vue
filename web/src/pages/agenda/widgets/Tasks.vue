@@ -9,7 +9,6 @@ import TaskPriorities from './TaskPriorities.vue';
 import TaskStatuses from './TaskStatuses.vue';
 import { updateTask } from '../../../api/agenda/request';
 import TaskSupervisors from './TaskSupervisors.vue';
-import TaskVisors from './TaskVisors.vue';
 import TaskHoriz from './TaskHoriz.vue';
 import TaskGroupHoriz from './TaskGroupHoriz.vue';
 
@@ -22,7 +21,6 @@ const columns = defineVaDataTableColumns([
     { label: 'Öncelik', key: 'priority', sortable: true },
     { label: 'Zaman Aralığı', key: 'date', sortable: true },
     { label: 'Son Tarih', key: 'expiration_date', sortable: true },
-    { label: 'Ziyaretçi', key: 'visor', sortable: true },
 ])
 
 const props = defineProps({

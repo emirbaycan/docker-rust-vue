@@ -8,9 +8,11 @@ import { PropType } from 'vue';
 import { CollectedTaskGroup, CreateTask, Task, TaskGroup } from '../../../api/agenda/types';
 import { addTask } from '../../../api/agenda/request';
 
-const { isLoading } = useItems()
-
 const props = defineProps({
+    loading:{
+        type:Boolean as boolean,
+        required:true
+    },
     group: {
         type: Object as PropType<CollectedTaskGroup>,
         required: true,
@@ -46,8 +48,6 @@ const addNewTask = async (task: Task | DataTableItem) => {
 
     var completeNewTask = await addTask(newTask);
     
-    console.log(completeNewTask);
-
     const lastIndex = tasks.value.length - 1;
 
     // Insert the new task before the last task
@@ -70,7 +70,7 @@ var tasks = ref(props.group.tasks);
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks :tasks="tasks" :loading="isLoading" @delete-task="deleteTask" @add-task="addNewTask"></Tasks>
+                <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" :loading="loading" @add-task="addNewTask"></Tasks>
             </VaCard>
         </div>
     </div>
@@ -80,8 +80,5 @@ var tasks = ref(props.group.tasks);
 .task-group {
     display: flex;
 
-    .task-group-options {
-        .va-dropdown {}
-    }
 }
 </style>

@@ -69,38 +69,31 @@ pub async fn all_tasks_list_handler(
 
     let groups = query_result.unwrap();
 
-    let mut visors:Vec<DisplayTaskAgendaVisorModel> = Vec::new();    
+    let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_agenda_visors a
+    INNER JOIN users b on a.user_id = b.id
+    WHERE a.agenda_id = $1";
+    let mut query  = sqlx::query_as::<_, DisplayTaskAgendaVisorModel>(&query);
+
+    query = query.bind(agenda_id);
+    
+    let query_result = query.fetch_all(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let visors = query_result.unwrap();
+
     let mut supervisors:Vec<DisplayTaskSupervisorModel> = Vec::new();
     let mut updates:Vec<DisplayTaskUpdateModel> = Vec::new();
 
     for task in tasks.iter(){
-        
-        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_agenda_visors a
-        INNER JOIN users b on a.user_id = b.id
-        WHERE a.task_id = $1";
-        let mut query  = sqlx::query_as::<_, DisplayTaskAgendaVisorModel>(&query);
-
-        query = query.bind(task.task_id);
-        
-        let query_result = query.fetch_all(&data.db).await;
-
-        if query_result.is_err() {
-            let error_response = serde_json::json!({
-                "error": query_result.unwrap_err().to_string(),
-                "status": "fail",
-                "message": "Something bad happened while fetching all items",
-            });
-            return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
-        }
-
-        let visor = query_result.unwrap();
-
-        if !visor.is_empty() {
-            for item in visor{
-                visors.push(item);
-            }
-        }
-
+           
         let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_supervisors a
         INNER JOIN users b on a.user_id = b.id
         WHERE a.task_id = $1";
