@@ -6,7 +6,6 @@ import TaskGroup from './TaskGroup.vue';
 defineProps({
     loading: {
         type: Boolean as boolean,
-        required: true
     },
     groups: {
         type: Object as PropType<Array<CollectedTaskGroup>>,

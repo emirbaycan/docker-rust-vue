@@ -10,8 +10,7 @@ import { addTask } from '../../../api/agenda/request';
 
 const props = defineProps({
     loading:{
-        type:Boolean as boolean,
-        required:true
+        type: Boolean as PropType<boolean>,
     },
     group: {
         type: Object as PropType<CollectedTaskGroup>,
@@ -54,7 +53,6 @@ const addNewTask = async (task: Task | DataTableItem) => {
     tasks.value.splice(lastIndex, 0, {
         ...completeNewTask,
         updates:[],
-        visors:[],
         supervisors:[]
     });
 };

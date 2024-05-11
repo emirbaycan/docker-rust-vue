@@ -8,7 +8,6 @@ export default {
   props:{
     data:{
       type: Array as () => Array<any>,
-      required:true,
     }
   },
   components: {

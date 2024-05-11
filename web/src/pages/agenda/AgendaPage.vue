@@ -19,6 +19,8 @@ const getAgenda = () => {
   }
 };
 
+const agenda = getAgenda();
+
 var filters = ref({
   agenda_id: agenda_id
 });
@@ -111,6 +113,9 @@ type CalendarTask = {
   title: string,
   start: number,
   end: number,
+  textColor:string,
+  borderColor:string,
+  backgroundColor:string,
 }
 
 var taskStatusClasses = {
@@ -151,8 +156,8 @@ const calendarData = (tasks: Array<Task> | undefined) => {
   tasks.forEach(task => {
 
     var date = task.date.split(' - ');
-    var status = taskStatusClasses[parseInt(task.status)];
-    var new_task: GantTask = {
+    var status = taskStatusClasses[task.status];
+    var new_task: CalendarTask = {
       id: task.task_id,
       title: task.name,
       start: parseInt(date[0]),
@@ -207,7 +212,7 @@ const calendarData = (tasks: Array<Task> | undefined) => {
       </VaButton>
     </div>
     <div class="agenda-description">
-      <div class="agenda-desc"></div>
+      <VaInput class="agenda-desc" :model-value="agenda?.description"></VaInput>
       <VaButton>
         See More
       </VaButton>
