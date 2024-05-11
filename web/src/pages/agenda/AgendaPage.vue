@@ -9,11 +9,11 @@ const route = useRoute();
 
 const agenda_id = parseInt(route.query.id as string);
 
-const getAgenda = ()=>{
+const getAgenda = () => {
   var agendas = localStorage.getItem('agendas');
-  if(agendas){
-    var all_agendas:Array<TaskAgenda> = JSON.parse(agendas);
-    all_agendas.filter(agenda=>agenda.agenda_id==agenda_id);
+  if (agendas) {
+    var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
+    all_agendas.filter(agenda => agenda.agenda_id == agenda_id);
     return all_agendas[0];
   }
 };
@@ -55,7 +55,6 @@ const groups = (items: AllTasks | undefined) => {
 
       task.updates = updates.filter(update => update.task_id == task.task_id);
       task.supervisors = supervisors.filter(supervisor => supervisor.task_id == task.task_id);;
-      task.visors = visors.filter(visor => visor.task_id == task.task_id);;
 
       new_group.tasks.push(task);
       new_group.group_id = task.group_id;
@@ -84,16 +83,6 @@ const groups = (items: AllTasks | undefined) => {
       ],
       supervisors: [{
         supervisor_id: 0,
-        task_id: 0,
-        email: "",
-        fullname: "",
-        avatar: "",
-        created_at: "",
-        updated_at: "",
-      }
-      ],
-      visors: [{
-        visor_id: 0,
         task_id: 0,
         email: "",
         fullname: "",

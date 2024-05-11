@@ -7,7 +7,7 @@ export type AllTasks = {
     groups: Array<TaskGroup>,
     updates: Array<TaskUpdate>,
     supervisors: Array<TaskSuperVisor>,
-    visors: Array<TaskVisor>,
+    visors: Array<TaskAgendaVisor>,
 }
 
 export type TaskUpdate = {
@@ -27,7 +27,7 @@ export type CreateTaskUpdate = {
     text: string,
 }
 
-export type TaskVisor = {
+export type TaskAgendaVisor = {
     visor_id: number,
     task_id: number,
     email: string,
@@ -37,12 +37,12 @@ export type TaskVisor = {
     updated_at: string,
 }
 
-export type CreateTaskVisor = {
+export type CreateTaskAgendaVisor = {
     task_id: number,
     email: string,
 }
 
-export type UpdateTaskVisor = {
+export type UpdateTaskAgendaVisor = {
     visor_id: number,
     task_id: number,
     email: string,
@@ -75,7 +75,6 @@ export type Task = {
     name: string
     updates: Array<TaskUpdate>
     supervisors: Array<TaskSuperVisor>,
-    visors: Array<TaskVisor>,
     date: string,
     expiration_date: string,
     status: TaskStatus

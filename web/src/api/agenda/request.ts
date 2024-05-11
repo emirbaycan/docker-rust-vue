@@ -1,4 +1,4 @@
-import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskVisor, RemoveTask, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskVisor } from './types';
+import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskAgendaVisor, RemoveTask, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskAgendaVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskAgendaVisor } from './types';
 
 export type AgendaFilters = {
     agenda_id: number,
@@ -166,8 +166,8 @@ export const updateTaskAgenda = async (item: UpdateTaskAgenda) => {
     return newItem
 }
 
-export const removeTaskAgenda = async (item: TaskVisor) => {
-    const response = await fetch(user_api_url + 'tasks/agendas/' + item.visor_id, {
+export const removeTaskAgenda = async (item: TaskAgenda) => {
+    const response = await fetch(user_api_url + 'task_agendas' + item.agenda_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -297,9 +297,9 @@ export const removeTaskUpdate = async (item: TaskUpdate) => {
     return result
 }
 
-export const getTaskVisors = async (filters: Partial<TaskFilters>) => {
+export const getTaskAgendaVisors = async (filters: Partial<AgendaFilters>) => {
 
-    const response = await fetch(user_api_url + 'task_visors?task_id=' + filters.task_id, {
+    const response = await fetch(user_api_url + 'task_agenda_visors?agenda_id=' + filters.agenda_id, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -308,15 +308,15 @@ export const getTaskVisors = async (filters: Partial<TaskFilters>) => {
     })
 
     const result = await response.json()
-    const items: Array<TaskVisor> = result.items
+    const items: Array<TaskAgendaVisor> = result.items
 
     return {
         data: items
     }
 }
 
-export const addTaskVisor = async (item: CreateTaskVisor) => {
-    const response = await fetch(user_api_url + 'task_visors', {
+export const addTaskAgendaVisor = async (item: CreateTaskAgendaVisor) => {
+    const response = await fetch(user_api_url + 'task_agenda_visors', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -326,15 +326,15 @@ export const addTaskVisor = async (item: CreateTaskVisor) => {
     })
 
     const result = await response.json()
-    const newItem: TaskVisor = result.item
+    const newItem: TaskAgendaVisor = result.item
 
     return {
         ...newItem,
     }
 }
 
-export const updateTaskVisor = async (item: UpdateTaskVisor) => {
-    const response = await fetch(user_api_url + 'task_visors?visor_id=' + item.visor_id, {
+export const updateTaskAgendaVisor = async (item: UpdateTaskAgendaVisor) => {
+    const response = await fetch(user_api_url + 'task_agenda_visors?visor_id=' + item.visor_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -344,13 +344,13 @@ export const updateTaskVisor = async (item: UpdateTaskVisor) => {
     })
 
     const result = await response.json()
-    const newItem: TaskVisor = result.item
+    const newItem: TaskAgendaVisor = result.item
 
     return newItem
 }
 
-export const removeTaskVisor = async (item: TaskVisor) => {
-    const response = await fetch(user_api_url + 'task_visors?visor_id=' + item.visor_id, {
+export const removeTaskAgendaVisor = async (item: TaskAgendaVisor) => {
+    const response = await fetch(user_api_url + 'task_agenda_visors?visor_id=' + item.visor_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

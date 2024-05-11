@@ -146,10 +146,6 @@ const addNewTask = (task: Task | DataTableItem) => {
             <TaskSupervisors :supervisors="rowData.supervisors" :task="rowData"></TaskSupervisors>
         </template>
 
-        <template #cell(visor)="{ rowData }">
-            <TaskVisors :visors="rowData.visors" :task="rowData"></TaskVisors>
-        </template>
-
         <template #cell(status)="{ rowData }">
             <TaskStatuses :status="rowData.status" :task="rowData"></TaskStatuses>
         </template>
