@@ -82,7 +82,7 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 const emit = defineEmits<{
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
-    (event: 'delete-task', index: number): void
+    (event: 'delete-task', index: number): void 
 }>()
 
 const deleteTask = (index: number) => {
@@ -92,6 +92,7 @@ const deleteTask = (index: number) => {
 const addNewTask = (task: Task | DataTableItem) => {
     emit('add-task', task);
 }
+
 
 </script>
 

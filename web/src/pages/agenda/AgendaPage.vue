@@ -5,6 +5,7 @@ import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
 import { useRoute } from 'vue-router';
+import Popup from '../../components/general/Popup.vue';
 
 const route = useRoute();
 
@@ -172,6 +173,19 @@ const calendarData = (tasks: Array<Task> | undefined) => {
   return data;
 }
 
+const agendaDetailsPopup = ref(false);
+
+const emit = defineEmits<{
+    (event: 'close-popup'): void 
+}>()
+
+const closePopup = () => {
+  agendaDetailsPopup.value=false;
+}
+
+function openPopup(){
+  agendaDetailsPopup.value=true;
+}
 
 </script>
 
@@ -211,8 +225,9 @@ const calendarData = (tasks: Array<Task> | undefined) => {
       </VaButton>
     </div>
     <div class="agenda-description">
-      <VaTextarea class="agenda-desc input-no-border w-full" :model-value="agenda?.description" :autosize="true"></VaTextarea>
-      <VaButton preset="secondary" class="agenda-see-more ml-auto"> Details </VaButton>
+      <VaTextarea class="agenda-desc input-no-border w-full" :model-value="agenda?.description" :autosize="true">
+      </VaTextarea>
+      <VaButton preset="secondary" class="agenda-see-more ml-auto" @click="openPopup"> Details </VaButton>
     </div>
     <VaTabs v-model="selectedTab">
       <template #tabs>
@@ -226,6 +241,7 @@ const calendarData = (tasks: Array<Task> | undefined) => {
       <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
     </div>
   </VaCard>
+  <Popup :open="agendaDetailsPopup" @close-popup="closePopup"></Popup>
 </template>
 
 
@@ -248,8 +264,9 @@ const calendarData = (tasks: Array<Task> | undefined) => {
       }
     }
   }
-  .agenda-description{
-    display:flex;
+
+  .agenda-description {
+    display: flex;
   }
 
 }
