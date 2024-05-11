@@ -1,10 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskUpdate } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
+import { useRoute } from 'vue-router';
 
-const { items, isLoading, filters, ...itemsApi } = useItems()
+const route = useRoute();
+
+const agenda_id = parseInt(route.query.id as string);
+
+const getAgenda = ()=>{
+  var agendas = localStorage.getItem('agendas');
+  if(agendas){
+    var all_agendas:Array<TaskAgenda> = JSON.parse(agendas);
+    all_agendas.filter(agenda=>agenda.agenda_id==agenda_id);
+    return all_agendas[0];
+  }
+};
+
+var filters = ref({
+  agenda_id: agenda_id
+});
+
+const { items, isLoading, ...itemsApi } = useItems(
+  {
+    filters: filters
+  }
+)
 
 const groups = (items: AllTasks | undefined) => {
 
@@ -101,7 +123,7 @@ var selectedTab = ref(0);
   <VaCard class="agenda" color="transparent">
     <div class="agenda-header">
       <div class="agenda-title">
-        <VaInput class="agenda-title-input" v-bind:model-value="'Agenda Title'"></VaInput>
+        <VaInput class="agenda-title-input" :model-value="getAgenda()?.title"></VaInput>
       </div>
       <VaButton class="agenda-updates">
         <div class="agenda-updates-title">
@@ -139,16 +161,13 @@ var selectedTab = ref(0);
     </div>
     <VaTabs v-model="selectedTab">
       <template #tabs>
-        <VaTab
-          v-for="tab in ['Table', 'Gantt', 'Graph','Calendar','Kanban']"
-          :key="tab"
-        >
+        <VaTab v-for="tab in ['Table', 'Gantt', 'Graph', 'Calendar', 'Kanban']" :key="tab">
           {{ tab }}
         </VaTab>
       </template>
     </VaTabs>
     <div class="tab-items">
-      <TaskGroups :groups="groups(items)" v-if="selectedTab==0"></TaskGroups>
+      <TaskGroups :groups="groups(items)" v-if="selectedTab == 0"></TaskGroups>
     </div>
   </VaCard>
 </template>

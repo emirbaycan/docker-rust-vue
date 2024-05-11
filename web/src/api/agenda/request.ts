@@ -96,6 +96,23 @@ export const removeTask = async (item: RemoveTask) => {
     return result
 }
 
+export const getTaskAgenda = async (filters: Partial<AgendaFilters>) => {
+
+    const response = await fetch(user_api_url +
+        'task_agendas/' + filters.agenda_id, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
+
+    const result = await response.json()
+    const item: TaskAgenda = result.item
+
+    return item
+}
+
 export const getTaskAgendas = async () => {
 
     const response = await fetch(user_api_url +
@@ -116,7 +133,7 @@ export const getTaskAgendas = async () => {
 }
 
 export const addTaskAgenda = async (item: CreateTaskAgenda) => {
-    const response = await fetch(user_api_url + 'tasks/agendas', {
+    const response = await fetch(user_api_url + 'task_agendas', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

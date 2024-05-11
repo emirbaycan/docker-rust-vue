@@ -1,6 +1,8 @@
 use serde::{Deserialize,Serialize};
 use sqlx::FromRow;
 
+use crate::task::model::TaskAgendaModel;
+
 #[derive(Deserialize, Debug, Default)]
 pub struct Login {
     pub email: Option<String>,
@@ -21,6 +23,20 @@ pub struct User {
     pub avatar: String,
     pub active: i16,
 }
+
+#[derive(Debug, Default, FromRow, Deserialize, Serialize)]
+pub struct CollectedUser {
+    pub id: i32,
+    pub email: String,
+    pub username: String,
+    pub password: String,
+    pub fullname: String,
+    pub role: i16,
+    pub avatar: String,
+    pub active: i16,
+    pub agendas: Vec<TaskAgendaModel>,
+}
+
 
 #[derive(Debug, Default, FromRow, Deserialize, Serialize)]
 pub struct NewUser {

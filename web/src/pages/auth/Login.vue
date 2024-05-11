@@ -82,6 +82,7 @@ const submit = async () => {
     localStorage.role = user.role;
     localStorage.avatar = user.avatar;
     localStorage.active = user.active;
+    localStorage.agendas = JSON.stringify(user.agendas);
 
     if (result.status == 'success') {
       init({ message: "You've successfully logged in", color: 'success' })

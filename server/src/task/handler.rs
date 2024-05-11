@@ -396,6 +396,41 @@ pub async fn delete_task_handler(
     Ok(Json(json_response))
 }
 
+pub async fn task_agenda_list_handler(
+    session:Session,
+    Path(agenda_id): Path<i32>,
+    State(data): State<Arc<AppState>>
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let user_id = session.get::<i32>("id").await.unwrap().unwrap();
+
+    let query = "SELECT a.* FROM task_agendas a
+        WHERE a.user_id = $1 and a.agenda_id = $2";
+ 
+    let mut query  = sqlx::query_as::<_, TaskAgendaModel>(&query);
+    
+    query = query.bind(user_id);
+    query = query.bind(agenda_id);
+ 
+    let query_result = query.fetch_one(&data.db).await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
+            "status": "fail",
+            "message": "Something bad happened while fetching all items",
+        });
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
+    }
+
+    let item = query_result.unwrap();
+       
+    let json_response = serde_json::json!({
+        "status": "success",
+        "item": item
+    });
+    Ok(Json(json_response))
+}
+
 pub async fn task_agendas_list_handler(
     session:Session,
     State(data): State<Arc<AppState>>
@@ -406,7 +441,7 @@ pub async fn task_agendas_list_handler(
     let query = "SELECT a.* FROM task_agendas a
         WHERE a.user_id = $1";
  
-    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+    let mut query  = sqlx::query_as::<_, TaskAgendaModel>(&query);
     
     query = query.bind(user_id);
  

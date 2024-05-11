@@ -29,7 +29,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         name: 'agenda',
-        path: 'agenda',
+        path: '/agenda',
         component: () => import('../pages/agenda/AgendaPage.vue'),
       },
       {

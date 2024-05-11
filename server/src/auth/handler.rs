@@ -7,14 +7,14 @@ use axum::{
     Json,
 };
 
-use crate::auth::model::UserModel;
+use crate::{auth::model::UserModel, task::model::TaskAgendaModel};
 use crate::auth::schema::Login;
 use crate::AppState;
 
 use bcrypt::{hash, verify,DEFAULT_COST};
 use tower_sessions::Session;
 
-use super::schema::User;
+use super::schema::{CollectedUser, User};
 
 pub async fn test_login_handler(
     session: Session,
@@ -51,9 +51,9 @@ pub async fn login_handler(
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
 
-    let item = query_result.unwrap();
+    let user = query_result.unwrap();
 
-    let password_hash = item.password.clone();
+    let password_hash = user.password.clone();
     let valid = verify(&password, &password_hash).unwrap();
 
     if !valid {
@@ -64,19 +64,42 @@ pub async fn login_handler(
         return Err((StatusCode::NOT_ACCEPTABLE, Json(error_response)));
     }
 
+    let query_result = sqlx::query_as!(
+        TaskAgendaModel,
+        "SELECT * FROM task_agendas WHERE user_id=$1",
+        user.id
+    )
+    .fetch_all(&data.db)
+    .await;
+
+    let agendas = query_result.unwrap();
+
+    let collected_user = CollectedUser {
+        id: user.id,
+        email: user.email.clone(),
+        username: user.username.clone(),
+        password: user.password,
+        fullname: user.fullname.clone(),
+        role: user.role,
+        avatar: user.avatar.clone(),
+        active: user.active,
+        agendas, 
+    };
+
+
     let json_response = serde_json::json!({
         "status": "success",
-        "data": item
+        "data": collected_user
     });
 
     session.insert("logged_in",1).await.unwrap();
-    session.insert("id",item.id).await.unwrap();
-    session.insert("email",item.email).await.unwrap();
-    session.insert("username",item.username).await.unwrap();
-    session.insert("fullname",item.fullname).await.unwrap();
-    session.insert("role",item.role).await.unwrap();
-    session.insert("avatar",item.avatar).await.unwrap();
-    session.insert("active",item.active).await.unwrap();
+    session.insert("id",user.id).await.unwrap();
+    session.insert("email",user.email).await.unwrap();
+    session.insert("username",user.username).await.unwrap();
+    session.insert("fullname",user.fullname).await.unwrap();
+    session.insert("role",user.role).await.unwrap();
+    session.insert("avatar",user.avatar).await.unwrap();
+    session.insert("active",user.active).await.unwrap();
 
     Ok((StatusCode::OK, Json(json_response)))
 }
