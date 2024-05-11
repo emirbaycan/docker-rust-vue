@@ -27,6 +27,7 @@ pub struct TaskGroupModel {
 pub struct TaskAgendaModel {
     pub agenda_id: i32,
     pub title: String, 
+    pub description: String, 
     pub user_id: i32,
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -56,18 +57,18 @@ pub struct DisplayTaskUpdateModel {
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct TaskVisorModel {
+pub struct TaskAgendaVisorModel {
     pub visor_id: i32,
-    pub task_id: i32,
+    pub agenda_id: i32,
     pub user_id: i32, 
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Debug, FromRow, Deserialize, Serialize)]
-pub struct DisplayTaskVisorModel {
+pub struct DisplayTaskAgendaVisorModel {
     pub visor_id: i32,
-    pub task_id: i32,
+    pub agenda_id: i32,
     pub user_id: i32, 
     pub email: String, 
     pub fullname: String, 

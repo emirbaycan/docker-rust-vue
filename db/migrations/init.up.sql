@@ -103,9 +103,9 @@ CREATE TABLE IF NOT EXISTS task_supervisors (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS task_visors (
+CREATE TABLE IF NOT EXISTS task_agenda_visors (
     visor_id SERIAL PRIMARY KEY,
-    task_id INTEGER NOT NULL,
+    agenda_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL, 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS task_groups (
 CREATE TABLE IF NOT EXISTS task_agendas (
     agenda_id SERIAL PRIMARY KEY,
     title VARCHAR(1000) NOT NULL,
+    description VARCHAR(1000) NOT NULL,
     user_id INTEGER NOT NULL,    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -176,11 +177,16 @@ VALUES
     );
 
 INSERT INTO
-    task_agendas (title, user_id)
+    task_agendas (title, description, user_id)
 VALUES
     (
         'Portfolio Management',
+        'Portfolio management task',
         1
+    ),(
+        'Task Management',
+        'Task management task',
+        2
     );
 
 INSERT INTO
@@ -204,7 +210,7 @@ VALUES
     );
 
 INSERT INTO
-    task_visors (task_id, user_id)
+    task_agenda_visors (agenda_id, user_id)
 VALUES
     (
         1,

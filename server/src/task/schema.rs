@@ -41,10 +41,12 @@ pub struct UpdateTaskGroupSchema {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskAgendaSchema {
     pub title: String,
+    pub description: String,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskAgendaSchema {
     pub title: Option<String>,
+    pub description: Option<String>,
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTaskUpdateSchema {
@@ -56,12 +58,12 @@ pub struct UpdateTaskUpdateSchema {
     pub text: Option<String>,
 }
 #[derive(Serialize, Deserialize, Debug)]
-pub struct CreateTaskVisorSchema {
+pub struct CreateTaskAgendaVisorSchema {
     pub task_id: i32,
     pub email: String,
 }
 #[derive(Serialize, Deserialize, Debug)]
-pub struct UpdateTaskVisorSchema {
+pub struct UpdateTaskAgendaVisorSchema {
     pub visor_id: Option<i32>,
     pub email: Option<String>,
 }

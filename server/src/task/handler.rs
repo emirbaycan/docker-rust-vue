@@ -7,7 +7,7 @@ use axum::{ extract::{ Path, Query, State }, http::StatusCode, response::IntoRes
 use crate::{auth::model::UserModel, task::{ model::{TaskAgendaModel, TaskModel}, schema::CreateTaskSchema }};
 use crate::AppState;
 
-use super::{model::{DisplayTaskSupervisorModel, DisplayTaskUpdateModel, DisplayTaskVisorModel, TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskVisorModel}, schema::{CreateTaskAgendaSchema, CreateTaskGroupSchema, CreateTaskSupervisorSchema, CreateTaskUpdateSchema, CreateTaskVisorSchema, TaskFilters, TaskUpdateFilters, UpdateTaskAgendaSchema, UpdateTaskGroupSchema, UpdateTaskSchema, UpdateTaskSupervisorSchema, UpdateTaskUpdateSchema, UpdateTaskVisorSchema}};
+use super::{model::{DisplayTaskSupervisorModel, DisplayTaskUpdateModel, DisplayTaskAgendaVisorModel, TaskGroupModel, TaskSupervisorModel, TaskUpdateModel, TaskAgendaVisorModel}, schema::{CreateTaskAgendaSchema, CreateTaskGroupSchema, CreateTaskSupervisorSchema, CreateTaskUpdateSchema, CreateTaskAgendaVisorSchema, TaskFilters, TaskUpdateFilters, UpdateTaskAgendaSchema, UpdateTaskGroupSchema, UpdateTaskSchema, UpdateTaskSupervisorSchema, UpdateTaskUpdateSchema, UpdateTaskAgendaVisorSchema}};
 
 pub async fn all_tasks_list_handler(
     session:Session,
@@ -69,16 +69,16 @@ pub async fn all_tasks_list_handler(
 
     let groups = query_result.unwrap();
 
-    let mut visors:Vec<DisplayTaskVisorModel> = Vec::new();    
+    let mut visors:Vec<DisplayTaskAgendaVisorModel> = Vec::new();    
     let mut supervisors:Vec<DisplayTaskSupervisorModel> = Vec::new();
     let mut updates:Vec<DisplayTaskUpdateModel> = Vec::new();
 
     for task in tasks.iter(){
         
-        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_visors a
+        let query = "SELECT a.*,b.email,b.fullname,b.avatar FROM task_agenda_visors a
         INNER JOIN users b on a.user_id = b.id
         WHERE a.task_id = $1";
-        let mut query  = sqlx::query_as::<_, DisplayTaskVisorModel>(&query);
+        let mut query  = sqlx::query_as::<_, DisplayTaskAgendaVisorModel>(&query);
 
         query = query.bind(task.task_id);
         
@@ -348,8 +348,8 @@ pub async fn delete_task_handler(
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
-    let query_result = sqlx::query_as!(TaskModel, 
-        "SELECT a.* FROM tasks a 
+    let query_result = sqlx::query_as!(TaskFilters, 
+        "SELECT c.agenda_id FROM tasks a 
         INNER JOIN task_groups b ON a.group_id = b.group_id 
         INNER JOIN task_agendas c ON b.agenda_id = c.agenda_id 
         WHERE a.task_id = $1 and c.user_id = $2", 
@@ -364,6 +364,8 @@ pub async fn delete_task_handler(
         });
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
+
+    let agenda = query_result.unwrap();
 
     let rows_affected = sqlx
         ::query!("DELETE FROM tasks WHERE task_id = $1", task_id)
@@ -381,7 +383,7 @@ pub async fn delete_task_handler(
     }
 
     let _result = sqlx
-        ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
+        ::query!("DELETE FROM task_agenda_visors WHERE agenda_id = $1", agenda.agenda_id)
         .execute(&data.db).await;
     let _result = sqlx
         ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
@@ -476,8 +478,9 @@ pub async fn create_task_agenda_handler(
     let query_result = sqlx
         ::query_as!(
             TaskAgendaModel,
-            "INSERT INTO task_agendas (title,user_id) VALUES ($1, $2) RETURNING *",
+            "INSERT INTO task_agendas (title,description,user_id) VALUES ($1, $2, $3) RETURNING *",
             body.title.to_owned(),
+            body.description.to_owned(),
             user_id
         )
         .fetch_one(&data.db).await;
@@ -518,7 +521,7 @@ pub async fn edit_task_agenda_handler(
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
     let query_result = sqlx::query_as!(TaskAgendaModel,
-         "SELECT * FROM task_agendas WHERE agenda_id = $1 and user_id = $2", agenda_id, user_id)
+         "SELECT a.* FROM task_agendas a WHERE a.agenda_id = $1 and a.user_id = $2", agenda_id, user_id)
         .fetch_one(&data.db)
         .await;
 
@@ -536,8 +539,9 @@ pub async fn edit_task_agenda_handler(
     let query_result = sqlx
         ::query_as!(
             TaskAgendaModel,
-            "UPDATE task_agendas SET title = $1, updated_at = $2 WHERE agenda_id = $3 RETURNING *",
+            "UPDATE task_agendas SET title = $1, description= $2, updated_at = $3 WHERE agenda_id = $4 RETURNING *",
             body.title.to_owned().unwrap_or(item.title),
+            body.description.to_owned().unwrap_or(item.description),
             now,
             agenda_id
         )
@@ -615,12 +619,13 @@ pub async fn delete_task_agenda_handler(
             ::query!("DELETE FROM task_updates WHERE task_id = $1", task_id)
             .execute(&data.db).await;
         let _result = sqlx
-            ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
-            .execute(&data.db).await;
-        let _result = sqlx
             ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
             .execute(&data.db).await;
     }
+
+    let _result = sqlx
+        ::query!("DELETE FROM task_agenda_visors WHERE agenda_id = $1", agenda_id)
+        .execute(&data.db).await;
 
     let _result = sqlx
         ::query!("DELETE FROM task_groups WHERE agenda_id = $1", agenda_id)
@@ -809,8 +814,8 @@ pub async fn delete_task_group_handler(
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
-    let query_result = sqlx::query_as!(TaskGroupModel, 
-        "SELECT a.* FROM task_groups a 
+    let query_result = sqlx::query_as!(TaskFilters, 
+        "SELECT b.agenda_id FROM task_groups a 
         INNER JOIN task_agendas b ON a.agenda_id = b.agenda_id 
         WHERE a.group_id = $1 and b.user_id = $2", 
         group_id, user_id)
@@ -824,6 +829,8 @@ pub async fn delete_task_group_handler(
         });
         return Err((StatusCode::NOT_FOUND, Json(error_response)));
     }
+
+    let agenda = query_result.unwrap();
 
     let rows_affected = sqlx
         ::query!("DELETE FROM task_groups WHERE group_id=$1", group_id)
@@ -866,13 +873,15 @@ pub async fn delete_task_group_handler(
         let _result = sqlx
             ::query!("DELETE FROM task_updates WHERE task_id = $1", task_id)
             .execute(&data.db).await;
-        let _result = sqlx
-            ::query!("DELETE FROM task_visors WHERE task_id = $1", task_id)
-            .execute(&data.db).await;
+
         let _result = sqlx
             ::query!("DELETE FROM task_supervisors WHERE task_id = $1", task_id)
             .execute(&data.db).await;
     }
+
+    let _result = sqlx
+        ::query!("DELETE FROM task_agenda_visors WHERE agenda_id = $1", agenda.agenda_id)
+        .execute(&data.db).await;
 
     let _result = sqlx
         ::query!("DELETE FROM tasks WHERE group_id = $1", group_id)
@@ -1104,7 +1113,7 @@ pub async fn delete_task_update_handler(
     Ok(Json(json_response))
 }
 
-pub async fn task_visors_list_handler(
+pub async fn task_agenda_visors_list_handler(
     opts: Option<Query<TaskUpdateFilters>>,
     session:Session,
     State(data): State<Arc<AppState>>
@@ -1124,13 +1133,13 @@ pub async fn task_visors_list_handler(
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
-    let query = "SELECT a.* FROM task_visors a
+    let query = "SELECT a.* FROM task_agenda_visors a
         INNER JOIN tasks b ON a.task_id = b.task_id
         INNER JOIN taks_groups c ON b.group_id = c.group_id
         INNER JOIN task_agendas d ON c.agenda_id = d.agenda_id
         WHERE a.task_id = $1 and d.user_id = $2";
  
-    let mut query  = sqlx::query_as::<_, TaskVisorModel>(&query);
+    let mut query  = sqlx::query_as::<_, TaskAgendaVisorModel>(&query);
     
     query = query.bind(task_id);
     query = query.bind(user_id);
@@ -1155,21 +1164,21 @@ pub async fn task_visors_list_handler(
     Ok(Json(json_response))
 }
 
-pub async fn create_task_visor_handler(
+pub async fn create_task_agenda_visor_handler(
     session: Session,
     State(data): State<Arc<AppState>>,
-    Json(body): Json<CreateTaskVisorSchema>
+    Json(body): Json<CreateTaskAgendaVisorSchema>
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
     let task_id = body.task_id.to_owned();
     
-    let query = "SELECT a.* FROM tasks a
+    let query = "SELECT c.* FROM tasks a
         INNER JOIN task_groups b ON b.group_id = a.task_id
         INNER JOIN task_agendas c ON c.agenda_id = b.agenda_id 
         WHERE a.task_id = $1 and c.user_id = $2";
  
-    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+    let mut query  = sqlx::query_as::<_, TaskAgendaModel>(&query);
     
     query = query.bind(task_id);
     query = query.bind(user_id);
@@ -1183,6 +1192,8 @@ pub async fn create_task_visor_handler(
         });
         return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
     }
+
+    let agenda_id = query_result.unwrap().agenda_id;
 
     let query = "SELECT a.user_id FROM users a 
     WHERE a.email = $1"; 
@@ -1205,9 +1216,9 @@ pub async fn create_task_visor_handler(
     
     let query_result = sqlx
         ::query_as!(
-            TaskVisorModel,
-            "INSERT INTO task_visors (task_id,user_id) VALUES ($1, $2) RETURNING *",
-            task_id,
+            TaskAgendaVisorModel,
+            "INSERT INTO task_agenda_visors (agenda_id,user_id) VALUES ($1, $2) RETURNING *",
+            agenda_id,
             user.id,         
         )
         .fetch_one(&data.db).await;
@@ -1238,21 +1249,19 @@ pub async fn create_task_visor_handler(
     }
 }
 
-pub async fn edit_task_visor_handler(
+pub async fn edit_task_agenda_visor_handler(
     Path(visor_id): Path<i32>,
     session: Session,
     State(data): State<Arc<AppState>>,
-    Json(body): Json<UpdateTaskVisorSchema>,
+    Json(body): Json<UpdateTaskAgendaVisorSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
-    let query_result = sqlx::query_as!(TaskVisorModel, 
-        "SELECT a.* FROM task_visors a 
-        INNER JOIN tasks b ON a.task_id = b.task_id
-        INNER JOIN task_groups c ON b.group_id = c.group_id
-        INNER JOIN task_agendas d ON c.agenda_id = d.agenda_id
-        WHERE a.visor_id = $1 and d.user_id = $2", 
+    let query_result = sqlx::query_as!(TaskAgendaVisorModel, 
+        "SELECT a.* FROM task_agenda_visors a 
+        INNER JOIN task_agendas b ON a.agenda_id = b.agenda_id
+        WHERE a.visor_id = $1 and b.user_id = $2", 
         visor_id, user_id)
         .fetch_one(&data.db)
         .await;
@@ -1288,8 +1297,8 @@ pub async fn edit_task_visor_handler(
 
     let query_result = sqlx
         ::query_as!(
-            TaskVisorModel,
-            "UPDATE task_visors SET user_id = $1, updated_at = $2 WHERE visor_id = $3 RETURNING *",
+            TaskAgendaVisorModel,
+            "UPDATE task_agenda_visors SET user_id = $1, updated_at = $2 WHERE visor_id = $3 RETURNING *",
             user.id,
             now,
             visor_id
@@ -1313,7 +1322,7 @@ pub async fn edit_task_visor_handler(
     }
 }
 
-pub async fn delete_task_visor_handler(
+pub async fn delete_task_agenda_visor_handler(
     session: Session,
     Path(visor_id): Path<i32>,
     State(data): State<Arc<AppState>>
@@ -1321,12 +1330,10 @@ pub async fn delete_task_visor_handler(
 
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
-    let query_result = sqlx::query_as!(TaskVisorModel, 
-        "SELECT a.* FROM task_visors a 
-        INNER JOIN tasks b ON a.task_id = b.task_id 
-        INNER JOIN task_groups c ON b.group_id = c.group_id
-        INNER JOIN task_agendas d ON c.agenda_id = d.agenda_id 
-        WHERE a.visor_id = $1 and d.user_id = $2", 
+    let query_result = sqlx::query_as!(TaskAgendaVisorModel, 
+        "SELECT a.* FROM task_agenda_visors a 
+        INNER JOIN task_agendas b ON a.agenda_id = b.agenda_id 
+        WHERE a.visor_id = $1 and b.user_id = $2", 
         visor_id, user_id)
         .fetch_one(&data.db)
         .await;
@@ -1340,7 +1347,7 @@ pub async fn delete_task_visor_handler(
     }
 
     let rows_affected = sqlx
-        ::query!("DELETE FROM task_visors WHERE visor_id=$1", visor_id)
+        ::query!("DELETE FROM task_agenda_visors WHERE visor_id=$1", visor_id)
         .execute(&data.db).await
         .unwrap()
         .rows_affected();
