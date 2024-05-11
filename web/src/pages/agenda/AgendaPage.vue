@@ -40,7 +40,6 @@ const parseGroups = (items: AllTasks | undefined) => {
   var tasks = items.tasks;
   var updates = items.updates;
   var supervisors = items.supervisors;
-  var visors = items.visors;
 
   var new_groups: Array<CollectedTaskGroup> = []
 
@@ -113,9 +112,9 @@ type CalendarTask = {
   title: string,
   start: number,
   end: number,
-  textColor:string,
-  borderColor:string,
-  backgroundColor:string,
+  textColor: string,
+  borderColor: string,
+  backgroundColor: string,
 }
 
 var taskStatusClasses = {
@@ -181,24 +180,24 @@ const calendarData = (tasks: Array<Task> | undefined) => {
   <VaCard class="agenda" color="transparent">
     <div class="agenda-header">
       <div class="agenda-title">
-        <VaInput class="agenda-title-input" :model-value="getAgenda()?.title"></VaInput>
+        <VaInput class="agenda-title-input input-no-border" :model-value="getAgenda()?.title"></VaInput>
       </div>
-      <VaButton class="agenda-updates">
+      <VaButton class="agenda-updates" preset="secondary">
         <div class="agenda-updates-title">
           Updates
         </div>
         <div v-if="items && items.updates.length" class="agenda-updater">
-          <VaAvatar :src="items.updates[0].avatar"></VaAvatar>
+          <VaAvatar size="small" :src="items.updates[0].avatar"></VaAvatar>
         </div>
       </VaButton>
-      <VaButton class="agenda-invite">
+      <VaButton class="agenda-invite" preset="secondary" border-color="primary" text-color="black">
         <VaIcon name="person_add"></VaIcon>
         <div class="agenda-invite-title">Invite</div>
       </VaButton>
-      <VaButton>
+      <VaButton preset="secondary">
         <VaMenu>
           <template #anchor>
-            <div class="task-group-option-menu">
+            <div class="task-agenda-option-menu">
               <VaIcon name="more_horiz" color="secondary"></VaIcon>
             </div>
           </template>
@@ -212,10 +211,8 @@ const calendarData = (tasks: Array<Task> | undefined) => {
       </VaButton>
     </div>
     <div class="agenda-description">
-      <VaInput class="agenda-desc" :model-value="agenda?.description"></VaInput>
-      <VaButton>
-        See More
-      </VaButton>
+      <VaTextarea class="agenda-desc input-no-border w-full" :model-value="agenda?.description" :autosize="true"></VaTextarea>
+      <VaButton preset="secondary" class="agenda-see-more ml-auto"> Details </VaButton>
     </div>
     <VaTabs v-model="selectedTab">
       <template #tabs>
@@ -237,5 +234,49 @@ const calendarData = (tasks: Array<Task> | undefined) => {
   .agenda-top {
     margin-bottom: 1rem;
   }
+
+  .input-no-border {
+    .va-input-wrapper__field {
+      border: solid 1px transparent;
+
+      .va-input__content__input {
+        border: solid 1px transparent;
+      }
+
+      .va-input__content__input:focus {
+        border: solid 1px transparent;
+      }
+    }
+  }
+  .agenda-description{
+    display:flex;
+  }
+
+}
+
+.agenda-header {
+  display: flex;
+  align-items: center;
+}
+
+.agenda-updates {
+  display: flex;
+  margin-left: auto;
+}
+
+.agenda-updates::before {
+  background: transparent;
+}
+
+.agenda-updates-title {
+  color: black;
+}
+
+.agenda-updater {
+  padding-left: 1rem;
+}
+
+.agenda-invite .va-icon {
+  margin-right: .5rem;
 }
 </style>
