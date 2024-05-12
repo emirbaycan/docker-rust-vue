@@ -18,7 +18,7 @@
           </VaSidebarItem>
           <template v-if="route.name === 'agenda'">
             <div v-for="(agenda, agendaIndex) in agendas" :key="'agenda_' + agendaIndex">
-              <VaSidebarItem :to="{ name: 'agenda', query: { id: agenda.agenda_id } }"
+              <VaSidebarItem v-if="agenda" :to="{ name: 'agenda', query: { id: agenda.agenda_id } }"
                 :active-color="activeColor"
                 :aria-label="`Visit ${agenda.title}`"
                 hover-opacity="0.10"

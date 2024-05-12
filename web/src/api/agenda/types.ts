@@ -148,9 +148,14 @@ export type TaskAgenda = {
     updated_at: string
 }
 
-export type UpdateTaskAgenda = {
+export type UpdateTaskAgendaTitle = {
     agenda_id: number
     title: string
+}
+
+export type UpdateTaskAgendaDescription = {
+    agenda_id: number
+    description: string
 }
 
 export type CreateTaskAgenda = {

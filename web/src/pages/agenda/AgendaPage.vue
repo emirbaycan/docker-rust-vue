@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate, UpdateTaskAgendaDescription, UpdateTaskAgendaTitle } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
 import TaskInfo from './widgets/TaskInfo.vue';
 import { useRoute } from 'vue-router';
+import { updateTaskAgendaDescription, updateTaskAgendaTitle } from '../../api/agenda/request';
 
 const route = useRoute();
 
@@ -21,6 +22,9 @@ const getAgenda = () => {
 };
 
 const agenda = getAgenda();
+
+var agenda_title = ref(agenda?.title);
+var agenda_description = ref(agenda?.description);
 
 var filters = ref({
   agenda_id: agenda_id
@@ -176,16 +180,59 @@ const calendarData = (tasks: Array<Task> | undefined) => {
 const agendaDetailsPopup = ref(false);
 
 const emit = defineEmits<{
-    (event: 'close-popup'): void 
+  (event: 'close-popup'): void
 }>()
 
 const closePopup = () => {
   emit('close-popup');
-  agendaDetailsPopup.value=false;
+  agendaDetailsPopup.value = false;
 }
 
-function openPopup(){
-  agendaDetailsPopup.value=true;
+function openPopup() {
+  agendaDetailsPopup.value = true;
+}
+
+async function updateAgendaTitle() {
+  var value = agenda_title.value;
+  if(!value){
+    return;
+  }
+  var update_agenda: UpdateTaskAgendaTitle = {
+    agenda_id: agenda_id,
+    title: value,
+  }
+  var new_agenda:TaskAgenda = await updateTaskAgendaTitle(update_agenda)
+  var agendas = localStorage.getItem('agendas');
+  if (agendas) {
+    var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
+    var index = all_agendas.findIndex(agenda => agenda.agenda_id === agenda_id);
+    if (index !== -1) {
+      all_agendas[index] = new_agenda;
+      localStorage.setItem('agendas', JSON.stringify(all_agendas));
+      return new_agenda;
+    }
+  }
+}
+
+async function updateAgendaDescription() {
+  var value = agenda_description.value;
+  if(!value){
+    return;
+  }
+  var update_agenda: UpdateTaskAgendaDescription = {
+    agenda_id: agenda_id,
+    description: value,
+  }
+  var new_agenda:TaskAgenda = await updateTaskAgendaDescription(update_agenda)
+  var agendas = localStorage.getItem('agendas');
+  if (agendas) {
+    var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
+    var index = all_agendas.findIndex(agenda => agenda.agenda_id === new_agenda.agenda_id);
+    if (index !== -1) {
+      all_agendas[index] = new_agenda;
+      localStorage.setItem('agendas', JSON.stringify(all_agendas));
+    }
+  }
 }
 
 </script>
@@ -195,7 +242,7 @@ function openPopup(){
   <VaCard class="agenda" color="transparent">
     <div class="agenda-header">
       <div class="agenda-title">
-        <VaInput class="agenda-title-input input-no-border" :model-value="getAgenda()?.title"></VaInput>
+        <VaInput class="agenda-title-input input-no-border" v-model="agenda_title" @blur="updateAgendaTitle()"></VaInput>
       </div>
       <VaButton class="agenda-updates" preset="secondary">
         <div class="agenda-updates-title">
@@ -226,8 +273,7 @@ function openPopup(){
       </VaButton>
     </div>
     <div class="agenda-description">
-      <VaTextarea class="agenda-desc input-no-border w-full" :model-value="agenda?.description" :autosize="true">
-      </VaTextarea>
+      <VaInput class="agenda-desc input-no-border w-full" v-model="agenda_description" @blur="updateAgendaDescription()" :autosize="true"></VaInput>
       <VaButton preset="secondary" class="agenda-see-more ml-auto" @click="openPopup"> Details </VaButton>
     </div>
     <VaTabs v-model="selectedTab">
@@ -242,7 +288,8 @@ function openPopup(){
       <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
     </div>
   </VaCard>
-  <TaskInfo :title="agenda?.title" :description="agenda?.description" :open="agendaDetailsPopup" @close-popup="closePopup" ></TaskInfo>
+  <TaskInfo :title="agenda?.title" :description="agenda?.description" :open="agendaDetailsPopup"
+    @close-popup="closePopup"></TaskInfo>
 
 </template>
 

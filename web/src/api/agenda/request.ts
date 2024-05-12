@@ -1,4 +1,4 @@
-import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskAgendaVisor, RemoveTask, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskAgendaVisor, UpdateTask, UpdateTaskAgenda, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskAgendaVisor } from './types';
+import { AllTasks, CreateTask, CreateTaskAgenda, CreateTaskGroup, CreateTaskSuperVisor, CreateTaskUpdate, CreateTaskAgendaVisor, RemoveTask, Task, TaskAgenda, TaskGroup, TaskSuperVisor, TaskUpdate, TaskAgendaVisor, UpdateTask, UpdateTaskAgendaTitle, UpdateTaskAgendaDescription, UpdateTaskGroup, UpdateTaskSuperVisor, UpdateTaskAgendaVisor } from './types';
 
 export type AgendaFilters = {
     agenda_id: number,
@@ -150,8 +150,8 @@ export const addTaskAgenda = async (item: CreateTaskAgenda) => {
     }
 }
 
-export const updateTaskAgenda = async (item: UpdateTaskAgenda) => {
-    const response = await fetch(user_api_url + 'tasks/agendas/' + item.agenda_id, {
+export const updateTaskAgendaTitle = async (item: UpdateTaskAgendaTitle) => {
+    const response = await fetch(user_api_url + 'task_agendas/' + item.agenda_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -161,7 +161,23 @@ export const updateTaskAgenda = async (item: UpdateTaskAgenda) => {
     })
 
     const result = await response.json()
-    const newItem: TaskAgenda = result.item
+    const newItem: TaskAgenda = result.data.item
+
+    return newItem
+}
+
+export const updateTaskAgendaDescription = async (item: UpdateTaskAgendaDescription) => {
+    const response = await fetch(user_api_url + 'task_agendas/' + item.agenda_id, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(item),
+    })
+
+    const result = await response.json()
+    const newItem: TaskAgenda = result.data.item
 
     return newItem
 }

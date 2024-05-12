@@ -66,11 +66,11 @@ export default {
         <div class="popup" :class="open ? 'open' : ''">
             <div class="popup-inner">
                 <slot />
-            </div>
-            <div class="popup-close">
-                <VaButton type="preset" @click="closePopup">
-                    <VaIcon name="close"></VaIcon>
-                </VaButton>
+                <div class="popup-close">
+                    <VaButton preset="plainOpacity" color="danger" @click="closePopup">
+                        <VaIcon name="close"></VaIcon>
+                    </VaButton>
+                </div>
             </div>
             <div class="popup-bg" @click="closePopup"></div>
         </div>
