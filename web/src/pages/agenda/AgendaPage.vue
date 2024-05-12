@@ -4,8 +4,8 @@ import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate 
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
+import TaskInfo from './widgets/TaskInfo.vue';
 import { useRoute } from 'vue-router';
-import Popup from '../../components/general/Popup.vue';
 
 const route = useRoute();
 
@@ -180,6 +180,7 @@ const emit = defineEmits<{
 }>()
 
 const closePopup = () => {
+  emit('close-popup');
   agendaDetailsPopup.value=false;
 }
 
@@ -241,7 +242,8 @@ function openPopup(){
       <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
     </div>
   </VaCard>
-  <Popup :open="agendaDetailsPopup" @close-popup="closePopup"></Popup>
+  <TaskInfo :title="agenda?.title" :description="agenda?.description" :open="agendaDetailsPopup" @close-popup="closePopup" ></TaskInfo>
+
 </template>
 
 
