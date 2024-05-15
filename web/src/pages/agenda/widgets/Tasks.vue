@@ -191,6 +191,10 @@ const addNewTask = (task: Task | DataTableItem) => {
         align-items: center;
         justify-content: center;
     }
+
+    .dp__input {
+        padding-right: .75rem;
+    }
     
 }
 

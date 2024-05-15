@@ -1,8 +1,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { Task, TaskPriority, UpdateTask } from '../../../api/agenda/types';
-import { DataTableItem } from 'vuestic-ui/web-components';
-import { updateTask } from '../../../api/agenda/request';
+import { Task } from '../../../api/agenda/types';
 
 export default defineComponent({
     props: {

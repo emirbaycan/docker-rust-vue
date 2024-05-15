@@ -21,7 +21,8 @@ export default defineComponent({
     },
     data() {
         return {
-            selectedSupervisor: null as number | null
+            selectedSupervisor: null as number | null,
+            email: ''
         };
     },
     methods: {
@@ -68,21 +69,21 @@ export default defineComponent({
             </VaDropdown>
         </div>
         <VaButton v-else class="task-supervisor-btn">
-            <VaMenu :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
+            <VaDropdown :close-on-content-click="false" :keyboard-navigation="false" :readonly="true">
                 <template #anchor>
                     <div>
                         <VaIcon name="person_add" class="va-text-secondary"></VaIcon>
                     </div>
                 </template>
-                <VaMenuItem>
+                <VaDropdownContent>
                     <div class="task-supervisor-add">
                         <VaInput v-model="email" placeholder="E-posta ile ekleyin"></VaInput>
                         <VaButton @click="addSupervisor()">
                             <VaIcon name="add" />
                         </VaButton>
                     </div>
-                </VaMenuItem>
-            </VaMenu>
+                </VaDropdownContent>
+            </VaDropdown>
         </VaButton>
     </div>
 </template>

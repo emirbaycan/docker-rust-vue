@@ -1434,13 +1434,14 @@ pub async fn create_task_supervisor_handler(
 
     if query_result.is_err() {
         let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
             "message": "Unauthorized",
         });
         return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
     }
 
-    let query = "SELECT a.user_id FROM users a 
+    let query = "SELECT a.* FROM users a 
     WHERE a.email = $1"; 
 
     let mut query  = sqlx::query_as::<_, UserModel>(&query);
@@ -1451,8 +1452,9 @@ pub async fn create_task_supervisor_handler(
 
     if query_result.is_err() {
         let error_response = serde_json::json!({
+            "error": query_result.unwrap_err().to_string(),
             "status": "fail",
-            "message": "No such user",
+            "message": "No user with the email",
         });
         return Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)));
     }
