@@ -183,7 +183,7 @@ export const updateTaskAgendaDescription = async (item: UpdateTaskAgendaDescript
 }
 
 export const removeTaskAgenda = async (item: TaskAgenda) => {
-    const response = await fetch(user_api_url + 'task_agendas' + item.agenda_id, {
+    const response = await fetch(user_api_url + 'task_agendas/' + item.agenda_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -234,7 +234,7 @@ export const addTaskGroup = async (item: CreateTaskGroup) => {
 }
 
 export const updateTaskGroup = async (item: UpdateTaskGroup) => {
-    const response = await fetch(user_api_url + 'tasks/groups/' + item.group_id, {
+    const response = await fetch(user_api_url + 'task_groups/' + item.group_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -250,7 +250,7 @@ export const updateTaskGroup = async (item: UpdateTaskGroup) => {
 }
 
 export const removeTaskGroup = async (item: TaskGroup) => {
-    const response = await fetch(user_api_url + 'tasks/groups/' + item.group_id, {
+    const response = await fetch(user_api_url + 'task_groups/' + item.group_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -300,7 +300,7 @@ export const addTaskUpdate = async (item: CreateTaskUpdate) => {
 }
 
 export const removeTaskUpdate = async (item: TaskUpdate) => {
-    const response = await fetch(user_api_url + 'task_updates?update_id=' + item.update_id, {
+    const response = await fetch(user_api_url + 'task_updates/' + item.update_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -350,7 +350,7 @@ export const addTaskAgendaVisor = async (item: CreateTaskAgendaVisor) => {
 }
 
 export const updateTaskAgendaVisor = async (item: UpdateTaskAgendaVisor) => {
-    const response = await fetch(user_api_url + 'task_agenda_visors?visor_id=' + item.visor_id, {
+    const response = await fetch(user_api_url + 'task_agenda_visors/' + item.visor_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -366,7 +366,7 @@ export const updateTaskAgendaVisor = async (item: UpdateTaskAgendaVisor) => {
 }
 
 export const removeTaskAgendaVisor = async (item: TaskAgendaVisor) => {
-    const response = await fetch(user_api_url + 'task_agenda_visors?visor_id=' + item.visor_id, {
+    const response = await fetch(user_api_url + 'task_agenda_visors/' + item.visor_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -417,7 +417,7 @@ export const addTaskSupervisor = async (item: CreateTaskSuperVisor) => {
 }
 
 export const updateTaskSupervisor = async (item: UpdateTaskSuperVisor) => {
-    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id=' + item.supervisor_id, {
+    const response = await fetch(user_api_url + 'task_supervisors/' + item.supervisor_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -433,7 +433,7 @@ export const updateTaskSupervisor = async (item: UpdateTaskSuperVisor) => {
 }
 
 export const removeTaskSupervisor = async (item: TaskSuperVisor) => {
-    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id=' + item.supervisor_id, {
+    const response = await fetch(user_api_url + 'task_supervisors/' + item.supervisor_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
