@@ -121,6 +121,10 @@ export type TaskGroup = {
     updated_at: string
 }
 
+export type RemoveTaskGroup = {
+    group_id: number
+}
+
 export type CollectedTaskGroup = {
     group_id: number
     agenda_id: number

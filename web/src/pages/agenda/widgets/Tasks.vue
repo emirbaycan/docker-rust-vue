@@ -12,7 +12,7 @@ import TaskHoriz from './TaskHoriz.vue';
 import TaskGroupHoriz from './TaskGroupHoriz.vue';
 
 const columns = defineVaDataTableColumns([
-    { key: 'horiz' },
+    { key: 'horiz'},
     /*{ key: 'selection' },*/
     { label: 'Görev', key: 'name', sortable: true },
     { label: 'Sorumlu', key: 'supervisor', sortable: true },
@@ -79,6 +79,8 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 
 
 const emit = defineEmits<{
+    (event: 'add-task-group'): void    
+    (event: 'delete-task-group', group_id: number): void
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
     (event: 'delete-task', index: number): void
@@ -92,13 +94,21 @@ const addNewTask = (task: Task | DataTableItem) => {
     emit('add-task', task);
 }
 
+const addNewTaskGroup = () => {
+    emit('add-task-group');
+}
+
+const deleteTaskGroup = (group_id: number) => {
+    emit('delete-task-group', group_id);
+}
+
 </script>
 
 <template>
     <VaDataTable :columns="columns" :items="tasks" :loading="$props.loading">
 
-        <template #header(horiz)="{ label }">
-            <TaskGroupHoriz :tasks="tasks"></TaskGroupHoriz>
+        <template #header(horiz)="{ }">
+            <TaskGroupHoriz :tasks="tasks" @add-task-group="addNewTaskGroup" @delete-task-group="deleteTaskGroup" />
         </template>
 
         <template #cell(horiz)="{ rowData, rowIndex }">

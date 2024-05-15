@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { Task } from '../../../api/agenda/types';
+import { DataTableCell } from 'vuestic-ui/web-components';
 
 export default defineComponent({
     props: {
@@ -9,7 +10,23 @@ export default defineComponent({
             required: true
         }
     },
+    setup(props, { emit }) {
+
+        const addNewTaskGroup = () => {
+            emit('add-task-group');
+        }
+
+        const deleteTaskGroup = () =>{
+            emit('delete-task-group', props.tasks[0].group_id);
+        }
+
+        return {
+            addNewTaskGroup,
+            deleteTaskGroup
+        };
+    }
 })
+
 </script>
 
 <style>
@@ -34,13 +51,13 @@ export default defineComponent({
                 </div>
             </template>
             <VaMenuItem class="task-option">
-                <VaButton preset="secondary">
+                <VaButton preset="secondary" @click="addNewTaskGroup">
                     <VaIcon name="library_add" color="secondary"></VaIcon>
                     <span class="group-menu-item">Grup ekle</span>
                 </VaButton>
             </VaMenuItem>
             <VaMenuItem class="task-option">
-                <VaButton  preset="secondary">
+                <VaButton preset="secondary" @click="deleteTaskGroup">
                     <VaIcon name="delete" color="secondary"></VaIcon>
                     <span class="group-menu-item">Grubu Sil</span>
                 </VaButton>

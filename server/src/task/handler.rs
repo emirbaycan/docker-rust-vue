@@ -181,7 +181,7 @@ pub async fn tasks_list_handler(
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
 
     let query = "SELECT a.* FROM tasks a
-        LEFT JOIN task_groups b ON b.group_id = a.task_id
+        LEFT JOIN task_groups b ON b.group_id = a.group_id
         LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
         WHERE c.agenda_id = $1 and c.user_id = $2";
  
@@ -581,7 +581,7 @@ pub async fn delete_task_agenda_handler(
     }
 
     let query = "SELECT a.* FROM tasks a
-        LEFT JOIN task_groups b ON b.group_id = a.task_id
+        LEFT JOIN task_groups b ON b.group_id = a.group_id
         LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
         WHERE c.agenda_id = $1";
 
@@ -690,11 +690,10 @@ pub async fn create_task_group_handler(
     let user_id = session.get::<i32>("id").await.unwrap().unwrap();
     let agenda_id = body.agenda_id;
 
-    let query = "SELECT a.* FROM task_groups a
-        INNER JOIN task_agendas b ON a.agenda_id = b.agenda_id 
-        WHERE b.agenda_id = $1 and b.user_id = $2";
+    let query = "SELECT a.* FROM task_agendas a
+        WHERE a.agenda_id = $1 and a.user_id = $2";
  
-    let mut query  = sqlx::query_as::<_, TaskModel>(&query);
+    let mut query  = sqlx::query_as::<_, TaskAgendaModel>(&query);
     
     query = query.bind(agenda_id);
     query = query.bind(user_id);
@@ -1421,7 +1420,7 @@ pub async fn create_task_supervisor_handler(
     let task_id = body.task_id.to_owned();
     
     let query = "SELECT a.* FROM tasks a
-        LEFT JOIN task_groups b ON b.group_id = a.task_id
+        LEFT JOIN task_groups b ON b.group_id = a.group_id
         LEFT JOIN task_agendas c ON c.agenda_id = b.agenda_id 
         WHERE a.task_id = $1 and c.user_id = $2";
  
@@ -1429,7 +1428,7 @@ pub async fn create_task_supervisor_handler(
     
     query = query.bind(task_id);
     query = query.bind(user_id);
- 
+
     let query_result = query.fetch_one(&data.db).await;
 
     if query_result.is_err() {

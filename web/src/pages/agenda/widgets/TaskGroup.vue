@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Tasks from './Tasks.vue';
-import { useItems } from '../composables/useTasks'
-import { DataTableItem, useModal, useToast } from 'vuestic-ui'
-
+import { DataTableItem } from 'vuestic-ui'
 import { PropType } from 'vue';
-import { CollectedTaskGroup, CreateTask, Task, TaskGroup } from '../../../api/agenda/types';
+import { CollectedTaskGroup, CreateTask, Task } from '../../../api/agenda/types';
 import { addTask } from '../../../api/agenda/request';
 
 const props = defineProps({
@@ -19,10 +17,20 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
+    (event: 'add-task-group'): void    
+    (event: 'delete-task-group', group_id: number): void
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
     (event: 'delete-task', index: number): void
 }>()
+
+const addNewTaskGroup = () => {
+    emit('add-task-group');
+}
+
+const deleteTaskGroup = (group_id: number) => {
+    emit('delete-task-group', group_id);
+}
 
 const deleteTask = (index: number) => {
     tasks.value.splice(index, 1);
@@ -68,7 +76,7 @@ var tasks = ref(props.group.tasks);
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" :loading="loading"
+                <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" @add-task-group="addNewTaskGroup" @delete-task-group="deleteTaskGroup" :loading="loading"
                     @add-task="addNewTask"></Tasks>
             </VaCard>
         </div>

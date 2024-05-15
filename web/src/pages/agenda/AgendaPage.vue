@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { AllTasks, CollectedTaskGroup, CreateTask, Task, TaskAgenda, TaskUpdate, UpdateTaskAgendaDescription, UpdateTaskAgendaTitle } from '../../api/agenda/types';
+import { ref, watch } from 'vue';
+import { AllTasks, CollectedTaskGroup, CreateTaskGroup, RemoveTaskGroup, Task, TaskAgenda, TaskGroup, UpdateTaskAgendaDescription, UpdateTaskAgendaTitle } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
-import TaskInfo from './widgets/TaskInfo.vue';
-import TaskUpdates from './widgets/TaskUpdates.vue';
 import { useRoute } from 'vue-router';
-import { updateTaskAgendaDescription, updateTaskAgendaTitle } from '../../api/agenda/request';
+import { addTaskGroup, removeTaskGroup, updateTaskAgendaDescription, updateTaskAgendaTitle } from '../../api/agenda/request';
 
 const route = useRoute();
 
 const agenda_id = parseInt(route.query.id as string);
 
-const getAgenda = () => {
+function getAgenda() {
   var agendas = localStorage.getItem('agendas');
   if (agendas) {
     var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
@@ -38,7 +36,6 @@ const { items, isLoading } = useItems(
 )
 
 const parseGroups = (items: AllTasks | undefined) => {
-
   if (!items) {
     return;
   }
@@ -181,7 +178,7 @@ const calendarData = (tasks: Array<Task> | undefined) => {
 const agendaDetailsPopup = ref(false);
 const taskUpdatesSideUp = ref(false);
 
-const emit = defineEmits(['close-popup', 'close-sideup', 'update-agenda-title', 'update-agenda-description']);
+const emit = defineEmits(['add-task-group', 'close-popup', 'close-sideup', 'update-agenda-title', 'update-agenda-description']);
 
 const closePopup = () => {
   emit('close-popup');
@@ -242,6 +239,60 @@ async function updateAgendaDescription(value: string) {
   }
 }
 
+const addNewTaskGroup = async () => {
+  if (!groups || !groups.value || !items.value) {
+    return;
+  }
+
+  const newItem: CreateTaskGroup = {
+    agenda_id: agenda_id,
+    title: "New Task Group"
+  };
+
+  var completeNewItem = await addTaskGroup(newItem);
+
+  const lastIndex = items.value.groups.length - 1;
+
+  items.value.groups.splice(lastIndex, 0, {
+    ...completeNewItem
+  });
+
+  groups.value = parseGroups(items.value);
+};
+
+
+const deleteTaskGroup = async (group_id: number) => {
+  if (!groups || !groups.value || !items.value) {
+    return;
+  }
+
+  const item: RemoveTaskGroup = {
+    group_id: group_id,
+  };
+
+  var result = await removeTaskGroup(item);
+
+  const indexToRemove = items.value.groups.findIndex(group => group.group_id === group_id);
+  if (indexToRemove !== -1) {
+    items.value.groups.splice(indexToRemove, 1);
+  }
+
+  groups.value = parseGroups(items.value);
+};
+
+const groups = ref<CollectedTaskGroup[] | undefined>();
+
+watch(
+  () => items.value,
+  (newItems) => {
+    items.value = newItems; 
+    if (newItems) {
+      groups.value = parseGroups(newItems); 
+    }
+  }
+);
+
+
 </script>
 
 <template>
@@ -296,8 +347,9 @@ async function updateAgendaDescription(value: string) {
         </template>
       </VaTabs>
       <div class="tab-items">
-        <TaskGroups :groups="parseGroups(items)" :loading="isLoading" v-if="selectedTab == 0"></TaskGroups>
-        <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
+        <TaskGroups :groups="groups" :loading="isLoading" v-if="selectedTab == 0" @add-task-group="addNewTaskGroup"
+          @delete-task-group="deleteTaskGroup" />
+        <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1" />
       </div>
     </div>
     <!-- <TaskUpdates :open="taskUpdatesSideUp" @close-sideup="closeSideup"></TaskUpdates> -->

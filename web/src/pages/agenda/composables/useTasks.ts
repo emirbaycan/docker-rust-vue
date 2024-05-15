@@ -2,7 +2,7 @@ import { Ref, ref, unref, watch } from 'vue'
 import { 
     getTasks, 
     addTask, addTaskGroup, addTaskSupervisor, addTaskAgenda,
-    updateTask, updateTaskGroup, updateTaskSupervisor, updateTaskAgenda,
+    updateTask, updateTaskGroup, updateTaskSupervisor,
     removeTask, removeTaskGroup, removeTaskSupervisor, removeTaskAgenda,
     getAllTasks,
     AgendaFilters,
