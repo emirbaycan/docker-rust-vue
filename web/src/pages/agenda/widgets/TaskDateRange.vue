@@ -36,25 +36,24 @@ export default defineComponent({
             end = now;
         }
 
-        var rangeDate = {
-            start: start,
-            end: end
-        }
-
+        var rangeDate = [
+            start, end
+        ]
 
         return { rangeDate };
     },
     watch: {
         rangeDate: {
             handler(newValue) {
-                if (!(newValue.start && newValue.end)) {
+                console.log(newValue)
+                if (!(newValue.length==2)) {
                     return;
                 }
                 var newTask: UpdateTask = {
                     task_id: this.task.task_id,
                     group_id: this.task.group_id,
                     name: this.task.name,
-                    date: newValue.start.getTime() + " - " + newValue.end.getTime(),
+                    date: newValue[0].getTime() + " - " + newValue[1].getTime(),
                     expiration_date: this.task.expiration_date,
                     status: this.task.status,
                     priority: this.task.priority,
@@ -69,6 +68,15 @@ export default defineComponent({
 
 <template>
     <div class="task-date-holder">
-        <VaDateInput v-model="rangeDate" v-if="task.date"/>
+        <VueDatePicker v-model="rangeDate" :range="{ partialRange: false }" :clearable="false" :teleport="true"  v-if="task.date"></VueDatePicker>
     </div>
 </template>
+
+<style lang="scss">
+    .task-date-holder{
+        width:100%;
+        .va-date-input{
+            width:100%;
+        }
+    }
+</style>

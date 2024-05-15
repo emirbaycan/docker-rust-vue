@@ -35,27 +35,8 @@ const deleteTask = (index:number) => {
                     <VaIcon name="more_horiz" color="secondary"></VaIcon>
                 </div>
             </template>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="user" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Görüntüle</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="shrink" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Taşı</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="check" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Kopyala</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaSeparator></VaSeparator>
-            <VaMenuItem>
-                <VaButton @click="deleteTask(index)">
+            <VaMenuItem class="task-option">
+                <VaButton @click="deleteTask(index)" preset="secondary">
                     <VaIcon name="remove" color="secondary"></VaIcon>
                     <span class="group-menu-item">Sil</span>
                 </VaButton>

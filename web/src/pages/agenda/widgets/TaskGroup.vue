@@ -9,7 +9,7 @@ import { CollectedTaskGroup, CreateTask, Task, TaskGroup } from '../../../api/ag
 import { addTask } from '../../../api/agenda/request';
 
 const props = defineProps({
-    loading:{
+    loading: {
         type: Boolean as PropType<boolean>,
     },
     group: {
@@ -46,14 +46,14 @@ const addNewTask = async (task: Task | DataTableItem) => {
     };
 
     var completeNewTask = await addTask(newTask);
-    
+
     const lastIndex = tasks.value.length - 1;
 
     // Insert the new task before the last task
     tasks.value.splice(lastIndex, 0, {
         ...completeNewTask,
-        updates:[],
-        supervisors:[]
+        updates: [],
+        supervisors: []
     });
 };
 
@@ -68,7 +68,8 @@ var tasks = ref(props.group.tasks);
                 {{ group.title }}
             </VaCardTitle>
             <VaCard class="tasks">
-                <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" :loading="loading" @add-task="addNewTask"></Tasks>
+                <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" :loading="loading"
+                    @add-task="addNewTask"></Tasks>
             </VaCard>
         </div>
     </div>
@@ -77,6 +78,10 @@ var tasks = ref(props.group.tasks);
 <style lang="scss">
 .task-group {
     display: flex;
+    width: 100%;
 
+    .task-group-holder {
+        width: 100%;
+    }
 }
 </style>

@@ -18,7 +18,7 @@
           <VaButton class="px-4 py-4" icon="md_close" preset="plain" @click="onCloseSidebarButtonClick" />
         </div>
       </div>
-      <main class="p-4 pt-4">
+      <main class="p-4 pt-4" id="main">
         <article>
           <RouterView />
         </article>

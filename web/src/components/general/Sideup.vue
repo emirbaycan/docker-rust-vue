@@ -1,68 +1,66 @@
 <template>
     <Teleport to="body">
-        <div class="popup" :class="{ open: open }">
-            <div class="popup-inner">
+        <div class="sideup" :class="{ open: open }">
+            <div class="sideup-inner">
                 <slot />
-                <div class="popup-close">
-                    <VaButton preset="plainOpacity" color="danger" @click="closePopup">
+                <div class="sideup-close">
+                    <VaButton preset="plainOpacity" color="danger" @click="closeSideup">
                         <VaIcon name="close"></VaIcon>
                     </VaButton>
                 </div>
             </div>
-            <div class="popup-bg" @click="closePopup"></div>
         </div>
     </Teleport>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType} from 'vue';
 
 export default defineComponent({
-    name: 'Popup',
+    name: 'Sideup',
     props: {
         open: {
             type: Boolean as PropType<boolean>,
-            required: true
+            required: true,
         }
     },
-    emits: ['close-popup'], // Declare the custom event
+    emits: ['close-sideup'],
     methods: {
-        closePopup() {
-            this.$emit('close-popup');
-        }
+        closeSideup() {
+            this.$emit('close-sideup');
+        },
     }
 });
+
 </script>
 
 <style lang="scss">
-.popup {
-    width: 100%;
+.sideup {
+    min-width: 50%;
     height: 100%;
     position: fixed;
     top: 0;
-    left: 0;
+    right: -100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    visibility: hidden;
     z-index: 99999;
 
-    .popup-inner {
+    .sideup-inner {
         min-width: 300px;
-        min-height: 300px;
+        height: 100%;
         margin: auto;
         position: relative;
         z-index: 1;
     }
 
-    .popup-close {
+    .sideup-close {
         position: absolute;
         top: 0;
         right: 0;
     }
 
-    .popup-bg {
+    .sideup-bg {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -73,8 +71,7 @@ export default defineComponent({
     }
 }
 
-.popup.open {
-    opacity: 1;
-    visibility: visible;
+.sideup.open {
+    right: 0;
 }
 </style>

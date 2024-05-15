@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { PropType, defineEmits } from 'vue';
 import Popup from '../../../components/general/Popup.vue';
 
 const props = defineProps({
-    title:{
-        type: Object as PropType<string>,
+    agenda_title:{
+        type: String as PropType<string>,
+        required:true,
     },
-    description:{
-        type: Object as PropType<string>,
+    agenda_description:{
+        type: String as PropType<string>,
+        required:true,
     },
     open: {
         type: Boolean as PropType<boolean>,
@@ -15,10 +17,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits<{
-    (event: 'close-popup'): void
-}>()
-
+const emit = defineEmits(['close-popup']);
 
 const closePopup = () => {
     emit('close-popup');
@@ -30,8 +29,8 @@ const closePopup = () => {
     <Popup :open="open" @close-popup="closePopup">
         <div class="agenda-info">
             <div class="left">
-                <VaInput :model-value="title" class="input-no-border"></VaInput>
-                <VaTextarea :model-value="description" class="input-no-border"></VaTextarea>
+                <VaInput :model-value="agenda_title" class="input-no-border"></VaInput>
+                <VaTextarea :model-value="agenda_description" class="input-no-border"></VaTextarea>
             </div>
             <div class="right"> 
                 <div class="header">
@@ -71,9 +70,6 @@ const closePopup = () => {
         flex-direction: column;
         background:white;
         padding:1rem;
-        .va-input{
-       
-        }
         .va-textarea{
             min-height: 300px;
             width:100%;

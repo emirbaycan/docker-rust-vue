@@ -417,7 +417,7 @@ export const addTaskSupervisor = async (item: CreateTaskSuperVisor) => {
 }
 
 export const updateTaskSupervisor = async (item: UpdateTaskSuperVisor) => {
-    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id' + item.supervisor_id, {
+    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id=' + item.supervisor_id, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -433,7 +433,7 @@ export const updateTaskSupervisor = async (item: UpdateTaskSuperVisor) => {
 }
 
 export const removeTaskSupervisor = async (item: TaskSuperVisor) => {
-    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id' + item.supervisor_id, {
+    const response = await fetch(user_api_url + 'task_supervisors?supervisor_id=' + item.supervisor_id, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',

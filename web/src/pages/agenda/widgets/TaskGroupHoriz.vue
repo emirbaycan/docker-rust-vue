@@ -28,42 +28,23 @@ export default defineComponent({
 </style>
 
 <template>
-    <div class="task-group-option flex align-center justify-center">
-        <VaMenu>
+    <div class="task-group-option-holder flex align-center justify-center">
+        <VaMenu class="task-group-options">
             <template #anchor>
                 <div class="task-group-option-menu">
                     <VaIcon name="more_horiz" color="secondary"></VaIcon>
                 </div>
             </template>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="user" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Bu grubu daralt</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="shrink" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Tüm grupları daralt</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="check" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Tümünü seç</span>
-                </VaButton>
-            </VaMenuItem>
-            <VaSeparator></VaSeparator>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="plus" color="secondary"></VaIcon>
+            <VaMenuItem class="task-option">
+                <VaButton preset="secondary">
+                    <VaIcon name="library_add" color="secondary"></VaIcon>
                     <span class="group-menu-item">Grup ekle</span>
                 </VaButton>
             </VaMenuItem>
-            <VaMenuItem>
-                <VaButton>
-                    <VaIcon name="copy" color="secondary"></VaIcon>
-                    <span class="group-menu-item">Grubu çoğalt</span>
+            <VaMenuItem class="task-option">
+                <VaButton  preset="secondary">
+                    <VaIcon name="delete" color="secondary"></VaIcon>
+                    <span class="group-menu-item">Grubu Sil</span>
                 </VaButton>
             </VaMenuItem>
         </VaMenu>

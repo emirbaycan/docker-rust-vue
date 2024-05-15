@@ -5,6 +5,7 @@ import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
 import TaskInfo from './widgets/TaskInfo.vue';
+import TaskUpdates from './widgets/TaskUpdates.vue';
 import { useRoute } from 'vue-router';
 import { updateTaskAgendaDescription, updateTaskAgendaTitle } from '../../api/agenda/request';
 
@@ -178,30 +179,37 @@ const calendarData = (tasks: Array<Task> | undefined) => {
 }
 
 const agendaDetailsPopup = ref(false);
+const taskUpdatesSideUp = ref(false);
 
-const emit = defineEmits<{
-  (event: 'close-popup'): void
-}>()
+const emit = defineEmits(['close-popup', 'close-sideup', 'update-agenda-title', 'update-agenda-description']);
 
 const closePopup = () => {
   emit('close-popup');
   agendaDetailsPopup.value = false;
 }
 
+const closeSideup = () => {
+  emit('close-sideup');
+  taskUpdatesSideUp.value = false;
+}
+
+function openTaskUpdatesSideUp() {
+  taskUpdatesSideUp.value = true;
+}
+
 function openPopup() {
   agendaDetailsPopup.value = true;
 }
 
-async function updateAgendaTitle() {
-  var value = agenda_title.value;
-  if(!value){
+async function updateAgendaTitle(value: string) {
+  if (!value) {
     return;
   }
   var update_agenda: UpdateTaskAgendaTitle = {
     agenda_id: agenda_id,
     title: value,
   }
-  var new_agenda:TaskAgenda = await updateTaskAgendaTitle(update_agenda)
+  var new_agenda: TaskAgenda = await updateTaskAgendaTitle(update_agenda)
   var agendas = localStorage.getItem('agendas');
   if (agendas) {
     var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
@@ -214,16 +222,15 @@ async function updateAgendaTitle() {
   }
 }
 
-async function updateAgendaDescription() {
-  var value = agenda_description.value;
-  if(!value){
+async function updateAgendaDescription(value: string) {
+  if (!value) {
     return;
   }
   var update_agenda: UpdateTaskAgendaDescription = {
     agenda_id: agenda_id,
     description: value,
   }
-  var new_agenda:TaskAgenda = await updateTaskAgendaDescription(update_agenda)
+  var new_agenda: TaskAgenda = await updateTaskAgendaDescription(update_agenda)
   var agendas = localStorage.getItem('agendas');
   if (agendas) {
     var all_agendas: Array<TaskAgenda> = JSON.parse(agendas);
@@ -237,65 +244,84 @@ async function updateAgendaDescription() {
 
 </script>
 
-
 <template>
-  <VaCard class="agenda" color="transparent">
-    <div class="agenda-header">
-      <div class="agenda-title">
-        <VaInput class="agenda-title-input input-no-border" v-model="agenda_title" @blur="updateAgendaTitle()"></VaInput>
+  <div class="agenda" color="transparent">
+    <div class="agenda-inner">
+      <div class="agenda-header">
+        <div class="agenda-title">
+          <VaInput class="agenda-title-input input-no-border" v-model="agenda_title"
+            @blur="updateAgendaTitle($event.target.value)">
+          </VaInput>
+        </div>
+        <!-- 
+        <VaButton class="agenda-updates" preset="secondary" @click="openTaskUpdatesSideUp">
+          <div class="agenda-updates-title">
+            Updates
+          </div>
+          <div v-if="items && items.updates.length" class="agenda-updater">
+            <VaAvatar size="small" :src="items.updates[0].avatar"></VaAvatar>
+          </div>
+        </VaButton>
+        -->
+        <VaButton class="agenda-invite ml-auto" preset="secondary" border-color="primary">
+          <VaIcon name="person_add"></VaIcon>
+          <div class="agenda-invite-title">Invite</div>
+        </VaButton>
+        <VaButton preset="secondary">
+          <VaMenu>
+            <template #anchor>
+              <div class="task-agenda-option-menu">
+                <VaIcon name="more_horiz" color="secondary"></VaIcon>
+              </div>
+            </template>
+            <VaMenuItem class="task-option">
+              <VaButton preset="secondary">
+                <VaIcon name="remove" color="secondary"></VaIcon>
+                <span class="group-menu-item">Delete Agenda</span>
+              </VaButton>
+            </VaMenuItem>
+          </VaMenu>
+        </VaButton>
       </div>
-      <VaButton class="agenda-updates" preset="secondary">
-        <div class="agenda-updates-title">
-          Updates
-        </div>
-        <div v-if="items && items.updates.length" class="agenda-updater">
-          <VaAvatar size="small" :src="items.updates[0].avatar"></VaAvatar>
-        </div>
-      </VaButton>
-      <VaButton class="agenda-invite" preset="secondary" border-color="primary" text-color="black">
-        <VaIcon name="person_add"></VaIcon>
-        <div class="agenda-invite-title">Invite</div>
-      </VaButton>
-      <VaButton preset="secondary">
-        <VaMenu>
-          <template #anchor>
-            <div class="task-agenda-option-menu">
-              <VaIcon name="more_horiz" color="secondary"></VaIcon>
-            </div>
-          </template>
-          <VaMenuItem>
-            <VaButton>
-              <VaIcon name="remove" color="secondary"></VaIcon>
-              <span class="group-menu-item">Delete Agenda</span>
-            </VaButton>
-          </VaMenuItem>
-        </VaMenu>
-      </VaButton>
+      <div class="agenda-description">
+        <VaInput class="agenda-desc input-no-border w-full" v-model="agenda_description"
+          @blur="updateAgendaDescription($event.target.value)" :autosize="true"></VaInput>
+        <!-- <VaButton preset="secondary" class="agenda-see-more ml-auto" @click="openPopup"> Details </VaButton> -->
+      </div>
+      <VaTabs v-model="selectedTab">
+        <template #tabs>
+          <VaTab v-for="tab in ['Table', 'Calendar']" :key="tab">
+            {{ tab }}
+          </VaTab>
+        </template>
+      </VaTabs>
+      <div class="tab-items">
+        <TaskGroups :groups="parseGroups(items)" :loading="isLoading" v-if="selectedTab == 0"></TaskGroups>
+        <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
+      </div>
     </div>
-    <div class="agenda-description">
-      <VaInput class="agenda-desc input-no-border w-full" v-model="agenda_description" @blur="updateAgendaDescription()" :autosize="true"></VaInput>
-      <VaButton preset="secondary" class="agenda-see-more ml-auto" @click="openPopup"> Details </VaButton>
-    </div>
-    <VaTabs v-model="selectedTab">
-      <template #tabs>
-        <VaTab v-for="tab in ['Table', 'Calendar']" :key="tab">
-          {{ tab }}
-        </VaTab>
-      </template>
-    </VaTabs>
-    <div class="tab-items">
-      <TaskGroups :groups="parseGroups(items)" :loading="isLoading" v-if="selectedTab == 0"></TaskGroups>
-      <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1"></TaskCalendar>
-    </div>
-  </VaCard>
-  <TaskInfo :title="agenda?.title" :description="agenda?.description" :open="agendaDetailsPopup"
-    @close-popup="closePopup"></TaskInfo>
-
+    <!-- <TaskUpdates :open="taskUpdatesSideUp" @close-sideup="closeSideup"></TaskUpdates> -->
+  </div>
+  <!-- <TaskInfo :agenda_title="agenda_title ?? ''" :agenda_description="agenda_description ?? ''" :open="agendaDetailsPopup" @close-popup="closePopup"></TaskInfo> -->
 </template>
 
 
 <style lang="scss">
 .agenda {
+  display: flex;
+
+  th.va-data-table__table-th:first-child {
+    padding: 0 !important;
+  }
+
+  .agenda-inner {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    width: 100%;
+
+  }
+
   .agenda-top {
     margin-bottom: 1rem;
   }
@@ -344,5 +370,22 @@ async function updateAgendaDescription() {
 
 .agenda-invite .va-icon {
   margin-right: .5rem;
+}
+
+.task-option {
+
+  .va-button {
+    width: 100%;
+
+    i {
+      margin-right: .5rem;
+      color: var(--va-info);
+
+    }
+
+    .group-menu-item {
+      color: black;
+    }
+  }
 }
 </style>

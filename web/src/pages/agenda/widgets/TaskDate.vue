@@ -50,6 +50,15 @@ export default defineComponent({
 
 <template>
     <div class="task-expiration-date-holder">
-        <VaDateInput v-model="single" v-if="task.expiration_date"/>
+        <VueDatePicker v-model="single" :teleport="true"  :clearable="false" v-if="task.expiration_date"></VueDatePicker>
     </div>
 </template>
+
+<style lang="scss">
+    .task-expiration-date-holder{
+        width:100%;
+        .va-date-input{
+            width:100%;
+        }
+    }
+</style>

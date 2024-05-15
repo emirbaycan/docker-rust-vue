@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, PropType } from 'vue';
 import { DataTableItem, defineVaDataTableColumns } from 'vuestic-ui'
-import { CreateTask, Task, TaskStatus, TaskUpdate, UpdateTask } from '../../../api/agenda/types';
-import { useVModel } from '@vueuse/core';
+import { Task, UpdateTask } from '../../../api/agenda/types';
 import TaskDate from './TaskDate.vue';
 import TaskDateRange from './TaskDateRange.vue';
 import TaskPriorities from './TaskPriorities.vue';
@@ -14,7 +13,7 @@ import TaskGroupHoriz from './TaskGroupHoriz.vue';
 
 const columns = defineVaDataTableColumns([
     { key: 'horiz' },
-    { key: 'selection' },
+    /*{ key: 'selection' },*/
     { label: 'Görev', key: 'name', sortable: true },
     { label: 'Sorumlu', key: 'supervisor', sortable: true },
     { label: 'Durum', key: 'status', sortable: true },
@@ -29,7 +28,7 @@ const props = defineProps({
         required: true,
     },
     loading: {
-        type: Boolean as PropType<boolean>   
+        type: Boolean as PropType<boolean>
     }
 })
 
@@ -82,7 +81,7 @@ const updateTaskTitle = (task: Task | DataTableItem) => {
 const emit = defineEmits<{
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
-    (event: 'delete-task', index: number): void 
+    (event: 'delete-task', index: number): void
 }>()
 
 const deleteTask = (index: number) => {
@@ -92,7 +91,6 @@ const deleteTask = (index: number) => {
 const addNewTask = (task: Task | DataTableItem) => {
     emit('add-task', task);
 }
-
 
 </script>
 
@@ -107,8 +105,8 @@ const addNewTask = (task: Task | DataTableItem) => {
             <TaskHoriz v-if="rowData.status" :task="rowData" :index="rowIndex" @delete-task="deleteTask"></TaskHoriz>
         </template>
 
-        <template #header(selection)="{ label }">
-            <div class="flex align-center justify-center" >
+        <!-- <template #header(selection)="{ label }">
+            <div class="flex align-center justify-center">
                 <VaCheckbox v-model="selectAll" @change="toggleAllTasks"></VaCheckbox>
             </div>
         </template>
@@ -118,21 +116,23 @@ const addNewTask = (task: Task | DataTableItem) => {
                 <VaCheckbox v-model="defaultCheckboxes[rowData.task_id]" @change="toggleTaskSelection(rowData.task_id)">
                 </VaCheckbox>
             </div>
-        </template>
+        </template> -->
 
         <template #cell(name)="{ rowData }">
             <div class="task-holder">
                 <div class="task pr-2">
-                    <VaInput v-if="rowData.name && rowData.task_id" v-model="rowData.name" @blur="updateTaskTitle(rowData)"></VaInput>
-                    <VaInput v-else v-model="rowData.name" :placeholder="'Bir görev ekleyin..'" @blur="addNewTask(rowData);rowData.name=''"></VaInput>
+                    <VaInput v-if="rowData.name && rowData.task_id" v-model="rowData.name"
+                        @blur="updateTaskTitle(rowData)"></VaInput>
+                    <VaInput v-else v-model="rowData.name" :placeholder="'Bir görev ekleyin..'"
+                        @blur="addNewTask(rowData); rowData.name = ''"></VaInput>
                 </div>
                 <div class="task-updates">
                     <div v-if="rowData.updates.length">
-                        <VaButton v-if="rowData.updates[0].update_id!=0" class="task-update-btn">                        
+                        <VaButton v-if="rowData.updates[0].update_id != 0" class="task-update-btn">
                             <VaIcon name="comment" class="va-text-secondary"></VaIcon>
                             <span class="task-update-count">{{ rowData.updates.length }}</span>
                         </VaButton>
-                    </div>                    
+                    </div>
                     <VaButton v-else class="task-update-btn">
                         <VaIcon name="add_comment" class="va-text-secondary"></VaIcon>
                     </VaButton>
@@ -168,26 +168,30 @@ const addNewTask = (task: Task | DataTableItem) => {
 
 
 <style lang="scss">
-.va-data-table__table-th-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+.tasks{
 
-.va-data-table__table-th-wrapper span {
-    text-align: center
-}
-
-.va-data-table__table-th-wrapper i {
-    position: absolute;
-    right: 0;
-}
-
-.va-data-table__table-td {
-    padding: 0 !important;
-    align-items: center;
-    justify-content: center;
+    .va-data-table__table-th-wrapper {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .va-data-table__table-th-wrapper span {
+        text-align: center
+    }
+    
+    .va-data-table__table-th-wrapper .va-data-table__table-th-sorting-icon {
+        position: absolute;
+        right: 0;
+    }
+    
+    .va-data-table__table-td {
+        padding: 0 !important;
+        align-items: center;
+        justify-content: center;
+    }
+    
 }
 
 .task-holder {
@@ -332,5 +336,4 @@ const addNewTask = (task: Task | DataTableItem) => {
         }
     }
 }
-
 </style>
