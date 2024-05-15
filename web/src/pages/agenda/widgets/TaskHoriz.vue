@@ -17,12 +17,12 @@ const props = defineProps({
 
 
 const emit = defineEmits<{
-    (event: 'delete-task', index:number): void
+    (event: 'delete-task', task_id:number): void
 }>()
 
 
-const deleteTask = (index:number) => {
-    emit('delete-task',index);
+const deleteTask = (task_id:number) => {
+    emit('delete-task',task_id);
 }
 
 </script>
@@ -36,7 +36,7 @@ const deleteTask = (index:number) => {
                 </div>
             </template>
             <VaMenuItem class="task-option">
-                <VaButton @click="deleteTask(index)" preset="secondary">
+                <VaButton @click="deleteTask(task.task_id)" preset="secondary">
                     <VaIcon name="remove" color="secondary"></VaIcon>
                     <span class="group-menu-item">Sil</span>
                 </VaButton>

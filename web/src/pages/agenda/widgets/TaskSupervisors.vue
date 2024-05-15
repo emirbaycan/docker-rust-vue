@@ -14,9 +14,6 @@ export default defineComponent({
         task: {
             type: Object as PropType<UpdateTask | DataTableItem>,
             required: true
-        },
-        email: {
-            type: String,
         }
     },
     data() {

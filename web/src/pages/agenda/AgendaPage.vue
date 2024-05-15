@@ -62,8 +62,6 @@ const parseGroups = (items: AllTasks | undefined) => {
       task.supervisors = supervisors.filter(supervisor => supervisor.task_id == task.task_id);;
 
       new_group.tasks.push(task);
-      new_group.group_id = task.group_id;
-
     });
     var task_adder: Task = {
       task_id: 0,
@@ -104,7 +102,6 @@ const parseGroups = (items: AllTasks | undefined) => {
     }
     new_groups.push(new_group);
   });
-
   return new_groups;
 }
 
@@ -251,11 +248,7 @@ const addNewTaskGroup = async () => {
 
   var completeNewItem = await addTaskGroup(newItem);
 
-  const lastIndex = items.value.groups.length - 1;
-
-  items.value.groups.splice(lastIndex, 0, {
-    ...completeNewItem
-  });
+  items.value.groups.push(completeNewItem);
 
   groups.value = parseGroups(items.value);
 };

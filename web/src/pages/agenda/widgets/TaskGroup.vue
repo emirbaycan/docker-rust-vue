@@ -4,7 +4,7 @@ import Tasks from './Tasks.vue';
 import { DataTableItem } from 'vuestic-ui'
 import { PropType } from 'vue';
 import { CollectedTaskGroup, CreateTask, Task } from '../../../api/agenda/types';
-import { addTask } from '../../../api/agenda/request';
+import { addTask, removeTask } from '../../../api/agenda/request';
 
 const props = defineProps({
     loading: {
@@ -21,7 +21,7 @@ const emit = defineEmits<{
     (event: 'delete-task-group', group_id: number): void
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
-    (event: 'delete-task', index: number): void
+    (event: 'delete-task', task_id: number): void
 }>()
 
 const addNewTaskGroup = () => {
@@ -32,8 +32,16 @@ const deleteTaskGroup = (group_id: number) => {
     emit('delete-task-group', group_id);
 }
 
-const deleteTask = (index: number) => {
-    tasks.value.splice(index, 1);
+const deleteTask = async (task_id: number) => {
+    if (!tasks || !tasks.value) {
+        return;
+    }
+
+    const updatedTasks = tasks.value.filter(task => task.task_id !== task_id);
+
+    tasks.value = updatedTasks;
+
+    await removeTask({task_id:task_id});
 }
 
 const addNewTask = async (task: Task | DataTableItem) => {

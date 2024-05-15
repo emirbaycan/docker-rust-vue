@@ -83,11 +83,11 @@ const emit = defineEmits<{
     (event: 'delete-task-group', group_id: number): void
     (event: 'add-task', item: Task | DataTableItem): void
     (event: 'edit-task', item: Task): void
-    (event: 'delete-task', index: number): void
+    (event: 'delete-task', task_id: number): void
 }>()
 
-const deleteTask = (index: number) => {
-    emit('delete-task', index);
+const deleteTask = (task_id: number) => {
+    emit('delete-task', task_id);
 }
 
 const addNewTask = (task: Task | DataTableItem) => {

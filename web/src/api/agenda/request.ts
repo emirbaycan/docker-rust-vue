@@ -226,7 +226,7 @@ export const addTaskGroup = async (item: CreateTaskGroup) => {
     })
 
     const result = await response.json()
-    const newItem: TaskGroup = result.item
+    const newItem: TaskGroup = result.data.item
 
     return {
         ...newItem,
