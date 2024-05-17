@@ -134,7 +134,6 @@ export type CollectedTaskGroup = {
 
 export type UpdateTaskGroup = {
     group_id: number
-    agenda_id: number
     title: string
 }
 

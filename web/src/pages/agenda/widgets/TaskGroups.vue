@@ -13,6 +13,7 @@ defineProps({
 })
 
 const emit = defineEmits<{
+    (event: 'update-task-group-title',value:string, group_id:number): void
     (event: 'add-task-group'): void
     (event: 'delete-task-group', group_id: number): void
 }>()
@@ -23,6 +24,10 @@ const addNewTaskGroup = () => {
 
 const deleteTaskGroup = (group_id: number) => {
     emit('delete-task-group', group_id);
+}
+
+const updateTaskGroupTitle = (value:string, group_id: number) => {
+    emit('update-task-group-title', value, group_id);
 }
 
 </script>
@@ -36,6 +41,6 @@ const deleteTaskGroup = (group_id: number) => {
 <template>
     <div class="task-groups" v-for="group in groups">
         <TaskGroup :group="group" :loading="loading" @add-task-group="addNewTaskGroup"
-            @delete-task-group="deleteTaskGroup"></TaskGroup>
+            @delete-task-group="deleteTaskGroup" @update-task-group-title="updateTaskGroupTitle"></TaskGroup>
     </div>
 </template>

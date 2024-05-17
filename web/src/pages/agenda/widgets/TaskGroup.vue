@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import Tasks from './Tasks.vue';
 import { DataTableItem } from 'vuestic-ui'
 import { PropType } from 'vue';
-import { CollectedTaskGroup, CreateTask, Task } from '../../../api/agenda/types';
-import { addTask, removeTask } from '../../../api/agenda/request';
+import { CollectedTaskGroup, CreateTask, Task, TaskGroup, UpdateTaskGroup } from '../../../api/agenda/types';
+import { addTask, removeTask, updateTaskGroup } from '../../../api/agenda/request';
 
 const props = defineProps({
     loading: {
@@ -17,6 +17,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
+    (event: 'update-task-group-title',value:string, group_id:number): void
     (event: 'add-task-group'): void    
     (event: 'delete-task-group', group_id: number): void
     (event: 'add-task', item: Task | DataTableItem): void
@@ -30,6 +31,10 @@ const addNewTaskGroup = () => {
 
 const deleteTaskGroup = (group_id: number) => {
     emit('delete-task-group', group_id);
+}
+
+const updateTaskGroupTitle = (value:string, group_id: number) => {
+    emit('update-task-group-title', value, group_id);
 }
 
 const deleteTask = async (task_id: number) => {
@@ -74,6 +79,7 @@ const addNewTask = async (task: Task | DataTableItem) => {
 };
 
 var tasks = ref(props.group.tasks);
+var group_title = ref(props.group.title);
 
 </script>
 
@@ -81,7 +87,7 @@ var tasks = ref(props.group.tasks);
     <div class="task-group">
         <div class="task-group-holder">
             <VaCardTitle class="task-group-title">
-                {{ group.title }}
+                <VaInput class="input-no-border" v-model="group_title" @blur="updateTaskGroupTitle($event.target.value, props.group.group_id)" />
             </VaCardTitle>
             <VaCard class="tasks">
                 <Tasks v-if="!loading" :tasks="tasks" @delete-task="deleteTask" @add-task-group="addNewTaskGroup" @delete-task-group="deleteTaskGroup" :loading="loading"

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { AllTasks, CollectedTaskGroup, CreateTaskGroup, RemoveTaskGroup, Task, TaskAgenda, TaskGroup, UpdateTaskAgendaDescription, UpdateTaskAgendaTitle } from '../../api/agenda/types';
+import { AllTasks, CollectedTaskGroup, CreateTaskGroup, RemoveTaskGroup, Task, TaskAgenda, TaskGroup, UpdateTaskAgendaDescription, UpdateTaskAgendaTitle, UpdateTaskGroup } from '../../api/agenda/types';
 import { useItems } from './composables/useTasks';
 import TaskGroups from './widgets/TaskGroups.vue';
 import TaskCalendar from './widgets/TaskCalendar.vue';
 import { useRoute } from 'vue-router';
-import { addTaskGroup, removeTaskGroup, updateTaskAgendaDescription, updateTaskAgendaTitle } from '../../api/agenda/request';
+import { addTaskGroup, removeTaskGroup, updateTaskAgendaDescription, updateTaskAgendaTitle, updateTaskGroup } from '../../api/agenda/request';
 
 const route = useRoute();
 
@@ -175,7 +175,7 @@ const calendarData = (tasks: Array<Task> | undefined) => {
 const agendaDetailsPopup = ref(false);
 const taskUpdatesSideUp = ref(false);
 
-const emit = defineEmits(['add-task-group', 'close-popup', 'close-sideup', 'update-agenda-title', 'update-agenda-description']);
+const emit = defineEmits(['update-task-group-title','add-task-group', 'close-popup', 'close-sideup', 'update-agenda-title', 'update-agenda-description']);
 
 const closePopup = () => {
   emit('close-popup');
@@ -273,18 +273,36 @@ const deleteTaskGroup = async (group_id: number) => {
   groups.value = parseGroups(items.value);
 };
 
+
+const updateTaskGroupTitle = async (value: string, group_id: number) => {
+  if (!groups || !groups.value || !items.value) {
+    return;
+  }
+
+  var update_item: UpdateTaskGroup = {
+    group_id: group_id,
+    title: value
+  }
+
+  var new_group: TaskGroup = await updateTaskGroup(update_item)
+
+  const group_index = items.value.groups.findIndex(group => group.group_id === group_id);
+  items.value.groups[group_index].title = value;
+
+  groups.value = parseGroups(items.value);
+};
+
 const groups = ref<CollectedTaskGroup[] | undefined>();
 
 watch(
   () => items.value,
   (newItems) => {
-    items.value = newItems; 
+    items.value = newItems;
     if (newItems) {
-      groups.value = parseGroups(newItems); 
+      groups.value = parseGroups(newItems);
     }
   }
 );
-
 
 </script>
 
@@ -341,7 +359,7 @@ watch(
       </VaTabs>
       <div class="tab-items">
         <TaskGroups :groups="groups" :loading="isLoading" v-if="selectedTab == 0" @add-task-group="addNewTaskGroup"
-          @delete-task-group="deleteTaskGroup" />
+          @delete-task-group="deleteTaskGroup" @update-task-group-title="updateTaskGroupTitle" />
         <TaskCalendar :data="calendarData(items?.tasks)" v-if="selectedTab == 1" />
       </div>
     </div>
@@ -349,7 +367,6 @@ watch(
   </div>
   <!-- <TaskInfo :agenda_title="agenda_title ?? ''" :agenda_description="agenda_description ?? ''" :open="agendaDetailsPopup" @close-popup="closePopup"></TaskInfo> -->
 </template>
-
 
 <style lang="scss">
 .agenda {
